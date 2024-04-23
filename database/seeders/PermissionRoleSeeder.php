@@ -16,6 +16,8 @@ class PermissionRoleSeeder extends Seeder
     {
         Role::create(['name' => 'admin']);
         Role::create(['name' => 'member']);
+        Role::create(['name' => 'owner']);
+        Role::create(['name' => 'kitchen']);
         Permission::create(['name' => 'adminPanelAccess'])
         ->assignRole('admin');
     }

@@ -15,7 +15,8 @@ class LoginController extends Controller
         ]);
         if(Auth::attempt($credentials, $request->filled('remember_token'))) {
             $request->session()->regenerate();
-            return redirect()->intended('home');
+            $message = 'Welcome ' . Auth::user()->name;
+            return redirect()->intended('home')->with('alert', 'success')->with('message', $message);
         } else {
             return back()->withInput()->withErrors([
                 'email' => 'Email/password salah!',
