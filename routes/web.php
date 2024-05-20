@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\AdminController;
+use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\auth\LogoutController;
 use Illuminate\Support\Facades\Route;
@@ -28,12 +29,14 @@ Route::group([
     'namespace'  => 'App\Http\Controllers\admin',
     'prefix'     => '/',
 ], function () {
+    Route::get('/getUser', [UserController::class, 'getUser'])->name('admin.dataTable.getUser');
     Route::get('/', [AdminController::class, 'index'])->name('home');
-    Route::resource('home', AdminController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy'])->names([
+    Route::resource('user', UserController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy'])->names([
+        'index' => 'user',
         'update'  => 'order.confirm',
         'show'  => 'order.view',
         'edit' => 'confirm',
         'store' => 'order.storepayment',
-        'destroy' => 'order.destroy'
+        'destroy' => 'user.destroy'
     ]);
 });
