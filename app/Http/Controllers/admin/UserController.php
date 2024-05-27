@@ -27,7 +27,7 @@ class UserController extends Controller
         // dd($user);
         $users = User::whereNotIn('id', [$adminId])->get();
 
-        return view('admin.user', compact('users'));
+        return view('admin.users.index', compact('users'));
     }
 
     /**
@@ -103,12 +103,28 @@ class UserController extends Controller
         ->addColumn('status', function($data) {
             return 'Inactive';
         })
+        ->addColumn('action', function ($data) {
+            // $user = auth()->user();
+            // $editHidden = !$user->role('admin') ? 'hidden' : '';
+            // $deleteHidden = !$user->role('admin') ? 'hidden' : '';
+
+            return '
+            <a href="' . route('user.edit', $data->id) . '" data-bs-toggle="tooltip" data-bs-original-title="Edit user">
+                <i class="fas fa-user-edit text-secondary"></i>
+            </a>
+            <button class="cursor-pointer fas fa-trash text-danger" onclick="submit('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>
+            <form id="form_'. $data->id .'" action="' . route('user.destroy', $data->id) . '" method="POST" class="inline">
+                ' . csrf_field() . '
+                ' . method_field('DELETE') . '
+            </form>';
+        })
         ->filterColumn('role', function($data, $keyword) {
             // Meng-handle search untuk kolom role
             $data->whereHas('roles', function ($query) use ($keyword) {
                 $query->where('name', 'like', "%{$keyword}%");
             });
         })
+        ->rawColumns(['action'])
         ->toJson(); 
     }
 }

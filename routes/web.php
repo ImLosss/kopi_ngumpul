@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\AdminController;
+use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\auth\LogoutController;
@@ -29,14 +30,29 @@ Route::group([
     'namespace'  => 'App\Http\Controllers\admin',
     'prefix'     => '/',
 ], function () {
-    Route::get('/getUser', [UserController::class, 'getUser'])->name('admin.dataTable.getUser');
     Route::get('/', [AdminController::class, 'index'])->name('home');
+
+    // routeUser
     Route::resource('user', UserController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy'])->names([
         'index' => 'user',
         'update'  => 'order.confirm',
         'show'  => 'order.view',
-        'edit' => 'confirm',
+        'edit' => 'user.edit',
         'store' => 'order.storepayment',
         'destroy' => 'user.destroy'
     ]);
+
+    Route::get('/getUser', [UserController::class, 'getUser'])->name('admin.dataTable.getUser');
+    //endRoute
+
+    //routeRoles
+    Route::resource('role', RoleController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy'])->names([
+        'index' => 'role',
+        'update'  => 'order.confirm',
+        'show'  => 'order.view',
+        'edit' => 'user.edit',
+        'store' => 'order.storepayment',
+        'destroy' => 'user.destroy'
+    ]);
+    //endRoute
 });

@@ -25,7 +25,7 @@
             </div>
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">
-                    <table class="table align-items-center m-0" id="dataTable3">
+                    <table class="table" id="dataTable3">
                         <thead>
                         <tr>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User</th>
@@ -34,6 +34,7 @@
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Role</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Since</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                         </tr>
                         </thead>
                         <tbody></tbody>
@@ -47,8 +48,13 @@
 
 @section('script')
 <script>
+
+    function submit(key) {
+        $('#form_'+key).submit();
+    }
+
     $(document).ready( function () {
-        $('#dataTable3').DataTable({
+        var table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
@@ -78,9 +84,20 @@
                 {
                     data: 'since',
                     name: 'since'
+                },
+                {
+                    data: 'action',
+                    name: 'action'
                 }
             ]
         });
+
+        // function reloadTable() {
+        //     table.ajax.reload(null, false); // Reload data without resetting pagination
+        // }
+
+        // // Set interval to reload table every 5 seconds
+        // setInterval(reloadTable, 10000);
     } );
 </script>
 @endsection
