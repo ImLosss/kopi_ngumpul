@@ -15,29 +15,50 @@
         <div class="card mb-1 p-3">
             <div class="card-header pb-3">
                 <div class="row">
-                    <div class="col-8 d-flex align-items-center">
+                    <div class="col d-flex align-items-center">
                         <h6>All Products</h6>
                     </div>
-                    <div class="col-2 text-end">
-                        <Select class="form-control">
-                            <option value="">Pilih Kategori</option>
+                    {{-- <div class="col-2 text-left">
+                        <select class="form-control" onchange="update(this.value)" id="categorySelect">
+                            <option value="" selected disabled>Pilih Kategori</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
                         </Select>
                     </div>
                     <div class="col-2 text-end">
-                        <a class="btn bg-gradient-dark mb-0" href="#"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Product</a>
+                        <a class="btn bg-gradient-dark mb-0" href="{{ route('product.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Product</a>
+                    </div> --}}
+                    <div class="col">
+                        <div class="d-flex justify-content-end flex-wrap">
+                            <div class="mb-2" style="margin-right: 20px">
+                                <select class="form-control" onchange="update(this.value)" id="categorySelect">
+                                    <option value="" selected disabled>Pilih Kategori</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </Select>
+                            </div>
+                            <div>
+                                <a class="btn bg-gradient-dark mb-0" href="{{ route('product.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Product</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">
-                    <table class="table  align-items-center mb-0" id="dataTable3">
+                    <table class="table" id="dataTable3">
                         <thead>
                         <tr>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Nama</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Kategori</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Jumlah</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Stock</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Modal</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Harga</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Rate</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -58,43 +79,32 @@
         $('#form_'+key).submit();
     }
 
-    $(document).ready( function () {
+    $(document).ready(function () {
         var table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('admin.dataTable.getProduct') }}"
+                url: "{{ route('admin.dataTable.getProduct') }}",
+                data: function (d) {
+                    d.category_id = $('#categorySelect').val(); // Mengirim category_id ke server
+                }
             },
             columns: [
-                {
-                    data: 'no',
-                    name: 'no'
-                },
-                {
-                    data: 'name',
-                    name: 'name'
-                },
-                {
-                    data: 'category',
-                    name: 'category'
-                },
-                {
-                    data: 'jumlah',
-                    name: 'jumlah'
-                },
-                {
-                    data: 'rate',
-                    name: 'rate'
-                }
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'name', name: 'name' },
+                { data: 'category', name: 'category' },
+                { data: 'jumlah', name: 'jumlah' },
+                { data: 'modal', name: 'modal' },
+                { data: 'harga', name: 'harga' },
+                { data: 'rate', name: 'rate' },
+                { data: 'action', name: 'action' }
             ]
         });
 
-        // function reloadTable() {
-        //     table.ajax.reload(null, false); // Reload data without resetting pagination
-        // }
-
-        // // Set interval to reload table every 5 seconds
-        // setInterval(reloadTable, 10000);
-    } );
+        // Fungsi update untuk memperbarui tabel berdasarkan kategori yang dipilih
+        window.update = function (category_id) {
+            $('#dataTable3').DataTable().ajax.reload();
+        }
+    });
 </script>
 @endsection

@@ -53,10 +53,15 @@ Route::group([
     //endRoute
 
     //routeProduct
-    Route::resource('product', ProductController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy'])->names([
+    Route::resource('product', ProductController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'index' => 'product',
+        'create' => 'product.create',
+        'store' => 'product.store',
+        'edit' => 'product.edit',
+        'show' => 'product.show',
     ]);
 
+    Route::get('/edit', [ProductController::class, 'edit']);
     Route::get('/getProduct', [ProductController::class, 'getProduct'])->name('admin.dataTable.getProduct');
     //endRoute
 });

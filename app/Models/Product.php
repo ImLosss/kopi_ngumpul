@@ -12,6 +12,8 @@ class Product extends Model
     protected $fillable = [
         'name',
         'jumlah',
+        'modal',
+        'harga',
         'category_id',
     ];
 

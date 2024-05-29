@@ -16,6 +16,8 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Nasi Goreng',
             'jumlah' => 20,
+            'modal' => 15000,
+            'harga' => 25000,
             'Category_id' => 1
         ]);
     }

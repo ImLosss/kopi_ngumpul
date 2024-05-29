@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::table('products', function (Blueprint $table) {
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
+
+        Schema::table('carts', function (Blueprint $table) {
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+        });
     }
 
     /**

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
@@ -14,10 +17,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data = Product::with('category')->get();
+        $data['categories'] = Category::get();
 
         // dd($data);
-        return view('admin.product.index', compact('data'));
+        return view('admin.product.index', $data);
     }
 
     /**
@@ -25,15 +28,26 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $data = Category::get();
+        // dd($data);
+        return view('admin.product.create', compact('data'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        //
+        // dd($request);
+        Product::create([
+            'name' => $request->name,
+            'jumlah' => $request->stock,
+            'modal' => $request->modal,
+            'harga' => $request->harga,
+            'category_id' => $request->kategori
+        ]);
+
+        return redirect()->route('product')->with('alert', 'success')->with('message', 'Data stored Succesfully');
     }
 
     /**
@@ -41,7 +55,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        
     }
 
     /**
@@ -49,15 +63,31 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data['product'] = Product::findOrFail($id);
+        $data['categories'] = Category::get();
+        // dd($data);
+        return view('admin.product.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ProductRequest $request, string $id)
     {
-        //
+        try {
+            $data = Product::findOrFail($id);
+            $data->update([
+                'name' => $request->name,
+                'jumlah' => $request->stock,
+                'modal' => $request->modal,
+                'harga' => $request->harga,
+                'category_id' => $request->kategori
+            ]);
+
+            return redirect()->route('product')->with('alert', 'success')->with('message', 'Data updated Succesfully');
+        } catch (\Throwable $e) {
+            return redirect()->route('product')->with('alert', 'error')->with('message', 'Something Error');
+        }
     }
 
     /**
@@ -68,14 +98,19 @@ class ProductController extends Controller
         //
     }
 
-    public function getProduct() {
+    public function getProduct(Request $request) {
         $data = Product::with('category');
+
+        // Untuk melihat semua data dalam request
+        // Log::info('Request Data: ', $request->all());
+        if ($request->filled('category_id')) {
+            $data->with('category')->where('category_id', $request->category_id);
+        }
+
 
         // dd($data);
         return DataTables::of($data)
-        ->addColumn('no', function($data) {
-           return '12';
-        })
+        ->addIndexColumn() 
         ->addColumn('name', function($data) {
             return $data->name;
          })
@@ -85,13 +120,33 @@ class ProductController extends Controller
          ->addColumn('jumlah', function($data) {
             return $data->jumlah;
          })
+         ->addColumn('modal', function($data) {
+            return $data->modal;
+         })
+         ->addColumn('harga', function($data) {
+            return $data->harga;
+         })
          ->addColumn('rate', function($data) {
-            return '50';
+            return '
+            <span class="me-2 text-xs font-weight-bold">100%</span>
+            <div>
+              <div class="progress">
+                <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
+              </div>
+            </div>';
          })
          ->addColumn('action', function($data) {
-            return '50';
+            return '
+            <a href="' . route('product.edit', $data->id) . '">
+                <i class="fas fa-user-edit text-secondary"></i>
+            </a>
+            <button class="cursor-pointer fas fa-trash text-danger" onclick="submit('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>
+            <form id="form_'. $data->id .'" action="' . route('user.destroy', $data->id) . '" method="POST" class="inline">
+                ' . csrf_field() . '
+                ' . method_field('DELETE') . '
+            </form>';
          })
-        
+         ->rawColumns(['rate', 'action'])
         ->toJson(); 
     }
 }
