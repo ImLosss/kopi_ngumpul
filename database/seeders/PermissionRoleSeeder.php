@@ -39,5 +39,9 @@ class PermissionRoleSeeder extends Seeder
         ->assignRole(['dapur', 'admin']);
         Permission::create(['name' => 'orderDeleteRequest'])
         ->assignRole(['kasir', 'member', 'admin']);
+        Permission::create(['name' => 'productAccess'])
+        ->assignRole(['admin']);
+        Permission::create(['name' => 'catogoryAccess'])
+        ->assignRole(['admin']);
     }
 }

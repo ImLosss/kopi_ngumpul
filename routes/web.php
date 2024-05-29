@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\AdminController;
+use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\LoginController;
@@ -48,11 +49,14 @@ Route::group([
     //routeRoles
     Route::resource('role', RoleController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy'])->names([
         'index' => 'role',
-        'update'  => 'order.confirm',
-        'show'  => 'order.view',
-        'edit' => 'user.edit',
-        'store' => 'order.storepayment',
-        'destroy' => 'user.destroy'
     ]);
+    //endRoute
+
+    //routeProduct
+    Route::resource('product', ProductController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy'])->names([
+        'index' => 'product',
+    ]);
+
+    Route::get('/getProduct', [ProductController::class, 'getProduct'])->name('admin.dataTable.getProduct');
     //endRoute
 });

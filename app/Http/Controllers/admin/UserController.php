@@ -15,19 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        
-        foreach ($users as $user) {
-            foreach ($user->roles as $role){
-                if ($role->name == 'admin' ) {
-                    $adminId = $user->id;
-                }
-            }
-        }
-        // dd($user);
-        $users = User::whereNotIn('id', [$adminId])->get();
-
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index');
     }
 
     /**
@@ -92,7 +80,18 @@ class UserController extends Controller
 
         // return view('admin.users.index', compact('users'));
 
-        $data = User::with('roles');
+        $data = User::with('roles')->get();
+
+        foreach ($data as $user) {
+            foreach ($user->roles as $role){
+                if ($role->name == 'admin' ) {
+                    $adminId = $user->id;
+                }
+            }
+        }
+        
+        $data = User::whereNotIn('id', [$adminId]);
+
         return DataTables::of($data)
         ->addColumn('role', function($data) {
            return $data->getRoleNames()->implode(', ');
