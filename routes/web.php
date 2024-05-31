@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\admin\AdminController;
+use App\Http\Controllers\admin\CashierController;
+use App\Http\Controllers\admin\DiscountController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
@@ -63,5 +65,25 @@ Route::group([
 
     Route::get('/edit', [ProductController::class, 'edit']);
     Route::get('/getProduct', [ProductController::class, 'getProduct'])->name('admin.dataTable.getProduct');
+    //endRoute
+
+    //routeCashier
+    Route::resource('cashier', CashierController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'cashier',
+    ]);
+
+    Route::get('/get-detail/{id}', [CashierController::class, 'getDetail']);
+    //endRoute
+
+    //routeDiscount
+    Route::resource('discount', DiscountController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'discount',
+        'destroy' => 'discount.destroy',
+        'edit' => 'discount.edit',
+        'create' => 'discount.create',
+        'store' => 'discount.store'
+    ]);
+
+    Route::get('/getDiscount', [DiscountController::class, 'getDiscount'])->name('admin.dataTable.getDiscount');
     //endRoute
 });

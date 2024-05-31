@@ -84,7 +84,7 @@ class ProductController extends Controller
                 'category_id' => $request->kategori
             ]);
 
-            return redirect()->route('product')->with('alert', 'success')->with('message', 'Data updated Succesfully');
+            return redirect()->route('product')->with('alert', 'success')->with('message', 'Data berhasil diubah');
         } catch (\Throwable $e) {
             return redirect()->route('product')->with('alert', 'error')->with('message', 'Something Error');
         }
@@ -138,7 +138,7 @@ class ProductController extends Controller
          ->addColumn('action', function($data) {
             return '
             <a href="' . route('product.edit', $data->id) . '">
-                <i class="fas fa-user-edit text-secondary"></i>
+                <i class="fa-solid fa-pen-to-square text-secondary"></i>
             </a>
             <button class="cursor-pointer fas fa-trash text-danger" onclick="submit('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>
             <form id="form_'. $data->id .'" action="' . route('user.destroy', $data->id) . '" method="POST" class="inline">

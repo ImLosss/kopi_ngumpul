@@ -43,5 +43,7 @@ class PermissionRoleSeeder extends Seeder
         ->assignRole(['admin']);
         Permission::create(['name' => 'catogoryAccess'])
         ->assignRole(['admin']);
+        Permission::create(['name' => 'discountAccess'])
+        ->assignRole(['admin']);
     }
 }
