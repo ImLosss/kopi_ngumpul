@@ -15,7 +15,7 @@
                 <!-- User Links -->
                 <li class="nav-item dropdown pe-2 d-flex align-items-center">
                     <a href="javascript:;" id="dropdownMenuButton" class="nav-link dropdown-toggle text-body font-weight-bold px-0" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-user me-sm-1"></i>
+                        <i class="fa-solid fa-user me-sm-1"></i>
                         @auth
                             <span class="d-sm-inline d-none">{{ Auth::user()->name }}</span>
                         @else

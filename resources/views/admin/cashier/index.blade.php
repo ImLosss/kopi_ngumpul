@@ -92,18 +92,59 @@
     </div>
     <div class="col-lg-4">
         <div class="card p-3">
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col">
                     <h5>Cart</h5>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    Nasi Goreng
+                    Nasi Goreng x2
                 </div>
                 <div class="col">
                     <div class="d-flex justify-content-end flex-wrap">
-                        Rp. 15000
+                        Rp. 40000
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Disc (20%)
+                </div>
+                <div class="col">
+                    <div class="d-flex justify-content-end flex-wrap">
+                        (Rp. 2000)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Milo x1
+                </div>
+                <div class="col">
+                    <div class="d-flex justify-content-end flex-wrap">
+                        Rp. 18000
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col">
+                    <p class="font-italic">Anda hemat:</p> 
+                </div>
+                <div class="col">
+                    <div class="d-flex justify-content-end flex-wrap">
+                        Rp. 2000
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p class="font-italic">Total:</p> 
+                </div>
+                <div class="col">
+                    <div class="d-flex justify-content-end flex-wrap">
+                        Rp. 50000
                     </div>
                 </div>
             </div>
