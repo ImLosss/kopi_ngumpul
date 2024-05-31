@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 
 class CashierController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('permission:cashierAccess');
+    }
+
     /**
      * Display a listing of the resource.
      */

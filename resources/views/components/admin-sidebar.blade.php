@@ -31,23 +31,28 @@
                 </a>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link {{ (Request::is('cashier') ? 'active' : '') }}" href="{{ route('cashier') }}">
-                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-money-coins {{ (Request::is('cashier') ? '' : 'text-dark') }} text-sm"></i>                    
-                    </div>
-                    <span class="nav-link-text ms-1">Cashier</span>
-                </a>
-            </li>
+            @can('cashierAccess')
+                <li class="nav-item">
+                    <a class="nav-link {{ (Request::is('cashier') ? 'active' : '') }}" href="{{ route('cashier') }}">
+                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="ni ni-money-coins {{ (Request::is('cashier') ? '' : 'text-dark') }} text-sm"></i>                    
+                        </div>
+                        <span class="nav-link-text ms-1">Cashier</span>
+                    </a>
+                </li>
+            @endcan
 
-            <li class="nav-item">
-                <a class="nav-link {{ (Request::is('product','product/*') ? 'active' : '') }}" href="{{ route('product') }}">
-                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-cart {{ (Request::is('product','product/*') ? '' : 'text-dark') }} text-sm"></i>                    
-                    </div>
-                    <span class="nav-link-text ms-1">Product</span>
-                </a>
-            </li>
+            @can('productAccess')
+                <li class="nav-item">
+                    <a class="nav-link {{ (Request::is('product','product/*') ? 'active' : '') }}" href="{{ route('product') }}">
+                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="ni ni-cart {{ (Request::is('product','product/*') ? '' : 'text-dark') }} text-sm"></i>                    
+                        </div>
+                        <span class="nav-link-text ms-1">Product</span>
+                    </a>
+                </li>
+            @endcan
+            
             @can('discountAccess')
                 <li class="nav-item">
                     <a class="nav-link {{ (Request::is('discount','discount/*') ? 'active' : '') }}" href="{{ route('discount') }}">
