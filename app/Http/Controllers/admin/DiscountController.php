@@ -11,6 +11,12 @@ use Yajra\DataTables\Facades\DataTables;
 
 class DiscountController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('permission:discountAccess');
+    }
+
     /**
      * Display a listing of the resource.
      */
