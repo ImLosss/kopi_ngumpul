@@ -36,6 +36,7 @@ class CashierController extends Controller
 
         $data['products'] = Product::get();
         $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status', 'cart')->first();
+        $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
 
         // dd($data);
         return view('admin.cashier.index', $data);
