@@ -26,9 +26,16 @@ class CashierController extends Controller
      */
     public function index()
     {
+        $order = Order::where('status', 'cart')->first();
+        if(!$order) {
+            $order = Order::create([
+                'kasir' => Auth::user()->name,
+                'status' => 'cart',
+            ]);
+        }
+
         $data['products'] = Product::get();
         $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status', 'cart')->first();
-        $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
 
         // dd($data);
         return view('admin.cashier.index', $data);
