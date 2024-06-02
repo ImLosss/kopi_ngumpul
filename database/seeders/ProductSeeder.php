@@ -18,7 +18,15 @@ class ProductSeeder extends Seeder
             'jumlah' => 20,
             'modal' => 15000,
             'harga' => 25000,
-            'Category_id' => 1
+            'category_id' => 1
+        ]);
+
+        Product::create([
+            'name' => 'Milo',
+            'jumlah' => 223,
+            'modal' => 8000,
+            'harga' => 18000,
+            'category_id' => 2
         ]);
     }
 }

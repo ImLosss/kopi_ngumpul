@@ -11,7 +11,7 @@ class CashierRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class CashierRequest extends FormRequest
     public function rules(): array
     {
         return [
-            ''
+            'menu' => 'required|exists:products,id',
+            'jumlah' => 'required',
+            'harga' => 'required',
+            'diskon_id' => 'exists:discounts,id'
         ];
     }
 }

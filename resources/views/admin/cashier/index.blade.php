@@ -16,7 +16,7 @@
     <div class="col-lg-8 mb-lg-0 mb-4">
         <div class="card">
             <div class="card-body p-3">
-                <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('cashier.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
                         <div class="col-md-6">
@@ -25,8 +25,8 @@
                                 <div class="@error('menu')border border-danger rounded-3 @enderror">
                                     <select name="menu" id="menuSelect" class="form-control">
                                         <option value="" selected disabled>Pilih Menu</option>
-                                        @foreach ($data as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @foreach ($products as $item)
+                                            <option value="{{ $item->id }}" {{ $item->jumlah == 0 ? 'disabled' : '' }}>{{ $item->name }} {{ $item->jumlah == 0 ? '(kosong)' : '' }}</option>
                                         @endforeach
                                     </select>
                                     @error('menu')
@@ -50,7 +50,7 @@
                             <div class="form-group">
                                 <label for="email" class="form-control-label">{{ __('Harga') }}</label>
                                 <div class="@error('harga')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="number" placeholder="harga" id="harga" name="harga" value="0" disabled>
+                                    <input class="form-control" type="number" placeholder="harga" id="harga" name="harga" value="0" readonly>
                                     @error('harga')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -61,7 +61,7 @@
                             <div class="form-group">
                                 <label for="email" class="form-control-label">{{ __('Stock') }}</label>
                                 <div class="@error('stock')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="number" placeholder="Stock" name="stock" id="stock" disabled>
+                                    <input class="form-control" type="number" placeholder="Stock" name="stock" id="stock" readonly>
                                     @error('stock')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -72,7 +72,7 @@
                             <div class="form-group">
                                 <label for="email" class="form-control-label">{{ __('Total') }}</label>
                                 <div class="@error('total')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="number" placeholder="Total" name="total" id="total" value="0" disabled>
+                                    <input class="form-control" type="number" placeholder="Total" name="total" id="total" value="0" readonly>
                                     @error('total')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -97,60 +97,90 @@
                     <h5>Cart</h5>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    Nasi Goreng x2
-                </div>
-                <div class="col">
-                    <div class="d-flex justify-content-end flex-wrap">
-                        Rp. 40000
+            @foreach ($order->carts as $item)
+                <div class="row">
+                    <div class="col-1">
+                        <a type="submit" onclick="submit({{ $item->id }})"><i class="fa-solid fa-circle-minus text-danger"></i></a>
+                        
+                        {{-- form delete --}}
+                        <form action="{{ route('cart.destroy', $item->id) }}" id="form_{{ $item->id }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                        </form>
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    Disc (20%)
-                </div>
-                <div class="col">
-                    <div class="d-flex justify-content-end flex-wrap">
-                        (Rp. 2000)
+                    <div class="col">
+                        {{$item->product->name}} x{{$item->jumlah}}
                     </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    Milo x1
-                </div>
-                <div class="col">
-                    <div class="d-flex justify-content-end flex-wrap">
-                        Rp. 18000
+                    <div class="col">
+                        <div class="d-flex justify-content-end flex-wrap">
+                            Rp. {{number_format($item->total + $item->total_diskon )}}
+                        </div>
                     </div>
-                </div>
-            </div>
+                </div> 
+                @if ($item->diskon_id != null)
+                    <div class="row">
+                        <div class="col-1">
+        
+                        </div>
+                        <div class="col">
+                            Disc ({{ $item->discount->percent }}%)
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-end flex-wrap">
+                                (Rp. {{ number_format($item->total_diskon) }})
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endforeach
             <hr>
+            @if ($disc != 0)
+                <div class="row">
+                    <div class="col font-italic">
+                        Anda hemat:
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-end flex-wrap font-weight-bold font-italic">
+                            (Rp. {{ number_format($disc) }})
+                        </div>
+                    </div>
+                </div>
+            @endif
             <div class="row">
-                <div class="col">
-                    <p class="font-italic">Anda hemat:</p> 
+                <div class="col font-italic">
+                    Total:
                 </div>
                 <div class="col">
-                    <div class="d-flex justify-content-end flex-wrap">
-                        Rp. 2000
+                    <div class="d-flex justify-content-end flex-wrap font-weight-bold font-italic">
+                        Rp. {{ number_format($order->total) }}
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <p class="font-italic">Total:</p> 
-                </div>
-                <div class="col">
-                    <div class="d-flex justify-content-end flex-wrap">
-                        Rp. 50000
+            <form action="" method="POST">
+                @csrf
+                @method('PATCH')
+                <div class="row mt-3">
+                    <div class="col">
+                        <div class="form-group has-validation">
+                            <label for="kategori" class="form-control-label">{{ __('Nomor Meja : ') }}</label>
+                            <div class="@error('menu')border border-danger rounded-3 @enderror">
+                                <select name="menu" id="menuSelect" class="form-control">
+                                    <option value="" selected disabled>Pilih Nomor meja</option>
+                                    <option value="">1</option>
+                                    <option value="">2</option>
+                                    <option value="">3</option>
+                                </select>
+                                @error('menu')
+                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="d-flex justify-content-end">
-                <button type="submit" class="btn bg-gradient-dark btn-md mt-4">{{ 'Submit' }}</button>
-            </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn bg-gradient-dark btn-md mt-4">{{ 'Order' }}</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -158,6 +188,10 @@
 
 @section('script')
 <script>
+    function submit(key) {
+        $('#form_'+key).submit();
+    }
+
     $(document).ready(function() {
         $('#menuSelect').change(function() {
             var productId = $(this).val();
@@ -181,9 +215,9 @@
                             });
 
                             $('#diskon').append(`<div class="form-group has-validation" id="diskonFill">
-                                <label for="diskon" class="form-control-label">{{ __('Diskon') }}</label>
+                                <label for="diskon_id" class="form-control-label">{{ __('Diskon') }}</label>
                                 <div class="@error('diskon')border border-danger rounded-3 @enderror">
-                                    <select name="diskon" id="diskon" class="form-control">
+                                    <select name="diskon_id" id="diskon" class="form-control">
                                         <option value="" selected disabled>Tanpa Diskon</option>
                                         ${ code }
                                     </select>
