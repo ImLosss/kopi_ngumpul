@@ -188,6 +188,8 @@
 
 @section('script')
 <script>
+    let stock;
+
     function submit(key) {
         $('#form_'+key).submit();
     }
@@ -200,7 +202,9 @@
                     url: '/get-detail/' + productId,
                     type: 'GET',
                     success: function(data) {
+                        stock = data.stock;
                         let jumlah = $('#jumlah').val();
+                        if(jumlah > stock) $('#jumlah').val(stock);
                         $('#harga').val(data.harga);
                         $('#stock').val(data.stock);
                         $('#total').val(data.harga*jumlah);
@@ -238,7 +242,9 @@
             var jumlah = $('#jumlah').val();
             var harga = $('#harga').val();
             if(jumlah <= 0) $('#jumlah').val(1);
+            if(jumlah > stock) $('#jumlah').val(stock);
 
+            var jumlah = $('#jumlah').val();
             $('#total').val(jumlah*harga);
         });
     });

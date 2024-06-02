@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -72,6 +73,11 @@ class CartController extends Controller
             DB::transaction(function () use ($order, $cart) {
                 $order->update([
                     'total' => $order->total - $cart->total
+                ]);
+
+                $product = Product::findOrFail($cart->product_id);
+                $product->update([
+                    'jumlah' => $product->jumlah + $cart->jumlah
                 ]);
 
                 $cart->delete();

@@ -80,6 +80,11 @@ class CashierController extends Controller
                     'total' => $request->total - $diskon
                 ]);
 
+                $product = Product::findOrFail($request->menu);
+                $product->update([
+                    'jumlah' => $product->jumlah - $request->jumlah
+                ]);
+
                 $total = Cart::where('order_id', $order->id)->get()->sum('total');
 
                 $order->update([
