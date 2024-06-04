@@ -26,16 +26,16 @@ class CashierController extends Controller
      */
     public function index()
     {
-        $order = Order::where('status', 'cart')->first();
+        $order = Order::where('status_id', 1)->first();
         if(!$order) {
             $order = Order::create([
                 'kasir' => Auth::user()->name,
-                'status' => 'cart',
+                'status_id' => 1,
             ]);
         }
 
         $data['products'] = Product::get();
-        $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status', 'cart')->first();
+        $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status_id', 1)->first();
         $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
 
         // dd($data);
@@ -57,12 +57,12 @@ class CashierController extends Controller
     {
         try {
             DB::transaction(function () use ($request) {
-                $order = Order::where('status', 'cart')->first();
+                $order = Order::where('status_id', 1)->first();
 
                 if(!$order) {
                     $order = Order::create([
                         'kasir' => Auth::user()->name,
-                        'status' => 'cart',
+                        'status_id' => 1,
                     ]);
                 }
 
@@ -77,7 +77,8 @@ class CashierController extends Controller
                     'diskon_id' => $request->diskon_id,
                     'jumlah' => $request->jumlah,
                     'total_diskon' => $diskon,
-                    'total' => $request->total - $diskon
+                    'total' => $request->total - $diskon,
+                    'status_id' => 1
                 ]);
 
                 $product = Product::findOrFail($request->menu);

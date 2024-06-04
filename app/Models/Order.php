@@ -13,7 +13,9 @@ class Order extends Model
         'no_meja',
         'total',
         'status',
-        'kasir'
+        'kasir',
+        'status_id',
+        'status_pembayaran_id'
     ];
 
     public function carts() {

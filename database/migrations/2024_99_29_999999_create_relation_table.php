@@ -22,6 +22,16 @@ return new class extends Migration
         Schema::table('discounts', function (Blueprint $table) {
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
         });
+
+        Schema::table('carts', function (Blueprint $table) {
+            $table->foreign('status_id')->references('id')->on('statuses')->onDelete('cascade');
+            $table->foreign('status_pembayaran_id')->references('id')->on('statuses')->onDelete('cascade');
+        });
+
+        Schema::table('orders', function (Blueprint $table) {
+            $table->foreign('status_id')->references('id')->on('statuses')->onDelete('cascade');
+            $table->foreign('status_pembayaran_id')->references('id')->on('statuses')->onDelete('cascade');
+        });
     }
 
     /**
