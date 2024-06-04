@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Discount;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Table;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,7 @@ class CashierController extends Controller
         $data['products'] = Product::get();
         $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status_id', 1)->first();
         $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
+        $data['tables'] = Table::get();
 
         // dd($data);
         return view('admin.cashier.index', $data);

@@ -4,6 +4,7 @@ use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\CartController;
 use App\Http\Controllers\admin\CashierController;
 use App\Http\Controllers\admin\DiscountController;
+use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
@@ -92,6 +93,12 @@ Route::group([
     //routeCart
     Route::resource('cart', CartController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'destroy' => 'cart.destroy',
+    ]);
+    //endRoute
+
+    //routeOrder
+    Route::resource('order', OrderController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'update' => 'order.update',
     ]);
     //endRoute
 });

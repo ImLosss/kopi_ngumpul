@@ -27,7 +27,8 @@ class DatabaseSeeder extends Seeder
             OrderSeeder::class,
             CartSeeder::class,
             DiscountSeeder::class,
-            StatusSeeder::class
+            StatusSeeder::class,
+            TableSeeder::class
         ]);
     }
 }

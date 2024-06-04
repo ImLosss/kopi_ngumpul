@@ -156,22 +156,24 @@
                     </div>
                 </div>
             </div>
-            <form action="" method="POST">
+            <form action="{{ route('order.update', $order->id) }}" method="POST">
                 @csrf
                 @method('PATCH')
                 <div class="row mt-3">
                     <div class="col">
                         <div class="form-group has-validation">
                             <label for="kategori" class="form-control-label">{{ __('Nomor Meja : ') }}</label>
-                            <div class="@error('menu')border border-danger rounded-3 @enderror">
-                                <select name="menu" id="menuSelect" class="form-control">
+                            <div class="@error('no_meja')border border-danger rounded-3 @enderror">
+                                <select name="no_meja" class="form-control">
                                     <option value="" selected disabled>Pilih Nomor meja</option>
-                                    <option value="">1</option>
-                                    <option value="">2</option>
-                                    <option value="">3</option>
+                                    @foreach ($tables as $table)
+                                        <option value="{{ $table->id }}">{{ $table->no_meja }} @if ($table->status == 'terpakai')
+                                            ({{ $table->status }})
+                                        @endif</option>
+                                    @endforeach
                                 </select>
-                                @error('menu')
-                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @error('no_meja')
+                                    <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
