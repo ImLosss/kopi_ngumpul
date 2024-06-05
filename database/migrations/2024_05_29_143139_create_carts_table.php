@@ -20,7 +20,7 @@ return new class extends Migration
             $table->bigInteger('total_diskon')->nullable();
             $table->bigInteger('total');
             $table->unsignedBigInteger('status_id');
-            $table->unsignedBigInteger('status_pembayaran_id')->default(5);
+            $table->boolean('pembayaran')->default(false);
             $table->timestamps();
         });
     }

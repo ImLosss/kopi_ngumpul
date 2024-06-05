@@ -17,7 +17,7 @@ class Cart extends Model
         'total_diskon',
         'total',
         'status_id',
-        'status_pembayaran_id'
+        'pembayaran'
     ];
 
     public function cart() {

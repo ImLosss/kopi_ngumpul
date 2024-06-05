@@ -15,7 +15,8 @@ class Order extends Model
         'status',
         'kasir',
         'status_id',
-        'status_pembayaran_id'
+        'pembayaran',
+        'bazar'
     ];
 
     public function carts() {

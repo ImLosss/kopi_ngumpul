@@ -16,8 +16,9 @@ return new class extends Migration
             $table->integer('no_meja')->nullable();
             $table->bigInteger('total')->nullable();
             $table->unsignedBigInteger('status_id');
-            $table->unsignedBigInteger('status_pembayaran_id')->default(5);
+            $table->boolean('pembayaran')->default(false);
             $table->string('kasir');
+            $table->boolean('bazar')->default(false);
             $table->timestamps();
         });
     }

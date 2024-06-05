@@ -28,13 +28,5 @@ class StatusSeeder extends Seeder
         Status::create([
             'desc' => 'Selesai',
         ]);
-
-        Status::create([
-            'desc' => 'Belum lunas',
-        ]);
-
-        Status::create([
-            'desc' => 'Lunas',
-        ]);
     }
 }
