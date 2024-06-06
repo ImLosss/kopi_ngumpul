@@ -20,7 +20,7 @@ class Cart extends Model
         'pembayaran'
     ];
 
-    public function cart() {
+    public function order() {
         return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 

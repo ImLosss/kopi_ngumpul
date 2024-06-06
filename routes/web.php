@@ -100,5 +100,8 @@ Route::group([
     Route::resource('order', OrderController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'update' => 'order.update',
     ]);
+
+    Route::get('/pesanan/order-list', [OrderController::class, 'orderList'])->name('pesanan.order-list');
+    Route::get('/getOrder', [OrderController::class, 'getOrder'])->name('admin.dataTable.getOrder');
     //endRoute
 });

@@ -42,6 +42,35 @@
                 </li>
             @endcan
 
+            @can('orderAccess')
+            <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#documentSideMenu" class="nav-link {{ (Request::is('pesanan','pesanan/*') ? 'active' : 'collapsed') }}" aria-controls="documentSideMenu"
+                    role="button" aria-expanded="{{ (Request::is('pesanan','pesanan/*') ? 'true' : 'false') }}">
+                    <div
+                        class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-clipboard-list {{ (Request::is('pesanan/*') ? '' : 'text-dark') }} text-sm"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Pesanan</span>
+                </a>
+                <div class="collapse {{ (Request::is('pesanan','pesanan/*') ? 'show' : '') }}" id="documentSideMenu" style="">
+                    <ul class="nav ms-4 ps-3">
+                        <li class="nav-item ">
+                            <a class="nav-link {{ (Request::is('pesanan/order-list') ? 'active' : '') }}" href="{{ route('pesanan.order-list') }}">
+                                <span class="sidenav-mini-icon"> P </span>
+                                <span class="sidenav-normal"> List Order </span>
+                            </a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link {{ (Request::is('pesanan/pembayaran') ? 'active' : '') }}" href="#">
+                                <span class="sidenav-mini-icon"> P </span>
+                                <span class="sidenav-normal"> Pembayaran </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            @endcan
+
             @can('productAccess')
                 <li class="nav-item">
                     <a class="nav-link {{ (Request::is('product','product/*') ? 'active' : '') }}" href="{{ route('product') }}">
