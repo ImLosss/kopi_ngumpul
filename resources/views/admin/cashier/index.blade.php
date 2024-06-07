@@ -180,7 +180,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn bg-gradient-dark btn-md mt-4">{{ 'Order' }}</button>
+                    <button type="submit" class="btn bg-gradient-dark btn-md mt-4" {{ $order->carts->count() == 0 ? 'disabled' : '' }}>{{ 'Order' }}</button>
                 </div>
             </form> 
         </div>

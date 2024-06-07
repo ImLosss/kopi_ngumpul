@@ -57,6 +57,7 @@ class CashierController extends Controller
      */
     public function store(CashierRequest $request)
     {
+        // dd($request);
         try {
             DB::transaction(function () use ($request) {
                 $order = Order::where('status_id', 1)->first();
@@ -78,6 +79,7 @@ class CashierController extends Controller
                     'order_id' => $order->id,
                     'diskon_id' => $request->diskon_id,
                     'jumlah' => $request->jumlah,
+                    'harga' => $request->harga,
                     'total_diskon' => $diskon,
                     'total' => $request->total - $diskon,
                     'status_id' => 1

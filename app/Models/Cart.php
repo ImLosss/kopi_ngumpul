@@ -14,6 +14,7 @@ class Cart extends Model
         'order_id',
         'diskon_id',
         'jumlah',
+        'harga',
         'total_diskon',
         'total',
         'status_id',
@@ -30,5 +31,10 @@ class Cart extends Model
 
     public function discount() {
         return $this->belongsTo(Discount::class, 'diskon_id', 'id');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_id', 'id');
     }
 }

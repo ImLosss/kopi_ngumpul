@@ -15,22 +15,21 @@ class PermissionRoleSeeder extends Seeder
     public function run(): void
     {
         Role::create(['name' => 'admin']);
-        Role::create(['name' => 'member']);
-        Role::create(['name' => 'owner']);
+        Role::create(['name' => 'partner']);
         Role::create(['name' => 'dapur']);
         Role::create(['name' => 'kasir']);
         Permission::create(['name' => 'userAccess'])
-        ->assignRole(['admin', 'owner']);
+        ->assignRole(['admin']);
         Permission::create(['name' => 'dailyReportAccess'])
-        ->assignRole(['admin', 'owner', 'member', 'kasir']);
+        ->assignRole(['admin', 'partner', 'kasir']);
         Permission::create(['name' => 'roleAccess'])
         ->assignRole('admin');
         Permission::create(['name' => 'permissionAccess'])
         ->assignRole('admin');
         Permission::create(['name' => 'cashierAccess'])
-        ->assignRole(['admin', 'kasir', 'member']);
+        ->assignRole(['admin', 'kasir', 'partner']);
         Permission::create(['name' => 'orderAccess'])
-        ->assignRole(['admin', 'kasir', 'dapur', 'member']);
+        ->assignRole(['admin', 'kasir', 'dapur', 'partner']);
         Permission::create(['name' => 'orderAccept'])
         ->assignRole(['dapur', 'admin']);
         Permission::create(['name' => 'orderDone'])
@@ -38,12 +37,14 @@ class PermissionRoleSeeder extends Seeder
         Permission::create(['name' => 'orderDelete'])
         ->assignRole(['dapur', 'admin']);
         Permission::create(['name' => 'orderDeleteRequest'])
-        ->assignRole(['kasir', 'member', 'admin']);
+        ->assignRole(['kasir', 'partner', 'admin']);
         Permission::create(['name' => 'productAccess'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'catogoryAccess'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'discountAccess'])
         ->assignRole(['admin']);
+        Permission::create(['name' => 'paymentAccess'])
+        ->assignRole(['admin', 'kasir', 'partner']);
     }
 }

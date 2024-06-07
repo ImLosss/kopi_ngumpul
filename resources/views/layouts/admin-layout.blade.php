@@ -137,6 +137,16 @@
           });
     </script>
   @endif
+
+  @if (session()->has('modal_alert'))
+    <script>
+      Swal.fire({
+        text: "{{ session('message') }}",
+        icon: "{{ session('modal_alert') }}",
+        timer: 3000,
+      })
+    </script>
+  @endif
   @yield('script')
 </body>
 

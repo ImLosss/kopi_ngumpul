@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('diskon_id')->nullable();
             $table->bigInteger('jumlah');
+            $table->bigInteger('harga');
             $table->bigInteger('total_diskon')->nullable();
             $table->bigInteger('total');
             $table->unsignedBigInteger('status_id');

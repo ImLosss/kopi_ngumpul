@@ -14,9 +14,13 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
         if(Auth::attempt($credentials, $request->filled('remember_token'))) {
+            $user = Auth::user();
             $request->session()->regenerate();
-            $message = 'Welcome ' . Auth::user()->name;
-            return redirect()->route('home')->with('alert', 'success')->with('message', $message);
+            $message = 'Welcome ' . $user->name;
+
+            if($user->hasRole('admin')) return redirect()->route('home')->with('alert', 'success')->with('message', $message);
+            if($user->hasRole('dapur')) return redirect()->route('order.index')->with('alert', 'success')->with('message', $message);
+            if($user->hasRole(['kasir', 'partner'])) return redirect()->route('cashier')->with('alert', 'success')->with('message', $message);
         } else {
             return back()->withInput()->withErrors([
                 'email' => 'Email/password salah!',

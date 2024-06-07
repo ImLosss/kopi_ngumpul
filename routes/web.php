@@ -98,10 +98,14 @@ Route::group([
 
     //routeOrder
     Route::resource('order', OrderController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'order.index',
         'update' => 'order.update',
+        'show' => 'order.show'
     ]);
 
-    Route::get('/pesanan/order-list', [OrderController::class, 'orderList'])->name('pesanan.order-list');
     Route::get('/getOrder', [OrderController::class, 'getOrder'])->name('admin.dataTable.getOrder');
+    Route::get('/getPesanan/{id}', [OrderController::class, 'getPesanan'])->name('admin.dataTable.getPesanan');
+    Route::delete('/pesanan/delete/{id}', [OrderController::class, 'hapusPesanan'])->name('pesanan.destroy');
+    Route::patch('pesanan/update/{id}', [OrderController::class, 'updateStatus'])->name('pesanan.updateStatus');
     //endRoute
 });
