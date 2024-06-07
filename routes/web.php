@@ -5,6 +5,7 @@ use App\Http\Controllers\admin\CartController;
 use App\Http\Controllers\admin\CashierController;
 use App\Http\Controllers\admin\DiscountController;
 use App\Http\Controllers\admin\OrderController;
+use App\Http\Controllers\admin\PaymentController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
@@ -107,5 +108,13 @@ Route::group([
     Route::get('/getPesanan/{id}', [OrderController::class, 'getPesanan'])->name('admin.dataTable.getPesanan');
     Route::delete('/pesanan/delete/{id}', [OrderController::class, 'hapusPesanan'])->name('pesanan.destroy');
     Route::patch('pesanan/update/{id}', [OrderController::class, 'updateStatus'])->name('pesanan.updateStatus');
+    //endRoute
+
+    // routePayment
+    Route::resource('payment', PaymentController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'payment',
+    ]);
+
+    Route::get('/getAllOrder', [PaymentController::class, 'getAllOrder'])->name('admin.dataTable.getAllOrder');
     //endRoute
 });
