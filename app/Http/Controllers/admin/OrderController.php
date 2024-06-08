@@ -198,11 +198,7 @@ class OrderController extends Controller
                 $hapus = '<button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="deletePesan"></button>';
             }
 
-            if($data->status_id < 4) {
-                if ($user->hasRole('dapur') && $data->status_id == 2) $update = '<button class="fa-solid fa-square-check text-success" onclick="modalUpdateStatus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="updateStatus"></button>';
-                else if (!$user->hasRole('dapur')) $update = '<button class="fa-solid fa-square-check text-success" onclick="modalUpdateStatus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="updateStatus"></button>';
-                if($data->status_id == 2 && $user->hasRole(['partner', 'kasir', 'admin'])) $update = '';
-            }
+            if(($data->status_id == 2 && $user->can('updateStatusTwo')) || ($data->status_id == 3 && $user->can('updateStatusThree'))) $update = '<button class="fa-solid fa-square-check text-success" onclick="modalUpdateStatus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="updateStatus"></button>';
 
             return '
             <form id="form_'. $data->id .'" action="' . route('pesanan.destroy', $data->id) . '" method="POST" class="inline">

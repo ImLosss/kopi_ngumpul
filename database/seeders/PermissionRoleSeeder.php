@@ -18,6 +18,7 @@ class PermissionRoleSeeder extends Seeder
         Role::create(['name' => 'partner']);
         Role::create(['name' => 'dapur']);
         Role::create(['name' => 'kasir']);
+        Role::create(['name' => 'pelayan']);
         Permission::create(['name' => 'userAccess'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'dailyReportAccess'])
@@ -27,13 +28,11 @@ class PermissionRoleSeeder extends Seeder
         Permission::create(['name' => 'permissionAccess'])
         ->assignRole('admin');
         Permission::create(['name' => 'cashierAccess'])
-        ->assignRole(['admin', 'kasir', 'partner']);
+        ->assignRole(['admin', 'kasir', 'pelayan']);
+        Permission::create(['name' => 'cashierPartnerAccess'])
+        ->assignRole(['partner']);
         Permission::create(['name' => 'orderAccess'])
-        ->assignRole(['admin', 'kasir', 'dapur', 'partner']);
-        Permission::create(['name' => 'orderAccept'])
-        ->assignRole(['dapur', 'admin']);
-        Permission::create(['name' => 'orderDone'])
-        ->assignRole(['dapur', 'admin']);
+        ->assignRole(['admin', 'kasir', 'dapur', 'partner', 'pelayan']);
         Permission::create(['name' => 'orderDelete'])
         ->assignRole(['dapur', 'admin']);
         Permission::create(['name' => 'orderDeleteRequest'])
@@ -46,5 +45,9 @@ class PermissionRoleSeeder extends Seeder
         ->assignRole(['admin']);
         Permission::create(['name' => 'paymentAccess'])
         ->assignRole(['admin', 'kasir', 'partner']);
+        Permission::create(['name' => 'updateStatusTwo'])
+        ->assignRole(['dapur', 'admin']);
+        Permission::create(['name' => 'updateStatusThree'])
+        ->assignRole(['admin', 'pelayan', 'partner', 'kasir']);
     }
 }

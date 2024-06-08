@@ -113,8 +113,12 @@ Route::group([
     // routePayment
     Route::resource('payment', PaymentController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'index' => 'payment',
+        'show' => 'payment.show',
     ]);
 
     Route::get('/getAllOrder', [PaymentController::class, 'getAllOrder'])->name('admin.dataTable.getAllOrder');
+    Route::get('/getPayment/{id}', [PaymentController::class, 'getPayment'])->name('admin.dataTable.getPayment');
+    Route::post('/payment/cetak-nota', [PaymentController::class, 'cetakNota'])->name('payment.cetakNota');
+    Route::patch('payment/update/{id}', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
     //endRoute
 });
