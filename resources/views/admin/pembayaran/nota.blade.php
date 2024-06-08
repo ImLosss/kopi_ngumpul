@@ -132,12 +132,18 @@
                 <br>Thanks for your purchase!
                 <br>kopingumpul.store</p>
         </div>
-        <button id="btnPrint" class="hidden-print">Print</button>
-        <script src="script.js"></script>
         <script>
-            const $btnPrint = document.querySelector("#btnPrint");
-            $btnPrint.addEventListener("click", () => {
-                window.print();
+            $(document).ready( function () {
+                // Pemanggilan window.print() akan melakukan pencetakan saat halaman dimuat
+                window.onload = function() {
+                    window.print();
+                }
+
+                // Deteksi ketika pencetakan dibatalkan (dalam beberapa kasus)
+                window.onafterprint = function() {
+                    // Kembali ke halaman sebelumnya jika pencetakan dibatalkan
+                    window.location.href = document.referrer;
+                }
             });
         </script>
     </body>
