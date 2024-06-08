@@ -35,8 +35,8 @@
         
         td.description,
         th.description {
-            width: 105px;
-            max-width: 105px;
+            width: 110px;
+            max-width: 110px;
         }
         
         td.quantity,
@@ -48,8 +48,8 @@
         
         td.price,
         th.price {
-            width: 85px;
-            max-width: 85px;
+            width: 80px;
+            max-width: 80px;
             word-break: break-all;
             text-align: end;
         }
@@ -107,7 +107,7 @@
                         @if ($item->diskon_id != null)
                             <td class="quantity"></td>
                             <td class="description">Disc ({{ $item->discount->percent }}%)</td>
-                            <td class="price">(Rp. {{ number_format($item->total_diskon) }})</td>
+                            <td class="price">(Rp{{ number_format($item->total_diskon) }})</td>
                         @endif
                     @endforeach
                 </tbody>
