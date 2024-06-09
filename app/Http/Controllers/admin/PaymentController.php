@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
@@ -46,7 +47,27 @@ class PaymentController extends Controller
     public function show(string $id)
     {
         $order = Order::findOrFail($id);
-        return view('admin.pembayaran.show', compact('order'));
+        $no_meja = $order->no_meja;
+        $user = Auth::user();
+
+        if($user->hasRole(['admin', 'kasir'])) {
+            $data = Cart::with('status', 'order', 'product')
+            ->where('pembayaran', false)
+            ->whereHas('order', function ($query) use ($no_meja) {
+                $query->where('no_meja', $no_meja);
+            })->first();
+        } else if($user->hasRole('partner')) {
+            $data = Cart::with('status', 'order', 'product')
+            ->where('order_id', 1)
+            ->where('pembayaran', false)
+            ->where(function ($query) {
+                $query->where('status_id', 2)
+                      ->orWhere('status_id', 3);
+            })->first();
+        }
+
+        if($data) return view('admin.pembayaran.show', compact('order'));
+        return view('admin.pembayaran.index');
     }
 
     /**
@@ -73,19 +94,35 @@ class PaymentController extends Controller
         //
     }
 
-    public function cetakNota(Request $request) {
-        $order_id = Cart::with('order')->distinct('order_id')->whereIn('id', $request->selectPesan)->get(['order_id']);
-        $orderIdsArr = $order_id->pluck('order_id')->toArray();
+    public function billOrUpdate(Request $request) {
+        if ($request->action == 'printBill') {
+            $order_id = Cart::with('order')->distinct('order_id')->whereIn('id', $request->selectPesan)->get(['order_id']);
+            $orderIdsArr = $order_id->pluck('order_id')->toArray();
 
-        $data['cart'] = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
-        $data['order_id'] = $order_id->pluck('order_id')->implode(', ');
-        $data['kasir'] = $data['cart']->pluck('order.kasir')->unique()->implode(', ');
-        $data['order'] = Order::whereIn('id', $orderIdsArr)->get();
-        $data['total'] = Order::whereIn('id', $orderIdsArr)->sum('total');
-        $data['diskon'] = $data['cart']->sum('total_diskon');
-        // dd($data);
-        
-        return view('admin.pembayaran.nota', $data);
+            $data['cart'] = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
+            $data['order_id'] = $order_id->pluck('order_id')->implode(', ');
+            $data['kasir'] = $data['cart']->pluck('order.kasir')->unique()->implode(', ');
+            $data['order'] = Order::whereIn('id', $orderIdsArr)->get();
+            $data['total'] = Order::whereIn('id', $orderIdsArr)->sum('total');
+            $data['diskon'] = $data['cart']->sum('total_diskon');
+            
+            return view('admin.pembayaran.nota', $data);
+        } else if ($request->action == 'updatePayment') {
+            $carts = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
+
+            foreach ($carts as $cart) {
+                $cart->update([
+                    'pembayaran' => true
+                ]);
+            }
+
+            $order_id = Cart::with('order')->distinct('order_id')->whereIn('id', $request->selectPesan)->get(['order_id']);
+            $orderIdsArr = $order_id->pluck('order_id')->toArray();
+
+            OrderService::checkStatusOrderArr($orderIdsArr);
+
+            return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update Pembayaran');
+        } else return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
     }
 
     public function getAllOrder()
@@ -131,15 +168,18 @@ class PaymentController extends Controller
         $user = Auth::user();
         if($user->hasRole(['admin', 'kasir'])) {
             $data = Cart::with('status', 'order', 'product')
+            ->where('pembayaran', false)
             ->whereHas('order', function ($query) use ($no_meja) {
                 $query->where('no_meja', $no_meja);
             })->get();
         } else if($user->hasRole('partner')) {
-            $data = Cart::with('status', 'order', 'product')->where('order_id', 1)
+            $data = Cart::with('status', 'order', 'product')
+            ->where('order_id', 1)
+            ->where('pembayaran', false)
             ->where(function ($query) {
                 $query->where('status_id', 2)
                       ->orWhere('status_id', 3);
-            });
+            })->get();
         }
 
         // dd($data);

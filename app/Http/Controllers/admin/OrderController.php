@@ -180,9 +180,12 @@ class OrderController extends Controller
         ->addColumn('menu', function($data) {
             return $data->product->name;
         })
-        ->addColumn('status_pembayaran', function($data) {
+        ->addColumn('status_pembayaran', function($data) use($user) {
             if ($data->pembayaran) return 'Lunas';
-            else return 'Belum Lunas';
+            else {
+                if($user->can('paymentAccess')) return '<a href="' . route('payment.show', $data->order_id) . '">Klik disini untuk selesaikan pembayaran</a>';
+                return 'Belum Lunas';
+            }
         })
         ->addColumn('status', function($data) {
             return $data->status->desc;
@@ -210,7 +213,7 @@ class OrderController extends Controller
                 ' . method_field('PATCH') . '
             </form>' . $update . $hapus;
         })
-        ->rawColumns(['#', 'action'])
+        ->rawColumns(['#', 'action', 'status_pembayaran'])
         ->toJson(); 
     }
 
@@ -231,7 +234,7 @@ class OrderController extends Controller
         $cekPesan = Cart::where('order_id', $data->order_id)->where('status_id', '!=', 4)->first();
         if($user->hasRole('dapur')) {
             $cekPesan = Cart::with('status')
-            ->where('order_id', $id)
+            ->where('order_id', $data->order_id)
             ->where('status_id', 2)->first();
         }
         

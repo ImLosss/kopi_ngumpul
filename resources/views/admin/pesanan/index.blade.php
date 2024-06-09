@@ -58,6 +58,7 @@
             processing: true,
             serverSide: true,
             responsive: true,
+            ordering: false,
             ajax: {
                 url: "{{ route('admin.dataTable.getOrder') }}"
             },
@@ -91,7 +92,11 @@
                     data: 'waktu_pesan',
                     name: 'waktu_pesan'
                 }
-            ]
+            ],
+            language: {
+                emptyTable: "Semua pesanan telah selesai",
+                loadingRecords: "Memuat..."
+            }
         });
 
         function reloadTable() {

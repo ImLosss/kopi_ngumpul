@@ -29,14 +29,16 @@
                         <h6>Meja {{ $order->no_meja }}</h6>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn bg-gradient-dark mb-0" onclick="submit_cetakNota()" id="btnCetakNota" disabled>Cetak nota</button>
+                        <button class="btn bg-gradient-success mb-1" onclick="modalUpdateStatusAll()" id="btnUpdatePayment" disabled>Selesaikan pembayaran</button>
+                        <button class="btn bg-gradient-dark mb-1" id="btnCetakNota" disabled>Cetak nota</button>
                     </div>
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">
-                    <form action="{{ route('payment.cetakNota') }}" method="POST" enctype="multipart/form-data" id="formCetakNota">
+                    <form action="{{ route('payment.billOrUpdate') }}" method="POST" enctype="multipart/form-data" id="formCetakNota">
                         @csrf
+                        <input type="text" name="action" id="action" hidden>
                         <table class="table" id="dataTable3">
                             <thead>
                                 <tr>
@@ -65,17 +67,18 @@
 @section('script')
 <script>
 
-    function submit(key) {
-        $('#form_'+key).submit();
-    }
-
     function updateStatus(key) {
         $('#formUpdate_'+key).submit();
     }
 
-    function submit_cetakNota() {
+    function submit_form() {
         $('#formCetakNota').submit();
     }
+
+    $('#btnCetakNota').on('click', function() {
+        $('#action').val('printBill');
+        submit_form()
+    });
 
     $(document).ready( function () {
 
@@ -99,9 +102,11 @@
             if ($('input[name="selectPesan[]"]:checked').length > 0) {
                 // Jika ada, hilangkan attribute disabled dari button
                 $('#btnCetakNota').removeAttr('disabled');
+                $('#btnUpdatePayment').removeAttr('disabled');
             } else {
                 // Jika tidak ada, tambahkan attribute disabled ke button
                 $('#btnCetakNota').attr('disabled', 'disabled');
+                $('#btnUpdatePayment').attr('disabled', 'disabled');
             }
         }
 
@@ -141,7 +146,11 @@
                     data: 'action',
                     name: 'action'
                 },
-            ]
+            ],
+            language: {
+                emptyTable: "Tidak menemukan pesanan yang belum Lunas",
+                loadingRecords: "Memuat..."
+            }
         });
 
         function reloadTable() {
@@ -180,6 +189,23 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // updateStatus(id);
+            }
+        });
+    }
+
+    function modalUpdateStatusAll() {
+        Swal.fire({
+            title: "Kamu yakin?",
+            text: "Kamu tidak akan bisa membatalkannya setelah ini!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Selesaikan pembayaran!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#action').val('updatePayment');
+                submit_form();
             }
         });
     }

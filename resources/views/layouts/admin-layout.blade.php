@@ -143,7 +143,9 @@
       Swal.fire({
         text: "{{ session('message') }}",
         icon: "{{ session('modal_alert') }}",
-        timer: 3000,
+        timer: 1500,
+        showConfirmButton: false,
+        timerProgressBar: true
       })
     </script>
   @endif

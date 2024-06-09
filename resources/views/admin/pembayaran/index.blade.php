@@ -61,6 +61,7 @@
             processing: true,
             serverSide: true,
             responsive: true,
+            ordering: false,
             ajax: {
                 url: "{{ route('admin.dataTable.getAllOrder') }}"
             },
@@ -89,7 +90,11 @@
                     data: 'waktu_pesan',
                     name: 'waktu_pesan'
                 },
-            ]
+            ],
+            language: {
+                emptyTable: "Tidak menemukan order yang belum Lunas",
+                loadingRecords: "Memuat..."
+            }
         });
 
         function reloadTable() {

@@ -118,7 +118,7 @@ Route::group([
 
     Route::get('/getAllOrder', [PaymentController::class, 'getAllOrder'])->name('admin.dataTable.getAllOrder');
     Route::get('/getPayment/{id}', [PaymentController::class, 'getPayment'])->name('admin.dataTable.getPayment');
-    Route::post('/payment/cetak-nota', [PaymentController::class, 'cetakNota'])->name('payment.cetakNota');
+    Route::post('/payment/billOrUpdate', [PaymentController::class, 'billOrUpdate'])->name('payment.billOrUpdate');
     Route::patch('payment/update/{id}', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
     //endRoute
 });

@@ -46,6 +46,12 @@
 </div>
 @endsection
 
+{{-- <style>
+    .h{
+        background-color: #a1a1a1
+    }
+</style> --}}
+
 @section('script')
 <script>
 
@@ -90,7 +96,11 @@
                     data: 'action',
                     name: 'action'
                 },
-            ]
+            ],
+            language: {
+                emptyTable: "Semua pesanan telah selesai",
+                loadingRecords: "Memuat..."
+            }
         });
 
         function reloadTable() {
@@ -107,9 +117,9 @@
             text: "Kamu tidak akan bisa membatalkannya setelah ini!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, hapus saja!"
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#a1a1a1",
+            confirmButtonText: "Ya, hapus saja!"
         }).then((result) => {
             if (result.isConfirmed) {
                 submit(id);
