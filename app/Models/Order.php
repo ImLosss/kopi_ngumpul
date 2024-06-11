@@ -11,6 +11,7 @@ class Order extends Model
 
     protected $fillable = [
         'no_meja',
+        'profit',
         'total',
         'status',
         'kasir',

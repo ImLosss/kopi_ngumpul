@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('no_meja')->nullable();
             $table->bigInteger('total')->nullable();
+            $table->bigInteger('profit')->nullable();
             $table->unsignedBigInteger('status_id');
             $table->boolean('pembayaran')->default(false);
             $table->string('kasir');

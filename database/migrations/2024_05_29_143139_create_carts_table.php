@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
+            $table->string('menu');
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('diskon_id')->nullable();
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->bigInteger('harga');
             $table->bigInteger('total_diskon')->nullable();
             $table->bigInteger('total');
+            $table->bigInteger('profit');
             $table->unsignedBigInteger('status_id');
             $table->boolean('pembayaran')->default(false);
             $table->timestamps();

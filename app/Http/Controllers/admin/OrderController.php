@@ -178,7 +178,7 @@ class OrderController extends Controller
             </div>';
         })
         ->addColumn('menu', function($data) {
-            return $data->product->name;
+            return $data->menu;
         })
         ->addColumn('status_pembayaran', function($data) use($user) {
             if ($data->pembayaran) return 'Lunas';

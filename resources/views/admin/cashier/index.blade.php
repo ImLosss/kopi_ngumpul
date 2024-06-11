@@ -109,7 +109,7 @@
                         </form>
                     </div>
                     <div class="col">
-                        {{$item->product->name}} x{{$item->jumlah}}
+                        {{$item->menu}} x{{$item->jumlah}}
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-end flex-wrap">

@@ -72,7 +72,8 @@ class CartController extends Controller
 
             DB::transaction(function () use ($order, $cart) {
                 $order->update([
-                    'total' => $order->total - $cart->total
+                    'total' => $order->total - $cart->total,
+                    'profit' => $order->profit - $cart->profit
                 ]);
 
                 $product = Product::findOrFail($cart->product_id);

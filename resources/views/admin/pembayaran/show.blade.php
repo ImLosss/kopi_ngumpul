@@ -188,7 +188,7 @@
             confirmButtonText: "Selesaikan pembayaran!"
         }).then((result) => {
             if (result.isConfirmed) {
-                // updateStatus(id);
+                updateStatus(id);
             }
         });
     }

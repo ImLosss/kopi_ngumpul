@@ -10,6 +10,7 @@ class Cart extends Model
     use HasFactory;
 
     protected $fillable = [
+        'menu',
         'product_id',
         'order_id',
         'diskon_id',
@@ -17,6 +18,7 @@ class Cart extends Model
         'harga',
         'total_diskon',
         'total',
+        'profit',
         'status_id',
         'pembayaran'
     ];

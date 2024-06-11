@@ -101,7 +101,7 @@
                     @foreach ($cart as $item)
                         <tr>
                             <td class="quantity">{{ $item->jumlah }}</td>
-                            <td class="description">{{ $item->product->name }}</td>
+                            <td class="description">{{ $item->menu }}</td>
                             <td class="price">Rp{{ number_format($item->total + $item->total_diskon) }}</td>
                         </tr>
                         @if ($item->diskon_id != null)

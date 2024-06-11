@@ -94,6 +94,22 @@ class PaymentController extends Controller
         //
     }
 
+
+    public function updateStatus($id) {
+        // dd($id);
+        $cart = Cart::with('product', 'order')->findOrFail($id);
+
+        $cart->update([
+            'pembayaran' => true
+        ]);
+
+        $orderIdsArr = $cart->pluck('order_id')->toArray();
+
+        OrderService::checkStatusOrderArr($orderIdsArr); 
+
+        return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update Pembayaran');
+    }
+
     public function billOrUpdate(Request $request) {
         if ($request->action == 'printBill') {
             $order_id = Cart::with('order')->distinct('order_id')->whereIn('id', $request->selectPesan)->get(['order_id']);
@@ -103,7 +119,7 @@ class PaymentController extends Controller
             $data['order_id'] = $order_id->pluck('order_id')->implode(', ');
             $data['kasir'] = $data['cart']->pluck('order.kasir')->unique()->implode(', ');
             $data['order'] = Order::whereIn('id', $orderIdsArr)->get();
-            $data['total'] = Order::whereIn('id', $orderIdsArr)->sum('total');
+            $data['total'] = $data['cart']->sum('total');
             $data['diskon'] = $data['cart']->sum('total_diskon');
             
             return view('admin.pembayaran.nota', $data);
@@ -192,7 +208,7 @@ class PaymentController extends Controller
             </div>';
         })
         ->addColumn('menu', function($data) {
-            return $data->product->name;
+            return $data->menu;
         })
         ->addColumn('status_pembayaran', function($data) {
             if ($data->pembayaran) return 'Lunas';

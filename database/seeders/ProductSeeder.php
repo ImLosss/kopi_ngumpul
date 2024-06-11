@@ -28,5 +28,13 @@ class ProductSeeder extends Seeder
             'harga' => 18000,
             'category_id' => 2
         ]);
+
+        Product::create([
+            'name' => 'Indomie ayam geprek',
+            'jumlah' => 25,
+            'modal' => 12000,
+            'harga' => 21000,
+            'category_id' => 2
+        ]);
     }
 }

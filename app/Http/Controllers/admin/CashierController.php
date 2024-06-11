@@ -61,6 +61,7 @@ class CashierController extends Controller
         try {
             DB::transaction(function () use ($request) {
                 $order = Order::where('status_id', 1)->first();
+                $menu = Product::findOrFail($request->menu);
 
                 if(!$order) {
                     $order = Order::create([
@@ -75,6 +76,7 @@ class CashierController extends Controller
                 } else $diskon = 0;
 
                 Cart::create([
+                    'menu' => $menu->name,
                     'product_id' => $request->menu,
                     'order_id' => $order->id,
                     'diskon_id' => $request->diskon_id,
@@ -82,6 +84,7 @@ class CashierController extends Controller
                     'harga' => $request->harga,
                     'total_diskon' => $diskon,
                     'total' => $request->total - $diskon,
+                    'profit' => ($menu->harga - $menu->modal) * $request->jumlah - $diskon,
                     'status_id' => 1
                 ]);
 
@@ -91,15 +94,18 @@ class CashierController extends Controller
                 ]);
 
                 $total = Cart::where('order_id', $order->id)->get()->sum('total');
+                $profit = Cart::where('order_id', $order->id)->get()->sum('profit');
 
                 $order->update([
-                    'total' => $total
+                    'total' => $total,
+                    'profit' => $profit
                 ]);
 
             });
             
             return redirect()->back()->with('alert', 'success')->with('message', 'Berhasil menambahkan cart');
         } catch (\Throwable $e) {
+            // dd($e);
             return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
         }
     }
