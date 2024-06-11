@@ -173,9 +173,7 @@ class OrderController extends Controller
         return DataTables::of($data)
         ->addIndexColumn() 
         ->addColumn('#', function($data) {
-            return '<div class="form-check">
-            <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan" name="selectPesan[]">
-            </div>';
+            
         })
         ->addColumn('menu', function($data) {
             return $data->menu;

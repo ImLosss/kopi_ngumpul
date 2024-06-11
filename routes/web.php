@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\DiscountController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\PaymentController;
 use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\LoginController;
@@ -120,5 +121,14 @@ Route::group([
     Route::get('/getPayment/{id}', [PaymentController::class, 'getPayment'])->name('admin.dataTable.getPayment');
     Route::post('/payment/billOrUpdate', [PaymentController::class, 'billOrUpdate'])->name('payment.billOrUpdate');
     Route::patch('payment/update/{id}', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
+    //endRoute
+
+    // routeReport
+    Route::resource('report', ReportController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'report',
+        'show' => 'report.show'
+    ]);
+
+    Route::get('/getReport', [ReportController::class, 'getReport'])->name('admin.dataTable.getReport');
     //endRoute
 });

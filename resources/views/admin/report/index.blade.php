@@ -3,10 +3,10 @@
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" @role('admin')href="{{ route('home') }}"@endrole">Home</a></li>
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('order.index') }}">Payments</a></li>
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" @role('admin')href="{{ route('home') }}"@endrole>Home</a></li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Reports</li>
         </ol>
-        <h5 class="font-weight-bolder mb-0">List Pembayaran</h5>
+        <h5 class="font-weight-bolder mb-0">Report</h5>
     </nav>
 @endsection
 @section('content')
@@ -16,7 +16,7 @@
             <div class="card-header pb-3">
                 <div class="row">
                     <div class="col-6 d-flex align-items-center">
-                        <h6>Pembayaran</h6>
+                        <h6>All Reports</h6>
                     </div>
                     {{-- <div class="col-6 text-end">
                         <a class="btn bg-gradient-dark mb-0" href="{{ route('discount.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Discount</a>
@@ -29,11 +29,11 @@
                         <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No Meja</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No meja</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kasir</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status Pembayaran</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Waktu Pesan</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profit</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Waktu pesan</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -52,10 +52,6 @@
         $('#form_'+key).submit();
     }
 
-    function updateStatus(key) {
-        $('#formUpdate_'+key).submit();
-    }
-
     $(document).ready( function () {
         var table = $('#dataTable3').DataTable({
             processing: true,
@@ -63,7 +59,7 @@
             responsive: true,
             ordering: false,
             ajax: {
-                url: "{{ route('admin.dataTable.getAllOrder') }}"
+                url: "{{ route('admin.dataTable.getReport') }}"
             },
             columns: [
                 {
@@ -81,62 +77,32 @@
                 {
                     data: 'total',
                     name: 'total'
-                },
+                }
+                ,
                 {
-                    data: 'status_pembayaran',
-                    name: 'status_pembayaran'
+                    data: 'profit',
+                    name: 'profit'
                 },
                 {
                     data: 'waktu_pesan',
                     name: 'waktu_pesan'
-                },
+                }
             ],
             language: {
-                emptyTable: "Tidak menemukan order yang belum Lunas",
+                emptyTable: "Tidak ada histori ditemukan",
                 loadingRecords: "Memuat..."
             },
-            drawCallback: function(settings) {
-                var api = this.api();
-                setTimeout(function() {
-                    api.ajax.reload(null, false); // user paging is not reset on reload
-                }, 10000); // 10000 milidetik = 10 detik
-            },
-            headerCallback: function(thead, data, start, end, display) {
-                $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
-            }
+            columnDefs: [
+                { width: '250px', targets: 0 }
+            ],
         });
+
+        function reloadTable() {
+            table.ajax.reload(null, false); // Reload data without resetting pagination
+        }
+
+        // Set interval to reload table every 5 seconds
+        // setInterval(reloadTable, 10000);
     } );
-
-    function modalHapus(id) {
-        Swal.fire({
-            title: "Kamu yakin?",
-            text: "Kamu tidak akan bisa membatalkannya setelah ini!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, hapus saja!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                submit(id);
-            }
-        });
-    }
-
-    function modalUpdateStatus(id) {
-        Swal.fire({
-            title: "Kamu yakin?",
-            text: "Kamu tidak akan bisa membatalkannya setelah ini!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Ya, selesaikan!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                updateStatus(id);
-            }
-        });
-    }
 </script>
 @endsection

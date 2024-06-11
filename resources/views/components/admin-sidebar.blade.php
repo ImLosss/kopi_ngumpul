@@ -37,7 +37,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ (Request::is('cashier') ? 'active' : '') }}" href="{{ route('cashier') }}">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="ni ni-money-coins {{ (Request::is('cashier') ? '' : 'text-dark') }} text-sm"></i>                    
+                            <i class="fa-solid fa-cash-register {{ (Request::is('cashier') ? '' : 'text-dark') }} text-sm"></i>                    
                         </div>
                         <span class="nav-link-text ms-1">Cashier</span>
                     </a>
@@ -73,6 +73,17 @@
                     </ul>
                 </div>
             </li>
+            @endcan
+
+            @can('dailyReportAccess')
+                <li class="nav-item">
+                    <a class="nav-link {{ (Request::is('report','report/*') ? 'active' : '') }}" href="{{ route('report') }}">
+                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="ni ni-money-coins {{ (Request::is('report','report/*') ? '' : 'text-dark') }} text-sm"></i>             
+                        </div>
+                        <span class="nav-link-text ms-1">Laporan</span>
+                    </a>
+                </li>
             @endcan
 
             @can('productAccess')

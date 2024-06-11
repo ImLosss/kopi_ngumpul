@@ -10,6 +10,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:userAccess');
+    }
+
     /**
      * Display a listing of the resource.
      */

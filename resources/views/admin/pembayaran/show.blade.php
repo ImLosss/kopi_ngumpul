@@ -3,7 +3,7 @@
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('home') }}">Home</a></li>
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" @role('admin')href="{{ route('home') }}"@endrole">Home</a></li>
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('payment') }}">Payments</a></li>
             <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Show</li>
         </ol>
@@ -150,15 +150,11 @@
             language: {
                 emptyTable: "Tidak menemukan pesanan yang belum Lunas",
                 loadingRecords: "Memuat..."
-            }
+            },
+            columnDefs: [
+                { width: '40px', targets: 0 }
+            ],
         });
-
-        function reloadTable() {
-            table.ajax.reload(null, false); // Reload data without resetting pagination
-        }
-
-        // Set interval to reload table every 5 seconds
-        // setInterval(reloadTable, 30000);
     } );
 
     function modalHapus(id) {
