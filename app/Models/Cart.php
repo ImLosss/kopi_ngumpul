@@ -20,7 +20,8 @@ class Cart extends Model
         'total',
         'profit',
         'status_id',
-        'pembayaran'
+        'pembayaran',
+        'note'
     ];
 
     public function order() {

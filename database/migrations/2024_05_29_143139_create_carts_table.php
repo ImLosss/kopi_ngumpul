@@ -24,6 +24,7 @@ return new class extends Migration
             $table->bigInteger('profit');
             $table->unsignedBigInteger('status_id');
             $table->boolean('pembayaran')->default(false);
+            $table->longText('note')->nullable();
             $table->timestamps();
         });
     }

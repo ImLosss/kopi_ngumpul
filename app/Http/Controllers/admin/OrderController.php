@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
+use function PHPUnit\Framework\isEmpty;
+
 class OrderController extends Controller
 {
 
@@ -185,6 +187,11 @@ class OrderController extends Controller
                 return 'Belum Lunas';
             }
         })
+        ->addColumn('note', function($data) {
+            if($data->note == null) return 'None';
+            $note = htmlspecialchars($data->note);
+            return '<span title="'.$note.'">'.(strlen($note) > 50 ? substr($note, 0, 35) . '…' : $note).'</span>';
+        })
         ->addColumn('status', function($data) {
             return $data->status->desc;
         })
@@ -211,7 +218,7 @@ class OrderController extends Controller
                 ' . method_field('PATCH') . '
             </form>' . $update . $hapus;
         })
-        ->rawColumns(['#', 'action', 'status_pembayaran'])
+        ->rawColumns(['#', 'action', 'status_pembayaran', 'note'])
         ->toJson(); 
     }
 

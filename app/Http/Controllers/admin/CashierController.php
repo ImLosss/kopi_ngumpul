@@ -85,7 +85,8 @@ class CashierController extends Controller
                     'total_diskon' => $diskon,
                     'total' => $request->total - $diskon,
                     'profit' => ($menu->harga - $menu->modal) * $request->jumlah - $diskon,
-                    'status_id' => 1
+                    'status_id' => 1,
+                    'note' => $request->note
                 ]);
 
                 $product = Product::findOrFail($request->menu);

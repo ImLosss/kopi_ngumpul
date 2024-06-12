@@ -83,6 +83,14 @@
                         
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="note" class="form-control-label">{{ __('Note') }}</label>
+                                <textarea name="note" rows="5" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn bg-gradient-dark btn-md mt-4">{{ 'Tambah ke cart' }}</button>
                     </div>

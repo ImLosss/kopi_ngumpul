@@ -23,13 +23,13 @@
                             <div class="col">
                                 <div class="d-flex justify-content-end">
                                     <div style="margin-right: 20px">
-                                        <input type="date" class="form-control" name="startDate">
+                                        <input type="date" class="form-control" name="startDate" id="startDate" onchange="start()">
                                     </div>
                                     <div style="margin-right: 20px">
                                         -
                                     </div>
                                     <div>
-                                        <input type="date" class="form-control">
+                                        <input type="date" class="form-control" name="endDate" id="endDate" onchange="end()">
                                     </div>
                                 </div>
                             </div>
@@ -38,20 +38,37 @@
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
-                <div class="table-responsive p-0">
-                    <table class="table" id="dataTable3">
-                        <thead>
-                            <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No meja</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kasir</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profit</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Waktu pesan</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                <div class="row">
+                    <div class="table-responsive p-3">
+                        <table class="table" id="dataTable3">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kasir</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profit</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Waktu pesan</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="2">Total</th>
+                                    <th id="totalPendapatan"></th>
+                                    <th id="totalProfit"></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="d-flex flex-wrap">
+                            <a class="btn bg-gradient-secondary mt-2" href="#" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
+                            <a class="btn bg-gradient-success mt-2" href="#"><i class="fa-solid fa-file-excel text-md"></i> Excel</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -61,28 +78,29 @@
 
 @section('script')
 <script>
-
-    function submit(key) {
-        $('#form_'+key).submit();
-    }
-
+    var table;
     $(document).ready( function () {
-        var table = $('#dataTable3').DataTable({
+        table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
             responsive: true,
             ordering: false,
             ajax: {
-                url: "{{ route('admin.dataTable.getAllReport') }}"
+                url: "{{ route('admin.dataTable.getAllReport') }}",
+                data: function (d) {
+                    d.startDate = $('#startDate').val();
+                    d.endDate = $('#endDate').val();
+                },
+                dataSrc: function(json) {
+                    $('#totalPendapatan').text(formatRupiah(json.totalPendapatan));
+                    $('#totalProfit').text(formatRupiah(json.totalProfit));
+                    return json.data;
+                }
             },
             columns: [
                 {
                     data: '#',
                     name: '#'
-                },
-                {
-                    data: 'no_meja',
-                    name: 'no_meja'
                 },
                 {
                     data: 'kasir',
@@ -115,8 +133,50 @@
             table.ajax.reload(null, false); // Reload data without resetting pagination
         }
 
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(number).replace(/\./g, ',');
+        }
+
         // Set interval to reload table every 5 seconds
         // setInterval(reloadTable, 10000);
     } );
+
+    function start() {
+        let startDate = $('#startDate').val();
+        let endDate = $('#endDate').val();
+
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+
+        if(start > end) $('#endDate').val(startDate);
+
+        submitFilter();
+    }
+
+    function end() {
+        let startDate = $('#startDate').val();
+        let endDate = $('#endDate').val();
+
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+
+        if(end < start) $('#startDate').val(endDate);
+
+        submitFilter();
+    }
+
+    function submitFilter() {
+        let startDate = $('#startDate').val();
+        let endDate = $('#endDate').val();
+
+        if(!startDate || !endDate) return;
+
+        table.ajax.reload();
+    }
 </script>
 @endsection

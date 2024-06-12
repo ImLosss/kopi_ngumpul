@@ -33,6 +33,7 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Menu</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jumlah</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status pembayaran</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Note</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                             </tr>
@@ -45,12 +46,6 @@
     </div>
 </div>
 @endsection
-
-{{-- <style>
-    .h{
-        background-color: #a1a1a1
-    }
-</style> --}}
 
 @section('script')
 <script>
@@ -68,6 +63,7 @@
             processing: true,
             serverSide: true,
             responsive: true,
+            ordering: false,
             ajax: {
                 url: "{{ route('admin.dataTable.getPesanan', $order->id) }}"
             },
@@ -87,6 +83,10 @@
                 {
                     data: 'status_pembayaran',
                     name: 'status_pembayaran'
+                },
+                {
+                    data: 'note',
+                    name: 'note'
                 },
                 {
                     data: 'status',
@@ -109,7 +109,14 @@
             },
             headerCallback: function(thead, data, start, end, display) {
                 $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
-            }
+            },
+            columnDefs: [
+                { width: '30px', targets: 0 },
+                { width: '100px', targets: 1 },
+                { width: '50px', targets: 2 },
+                { width: '330px', targets: 3 },
+                { width: '150px', targets: 4 }
+            ],
         });
     } );
 

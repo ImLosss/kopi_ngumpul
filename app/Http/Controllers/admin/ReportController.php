@@ -8,6 +8,7 @@ use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
 class ReportController extends Controller
@@ -26,22 +27,6 @@ class ReportController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(string $id)
@@ -50,46 +35,25 @@ class ReportController extends Controller
         return view('admin.report.show', compact('order'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function getAllReport(Request $request)
     {
-        //
-    }
+        // Log::info('Request Data: ', $request->all());
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    public function getAllReport()
-    {
         $user = Auth::user();
         $oneMonthAgo = Carbon::now()->subMonth();
         $oneDayAgo = Carbon::now()->subDay();
-        $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->whereDate('created_at', '>=', $oneMonthAgo);
+        $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->whereDate('created_at', '>=', $oneDayAgo);
 
-        // dd($data);
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->whereBetween('created_at', [$request->startDate, $request->endDate]);
+        }
+
+        $totalPendapatan = $data->sum('total');
+        $totalProfit = $data->sum('profit');
+
         return DataTables::of($data)
         ->addColumn('#', function($data) {
             return '<a href="' . route('report.show', $data->id) . '">Klik disini untuk lihat Pesanan</a>';
-        })
-        ->addColumn('no_meja', function($data) {
-        $no_meja = 'kosong';
-        if($data->no_meja) $no_meja = $data->no_meja;
-            return $no_meja;
         })
         ->addColumn('kasir', function($data) {
             return $data->kasir;
@@ -103,6 +67,8 @@ class ReportController extends Controller
         ->addColumn('waktu_pesan', function($data) {
             return $data->created_at;
         })
+        ->with('totalPendapatan', $totalPendapatan)
+        ->with('totalProfit', $totalProfit)
         ->rawColumns(['#', 'action'])
         ->toJson(); 
     }

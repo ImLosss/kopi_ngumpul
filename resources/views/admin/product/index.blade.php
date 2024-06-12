@@ -50,9 +50,7 @@
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
