@@ -18,17 +18,6 @@
                     <div class="col d-flex align-items-center">
                         <h6>All Products</h6>
                     </div>
-                    {{-- <div class="col-2 text-left">
-                        <select class="form-control" onchange="update(this.value)" id="categorySelect">
-                            <option value="" selected disabled>Pilih Kategori</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </Select>
-                    </div>
-                    <div class="col-2 text-end">
-                        <a class="btn bg-gradient-dark mb-0" href="{{ route('product.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Product</a>
-                    </div> --}}
                     <div class="col">
                         <div class="d-flex justify-content-end flex-wrap">
                             <div class="mb-2" style="margin-right: 20px">

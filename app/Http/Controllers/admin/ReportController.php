@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Models\Order;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
@@ -44,7 +46,8 @@ class ReportController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $order = Order::findOrFail($id);
+        return view('admin.report.show', compact('order'));
     }
 
     /**
@@ -71,10 +74,12 @@ class ReportController extends Controller
         //
     }
 
-    public function getReport()
+    public function getAllReport()
     {
         $user = Auth::user();
-        $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true);
+        $oneMonthAgo = Carbon::now()->subMonth();
+        $oneDayAgo = Carbon::now()->subDay();
+        $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->whereDate('created_at', '>=', $oneMonthAgo);
 
         // dd($data);
         return DataTables::of($data)
@@ -99,6 +104,34 @@ class ReportController extends Controller
             return $data->created_at;
         })
         ->rawColumns(['#', 'action'])
+        ->toJson(); 
+    }
+
+    public function getReport($id) 
+    {
+        $user = Auth::user();
+        $data = Cart::with('status', 'order', 'product')->where('order_id', $id);
+
+        return DataTables::of($data)
+        ->addColumn('menu', function($data) {
+            return $data->menu;
+        })
+        ->addColumn('jumlah', function($data) {
+            return $data->jumlah;
+        })
+        ->addColumn('harga', function($data) use($user) {
+            return 'Rp' . number_format($data->harga);
+        })
+        ->addColumn('diskon', function($data) {
+            if($data->total_diskon == 0) return 'None';
+            return 'Rp' . number_format($data->total_diskon);
+        })
+        ->addColumn('total', function($data) {
+            return 'Rp' . number_format($data->total);
+        })
+        ->addColumn('profit', function($data) use($user) {
+            return 'Rp' . number_format($data->profit);
+        })
         ->toJson(); 
     }
 }

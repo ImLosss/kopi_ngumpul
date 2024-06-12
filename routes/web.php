@@ -129,6 +129,7 @@ Route::group([
         'show' => 'report.show'
     ]);
 
-    Route::get('/getReport', [ReportController::class, 'getReport'])->name('admin.dataTable.getReport');
+    Route::get('/getAllReport', [ReportController::class, 'getAllReport'])->name('admin.dataTable.getAllReport');
+    Route::get('/getReport/{id}', [ReportController::class, 'getReport'])->name('admin.dataTable.getReport');
     //endRoute
 });

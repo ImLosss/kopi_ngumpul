@@ -18,9 +18,23 @@
                     <div class="col-6 d-flex align-items-center">
                         <h6>All Reports</h6>
                     </div>
-                    {{-- <div class="col-6 text-end">
-                        <a class="btn bg-gradient-dark mb-0" href="{{ route('discount.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Discount</a>
-                    </div> --}}
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">
+                                <div class="d-flex justify-content-end">
+                                    <div style="margin-right: 20px">
+                                        <input type="date" class="form-control" name="startDate">
+                                    </div>
+                                    <div style="margin-right: 20px">
+                                        -
+                                    </div>
+                                    <div>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
@@ -59,7 +73,7 @@
             responsive: true,
             ordering: false,
             ajax: {
-                url: "{{ route('admin.dataTable.getReport') }}"
+                url: "{{ route('admin.dataTable.getAllReport') }}"
             },
             columns: [
                 {
