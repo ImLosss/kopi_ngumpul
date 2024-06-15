@@ -111,10 +111,6 @@
                 $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
             },
             columnDefs: [
-                { width: '30px', targets: 0 },
-                { width: '100px', targets: 1 },
-                { width: '50px', targets: 2 },
-                { width: '330px', targets: 3 },
                 { width: '150px', targets: 4 }
             ],
         });

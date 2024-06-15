@@ -132,5 +132,6 @@ Route::group([
     Route::get('/getAllReport', [ReportController::class, 'getAllReport'])->name('admin.dataTable.getAllReport');
     Route::get('/reportFilter', [ReportController::class, 'filterReport'])->name('report.filter');
     Route::get('/getReport/{id}', [ReportController::class, 'getReport'])->name('admin.dataTable.getReport');
+    Route::post('/report/print', [ReportController::class, 'printReport'])->name('report.printReport');
     //endRoute
 });

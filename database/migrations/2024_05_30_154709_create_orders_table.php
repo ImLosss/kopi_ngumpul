@@ -19,7 +19,10 @@ return new class extends Migration
             $table->unsignedBigInteger('status_id');
             $table->boolean('pembayaran')->default(false);
             $table->string('kasir');
-            $table->boolean('bazar')->default(false);
+            $table->boolean('partner')->default(false);
+            $table->bigInteger('partner_price')->default(false);
+            $table->bigInteger('partner_profit')->default(false);
+            $table->bigInteger('partner_total')->default(false);
             $table->timestamps();
         });
     }

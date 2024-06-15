@@ -40,32 +40,38 @@
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="row">
                     <div class="table-responsive p-3">
-                        <table class="table" id="dataTable3">
-                            <thead>
-                                <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kasir</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profit</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Waktu pesan</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="2">Total</th>
-                                    <th id="totalPendapatan"></th>
-                                    <th id="totalProfit"></th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
-                        </table>
+                        <form action="{{ route('report.printReport') }}" id="form_report" method="POST">
+                            <input type="date" class="form-control" name="startDate" id="startDateVal" readonly hidden>
+                            <input type="date" class="form-control" name="endDate" id="endDateVal" readonly hidden>
+                            <input type="text" class="form-control" name="signatoryName" id="signatory" readonly hidden>
+                            @csrf
+                            <table class="table" id="dataTable3">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kasir</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profit</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Waktu pesan</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="2">Total</th>
+                                        <th id="totalPendapatan"></th>
+                                        <th id="totalProfit"></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </form>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
                         <div class="d-flex flex-wrap">
-                            <a class="btn bg-gradient-secondary mt-2" href="#" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
+                            <a class="btn bg-gradient-secondary mt-2" href="#" onclick="modal()" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
                             <a class="btn bg-gradient-success mt-2" href="#"><i class="fa-solid fa-file-excel text-md"></i> Excel</a>
                         </div>
                     </div>
@@ -78,8 +84,34 @@
 
 @section('script')
 <script>
+    function submit_form() {
+        $('#form_report').submit();
+    }
+
+    function modal() {
+        Swal.fire({
+            title: "Full name Signatory",
+            input: "text",
+            inputAttributes: {
+                autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Print",
+            showLoaderOnConfirm: true,
+            preConfirm: async (login) => {
+                console.log(login);
+                if(!login) return Swal.showValidationMessage('Nama tidak boleh kosong');
+
+                $('#signatory').val(login);
+                return submit_form();
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        })
+    }
+
     var table;
     $(document).ready( function () {
+
         table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
@@ -173,6 +205,9 @@
     function submitFilter() {
         let startDate = $('#startDate').val();
         let endDate = $('#endDate').val();
+
+        $('#startDateVal').val(startDate);
+        $('#endDateVal').val(endDate);
 
         if(!startDate || !endDate) return;
 

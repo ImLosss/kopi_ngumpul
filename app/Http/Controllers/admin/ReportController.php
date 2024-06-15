@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
+use function PHPUnit\Framework\isEmpty;
+
 class ReportController extends Controller
 {
     public function __construct()
@@ -35,6 +37,20 @@ class ReportController extends Controller
         return view('admin.report.show', compact('order'));
     }
 
+    public function printReport(Request $request)
+    {
+        // dd($request);
+        if(!$request->has('id_order')) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada History yang terpilih');
+        $data['order'] = Order::with('carts')->whereIn('id', $request->id_order)->get();
+        $data['strDate'] = $request->startDate . ' - ' . $request->endDate;
+        $data['total'] = $data['order']->sum('total');
+        $data['profit'] = $data['order']->sum('profit');
+        $data['assignDate'] = Carbon::now()->locale('id_ID')->isoFormat('D MMMM YYYY');
+        $data['signatory'] = $request->signatoryName;
+        // dd($data);
+        return view('admin.report.print', $data);
+    }
+
     public function getAllReport(Request $request)
     {
         // Log::info('Request Data: ', $request->all());
@@ -53,7 +69,7 @@ class ReportController extends Controller
 
         return DataTables::of($data)
         ->addColumn('#', function($data) {
-            return '<a href="' . route('report.show', $data->id) . '">Klik disini untuk lihat Pesanan</a>';
+            return '<a href="' . route('report.show', $data->id) . '">Klik disini untuk lihat Pesanan</a><input type="text" name="id_order[]" value="' . $data->id . '" readonly hidden>';
         })
         ->addColumn('kasir', function($data) {
             return $data->kasir;
