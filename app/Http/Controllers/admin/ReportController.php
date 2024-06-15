@@ -42,11 +42,13 @@ class ReportController extends Controller
         // dd($request);
         if(!$request->has('id_order')) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada History yang terpilih');
         $data['order'] = Order::with('carts')->whereIn('id', $request->id_order)->get();
-        $data['strDate'] = $request->startDate . ' - ' . $request->endDate;
+        $data['strDate'] = Carbon::now()->format('Y-m-d');
         $data['total'] = $data['order']->sum('total');
         $data['profit'] = $data['order']->sum('profit');
         $data['assignDate'] = Carbon::now()->locale('id_ID')->isoFormat('D MMMM YYYY');
         $data['signatory'] = $request->signatoryName;
+
+        if($request->has('startDate') && $request->has('endDate')) $data['strDate'] = str_replace('-', '/', $request->startDate) . ' - ' . str_replace('-', '/', $request->endDate);
         // dd($data);
         return view('admin.report.print', $data);
     }
