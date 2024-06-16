@@ -17,7 +17,7 @@ class Order extends Model
         'kasir',
         'status_id',
         'pembayaran',
-        'bazar'
+        'partner'
     ];
 
     public function carts() {

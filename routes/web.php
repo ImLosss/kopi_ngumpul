@@ -5,6 +5,7 @@ use App\Http\Controllers\admin\CartController;
 use App\Http\Controllers\admin\CashierController;
 use App\Http\Controllers\admin\DiscountController;
 use App\Http\Controllers\admin\OrderController;
+use App\Http\Controllers\admin\PartnerProductController;
 use App\Http\Controllers\admin\PaymentController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\ReportController;
@@ -133,5 +134,17 @@ Route::group([
     Route::get('/reportFilter', [ReportController::class, 'filterReport'])->name('report.filter');
     Route::get('/getReport/{id}', [ReportController::class, 'getReport'])->name('admin.dataTable.getReport');
     Route::post('/report/print', [ReportController::class, 'printReport'])->name('report.printReport');
+    //endRoute
+
+    // routeReport
+    Route::resource('partnerProduct', PartnerProductController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'partnerProduct',
+        'create' => 'product.partner.create',
+        'store' => 'product.partner.store',
+        'edit' => 'product.partner.edit',
+        'destroy' => 'product.partner.destroy'
+    ]);
+
+    Route::get('/getPartnerProduct', [PartnerProductController::class, 'getPartnerProduct'])->name('admin.dataTable.getPartnerProduct');
     //endRoute
 });

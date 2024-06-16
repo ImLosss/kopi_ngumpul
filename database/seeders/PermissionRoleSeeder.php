@@ -49,5 +49,7 @@ class PermissionRoleSeeder extends Seeder
         ->assignRole(['dapur', 'admin']);
         Permission::create(['name' => 'updateStatusThree'])
         ->assignRole(['admin', 'pelayan', 'partner', 'kasir']);
+        Permission::create(['name' => 'partnerProductAcceess'])
+        ->assignRole(['partner']);
     }
 }

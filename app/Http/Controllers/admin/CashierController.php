@@ -8,6 +8,7 @@ use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Discount;
 use App\Models\Order;
+use App\Models\PartnerProduct;
 use App\Models\Product;
 use App\Models\Table;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class CashierController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:cashierAccess');
+        $this->middleware('permission:cashierAccess|cashierPartnerAccess');
     }
 
     /**
@@ -27,21 +28,41 @@ class CashierController extends Controller
      */
     public function index()
     {
-        $order = Order::where('status_id', 1)->first();
-        if(!$order) {
-            $order = Order::create([
-                'kasir' => Auth::user()->name,
-                'status_id' => 1,
-            ]);
+        $user = Auth::user();
+        if($user->hasRole('cashierAccess')){
+            $order = Order::where('status_id', 1)->where('partner', null)->first();
+            if(!$order) {
+                $order = Order::create([
+                    'kasir' => Auth::user()->name,
+                    'status_id' => 1,
+                ]);
+            }
+
+            $data['products'] = Product::get();
+            $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status_id', 1)->first();
+            $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
+            $data['tables'] = Table::get();
+
+            // dd($data);
+            return view('admin.cashier.index', $data);
+        } else {
+            $order = Order::where('status_id', 1)->where('partner', '!=', null)->first();
+            if(!$order) {
+                $order = Order::create([
+                    'kasir' => Auth::user()->name,
+                    'status_id' => 1,
+                    'partner' => 0
+                ]);
+            }
+
+            $data['products'] = PartnerProduct::where('user_id', $user->id)->get();
+            $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status_id', 1)->first();
+            $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
+            $data['tables'] = Table::get();
+
+            // dd($data);
+            return view('admin.cashier.index', $data);
         }
-
-        $data['products'] = Product::get();
-        $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status_id', 1)->first();
-        $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
-        $data['tables'] = Table::get();
-
-        // dd($data);
-        return view('admin.cashier.index', $data);
     }
 
     /**
