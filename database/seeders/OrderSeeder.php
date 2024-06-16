@@ -13,11 +13,11 @@ class OrderSeeder extends Seeder
      */
     public function run(): void
     {
-        Order::create([
-            'no_meja' => 1,
-            'total' => 50000,
-            'status' => 'cart',
-            'kasir' => 'admin'
-        ]);
+        // Order::create([
+        //     'no_meja' => 1,
+        //     'total' => 50000,
+        //     'status' => 'cart',
+        //     'kasir' => 'admin'
+        // ]);
     }
 }

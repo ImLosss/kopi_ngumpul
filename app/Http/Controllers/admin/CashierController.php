@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CashierRequest;
+use App\Models\Cart;
 use App\Models\Category;
+use App\Models\Discount;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CashierController extends Controller
 {
@@ -21,10 +26,20 @@ class CashierController extends Controller
      */
     public function index()
     {
-        $data = Product::get();
+        $order = Order::where('status', 'cart')->first();
+        if(!$order) {
+            $order = Order::create([
+                'kasir' => Auth::user()->name,
+                'status' => 'cart',
+            ]);
+        }
+
+        $data['products'] = Product::get();
+        $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status', 'cart')->first();
+        $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
 
         // dd($data);
-        return view('admin.cashier.index', compact('data'));
+        return view('admin.cashier.index', $data);
     }
 
     /**
@@ -38,9 +53,50 @@ class CashierController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CashierRequest $request)
     {
-        //
+        try {
+            DB::transaction(function () use ($request) {
+                $order = Order::where('status', 'cart')->first();
+
+                if(!$order) {
+                    $order = Order::create([
+                        'kasir' => Auth::user()->name,
+                        'status' => 'cart',
+                    ]);
+                }
+
+                if($request->has('diskon_id')) {
+                    $diskon = Discount::findOrFail($request->diskon_id);
+                    $diskon = $request->total * ($diskon->percent / 100);
+                } else $diskon = 0;
+
+                Cart::create([
+                    'product_id' => $request->menu,
+                    'order_id' => $order->id,
+                    'diskon_id' => $request->diskon_id,
+                    'jumlah' => $request->jumlah,
+                    'total_diskon' => $diskon,
+                    'total' => $request->total - $diskon
+                ]);
+
+                $product = Product::findOrFail($request->menu);
+                $product->update([
+                    'jumlah' => $product->jumlah - $request->jumlah
+                ]);
+
+                $total = Cart::where('order_id', $order->id)->get()->sum('total');
+
+                $order->update([
+                    'total' => $total
+                ]);
+
+            });
+            
+            return redirect()->back()->with('alert', 'success')->with('message', 'Berhasil menambahkan cart');
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
+        }
     }
 
     /**
