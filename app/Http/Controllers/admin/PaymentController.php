@@ -54,15 +54,13 @@ class PaymentController extends Controller
             $data = Cart::with('status', 'order', 'product')
             ->where('pembayaran', false)
             ->whereHas('order', function ($query) use ($no_meja) {
-                $query->where('no_meja', $no_meja);
+                $query->where('no_meja', $no_meja)->where('partner', false);
             })->first();
         } else if($user->hasRole('partner')) {
             $data = Cart::with('status', 'order', 'product')
-            ->where('order_id', 1)
             ->where('pembayaran', false)
-            ->where(function ($query) {
-                $query->where('status_id', 2)
-                      ->orWhere('status_id', 3);
+            ->whereHas('order', function ($query) use ($no_meja) {
+                $query->where('no_meja', $no_meja)->where('partner', true);
             })->first();
         }
 
@@ -112,6 +110,7 @@ class PaymentController extends Controller
 
     public function billOrUpdate(Request $request) {
         if ($request->action == 'printBill') {
+            $user = Auth::user();
             $order_id = Cart::with('order')->distinct('order_id')->whereIn('id', $request->selectPesan)->get(['order_id']);
             $orderIdsArr = $order_id->pluck('order_id')->toArray();
 
@@ -120,6 +119,7 @@ class PaymentController extends Controller
             $data['kasir'] = $data['cart']->pluck('order.kasir')->unique()->implode(', ');
             $data['order'] = Order::whereIn('id', $orderIdsArr)->get();
             $data['total'] = $data['cart']->sum('total');
+            if($user->hasRole('partner')) $data['total'] = $data['cart']->sum('partner_total');
             $data['diskon'] = $data['cart']->sum('total_diskon');
             
             return view('admin.pembayaran.nota', $data);
@@ -143,11 +143,18 @@ class PaymentController extends Controller
 
     public function getAllOrder()
     {
+        $user = Auth::user();
         $data = Order::with('status')
         ->where('status_id', '!=', 1)
-        ->where('pembayaran', false);
+        ->where('pembayaran', false)
+        ->where('partner', false);
 
-
+        if($user->hasRole('partner')) {
+            $data = Order::with('status')
+            ->where('status_id', '!=', 1)
+            ->where('partner', true)
+            ->where('pembayaran', false);
+        }
         // dd($data);
         return DataTables::of($data)
         ->addIndexColumn() 
@@ -164,6 +171,7 @@ class PaymentController extends Controller
             return $data->kasir;
          })
          ->addColumn('total', function($data) {
+            if($data->partner) return 'Rp' . number_format($data->partner_total);
             return $data->total;
          })
          ->addColumn('status_pembayaran', function($data) {
@@ -186,15 +194,13 @@ class PaymentController extends Controller
             $data = Cart::with('status', 'order', 'product')
             ->where('pembayaran', false)
             ->whereHas('order', function ($query) use ($no_meja) {
-                $query->where('no_meja', $no_meja);
+                $query->where('no_meja', $no_meja)->where('partner', false);
             })->get();
         } else if($user->hasRole('partner')) {
             $data = Cart::with('status', 'order', 'product')
-            ->where('order_id', 1)
             ->where('pembayaran', false)
-            ->where(function ($query) {
-                $query->where('status_id', 2)
-                      ->orWhere('status_id', 3);
+            ->whereHas('order', function ($query) use ($no_meja) {
+                $query->where('no_meja', $no_meja)->where('partner', true);
             })->get();
         }
 
@@ -218,6 +224,7 @@ class PaymentController extends Controller
             return $data->created_at;
         })
         ->addColumn('total', function($data) {
+            if($data->order->partner) return 'Rp' . number_format($data->partner_total);
             return 'Rp' . number_format($data->total);
         })
         ->addColumn('action', function($data) use($user) {

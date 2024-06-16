@@ -133,4 +133,28 @@ class PartnerProductController extends Controller
          ->rawColumns(['action'])
         ->toJson(); 
     }
+
+    public function getPartnerProductDetail($id)
+    {
+        $product = Product::with('discount')->find($id);
+
+        $diskon = $product->discount;
+
+        $diskonData = [];
+        if ($product->discount->isNotEmpty()) {
+            foreach ($product->discount as $diskon) {
+                $diskonData[] = [
+                    'id' => $diskon->id,
+                    'name' => $diskon->name,
+                    'percent' => $diskon->percent
+                ];
+            }
+        }
+
+        return response()->json([
+            'harga' => $product->harga,
+            'stock' => $product->jumlah,
+            'diskon' => $diskonData
+        ]);
+    }
 }

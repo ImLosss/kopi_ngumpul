@@ -40,6 +40,8 @@ class ReportController extends Controller
     public function printReport(Request $request)
     {
         // dd($request);
+        $user = Auth::user();
+
         if(!$request->has('id_order')) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada History yang terpilih');
         $data['order'] = Order::with('carts')->whereIn('id', $request->id_order)->get();
         $data['strDate'] = Carbon::now()->format('Y-m-d');
@@ -48,8 +50,13 @@ class ReportController extends Controller
         $data['assignDate'] = Carbon::now()->locale('id_ID')->isoFormat('D MMMM YYYY');
         $data['signatory'] = $request->signatoryName;
 
-        if($request->has('startDate') && $request->has('endDate')) $data['strDate'] = str_replace('-', '/', $request->startDate) . ' - ' . str_replace('-', '/', $request->endDate);
-        // dd($data);
+        if($user->hasRole('partner')) {
+            $data['total'] = $data['order']->sum('partner_total');
+            $data['penyerahan_dana'] = $data['order']->sum('total');
+            $data['profit'] = $data['order']->sum('partner_profit');
+        }
+        if($request->filled('startDate') && $request->filled('endDate')) $data['strDate'] = str_replace('-', '/', $request->startDate) . ' - ' . str_replace('-', '/', $request->endDate);
+        // dd($request);
         return view('admin.report.print', $data);
     }
 
@@ -62,12 +69,20 @@ class ReportController extends Controller
         $oneDayAgo = Carbon::now()->subDay();
         $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->whereDate('created_at', '>=', $oneDayAgo);
 
+        if($user->hasRole('partner')) $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereDate('created_at', '>=', $oneDayAgo);
+
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->whereBetween('created_at', [$request->startDate, $request->endDate]);
+            if($user->hasRole('partner')) $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereBetween('created_at', [$request->startDate, $request->endDate]);
         }
 
         $totalPendapatan = $data->sum('total');
         $totalProfit = $data->sum('profit');
+
+        if($user->hasRole('partner')) {
+            $totalPendapatan = $data->sum('partner_total');
+            $totalProfit = $data->sum('partner_profit');
+        }
 
         return DataTables::of($data)
         ->addColumn('#', function($data) {
@@ -76,10 +91,12 @@ class ReportController extends Controller
         ->addColumn('kasir', function($data) {
             return $data->kasir;
         })
-        ->addColumn('total', function($data) {
+        ->addColumn('total', function($data) use($user) {
+            if($user->hasRole('partner')) return 'Rp' . number_format($data->partner_total);
             return 'Rp' . number_format($data->total);
         })
-        ->addColumn('profit', function($data) {
+        ->addColumn('profit', function($data) use($user) {
+            if($user->hasRole('partner')) return 'Rp' . number_format($data->partner_profit);
             return 'Rp' . number_format($data->profit);
         })
         ->addColumn('waktu_pesan', function($data) {
@@ -104,6 +121,7 @@ class ReportController extends Controller
             return $data->jumlah;
         })
         ->addColumn('harga', function($data) use($user) {
+            if($data->order->partner) return 'Rp' . number_format($data->partner_price);
             return 'Rp' . number_format($data->harga);
         })
         ->addColumn('diskon', function($data) {
@@ -111,9 +129,11 @@ class ReportController extends Controller
             return 'Rp' . number_format($data->total_diskon);
         })
         ->addColumn('total', function($data) {
+            if($data->order->partner) return 'Rp' . number_format($data->partner_total);
             return 'Rp' . number_format($data->total);
         })
         ->addColumn('profit', function($data) use($user) {
+            if($data->order->partner) return 'Rp' . number_format($data->partner_profit);
             return 'Rp' . number_format($data->profit);
         })
         ->toJson(); 

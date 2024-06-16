@@ -19,9 +19,11 @@
                     <div class="col-6 d-flex align-items-center">
                         <h6>Meja {{ $order->no_meja }}</h6>
                     </div>
-                    {{-- <div class="col-6 text-end">
-                        <a class="btn bg-gradient-dark mb-0" href="{{ route('discount.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Discount</a>
-                    </div> --}}
+                    @if ($order->partner)
+                        <div class="col-6 text-end">
+                            Partner
+                        </div>
+                    @endif
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">

@@ -19,8 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('status_id');
             $table->boolean('pembayaran')->default(false);
             $table->string('kasir');
-            $table->bigInteger('partner')->nullable();
-            $table->bigInteger('partner_price')->nullable();
+            $table->boolean('partner')->default(false);
             $table->bigInteger('partner_profit')->nullable();
             $table->bigInteger('partner_total')->nullable();
             $table->timestamps();

@@ -110,6 +110,7 @@ class OrderController extends Controller
         $user = Auth::user();
         $data = Order::with('status')
         ->where('status_id', '!=', 1)
+        ->where('partner', false)
         ->where(function ($query) {
             $query->where('status_id', '!=', 4)
                   ->orWhere('pembayaran', false);
@@ -119,6 +120,16 @@ class OrderController extends Controller
             $data = Order::with('status')
             ->where('status_id', 2)
             ->orWhere('status_id', 3);
+        }
+
+        if($user->hasRole('partner')) {
+            $data = Order::with('status')
+            ->where('status_id', '!=', 1)
+            ->where('partner', true)
+            ->where(function ($query) {
+                $query->where('status_id', '!=', 4)
+                      ->orWhere('pembayaran', false);
+            });
         }
 
 
@@ -137,7 +148,8 @@ class OrderController extends Controller
          ->addColumn('kasir', function($data) {
             return $data->kasir;
          })
-         ->addColumn('total', function($data) {
+         ->addColumn('total', function($data) use($user) {
+            if($data->partner) return $data->partner_total;
             return $data->total;
          })
          ->addColumn('status_pembayaran', function($data) {
@@ -223,7 +235,11 @@ class OrderController extends Controller
     }
 
     public function hapusPesanan($id) {
-        dd($id);
+        // $data = Cart::findOrFail($id);
+
+        // $data->delete();
+
+        return redirect()->back()->with('alert', 'info')->with('message', 'Belum tersedia');
     }
 
     public function updateStatus($id) {

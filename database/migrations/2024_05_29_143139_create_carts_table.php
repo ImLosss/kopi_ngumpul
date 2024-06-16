@@ -22,6 +22,9 @@ return new class extends Migration
             $table->bigInteger('total_diskon')->nullable();
             $table->bigInteger('total');
             $table->bigInteger('profit');
+            $table->bigInteger('partner_price')->default(0);
+            $table->bigInteger('partner_profit')->default(0);
+            $table->bigInteger('partner_total')->default(0);
             $table->unsignedBigInteger('status_id');
             $table->boolean('pembayaran')->default(false);
             $table->longText('note')->nullable();

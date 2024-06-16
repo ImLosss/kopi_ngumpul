@@ -146,5 +146,6 @@ Route::group([
     ]);
 
     Route::get('/getPartnerProduct', [PartnerProductController::class, 'getPartnerProduct'])->name('admin.dataTable.getPartnerProduct');
+    Route::get('/get-partner-detail/{id}', [PartnerProductController::class, 'getPartnerProductDetail']);
     //endRoute
 });

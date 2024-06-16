@@ -75,7 +75,7 @@
             var productId = $(this).val();
             if (productId) {
                 $.ajax({
-                    url: '/get-detail/' + productId,
+                    url: '/get-partner-detail/' + productId,
                     type: 'GET',
                     success: function(data) {
                         console.log(data);

@@ -45,22 +45,44 @@
         <div class="row">
             <div class="col-12 mt-3">
                 <table class="table table-borderless">
-                    <tr>
-                        <td width="120px"><b>Total pemasukan</b></td>
-                        <td width="20px"><b>:</b></td>
-                        <td><b>Rp{{ number_format($total) }}</b></td>
-                    </tr>
-                    <tr>
-                        <td><b>Total keuntungan</b></td>
-                        <td><b>:</b></td>
-                        <td><b>Rp{{ number_format($profit) }}</b></td>
-                        <td>
-                            <div class="report-date">
-                                <b>{{ $strDate }}</b>
-                            </div>
-                        </td>
-                    </tr>
-                    
+                    @if (Auth::user()->hasRole('partner'))
+                        <tr>
+                            <td width="150px"><b>Total pemasukan</b></td>
+                            <td width="20px"><b>:</b></td>
+                            <td><b>Rp{{ number_format($total) }}</b></td>
+                        </tr>
+                        <tr>
+                            <td><b>Total keuntungan</b></td>
+                            <td><b>:</b></td>
+                            <td><b>Rp{{ number_format($profit) }}</b></td>
+                        </tr>
+                        <tr>
+                            <td><b>Total Dana yang diserahkan</b></td>
+                            <td><b>:</b></td>
+                            <td><b>Rp{{ number_format($penyerahan_dana) }}</b></td>
+                            <td>
+                                <div class="report-date">
+                                    <b>{{ $strDate }}</b>
+                                </div>
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td width="120px"><b>Total pemasukan</b></td>
+                            <td width="20px"><b>:</b></td>
+                            <td><b>Rp{{ number_format($total) }}</b></td>
+                        </tr>
+                        <tr>
+                            <td><b>Total keuntungan</b></td>
+                            <td><b>:</b></td>
+                            <td><b>Rp{{ number_format($profit) }}</b></td>
+                            <td>
+                                <div class="report-date">
+                                    <b>{{ $strDate }}</b>
+                                </div>
+                            </td>
+                        </tr>
+                    @endif
                 </table>
             </div>
             
@@ -80,15 +102,15 @@
                 <tbody>
                     @foreach ($order as $item)
                         <tr>
-                            <td colspan="6" class="text-center">{{ $item->created_at }} / kasir: {{ $item->kasir }} @if ($item->bazar == true) / partner @endif </td>
+                            <td colspan="6" class="text-center">{{ $item->created_at }} / kasir: {{ $item->kasir }} @if ($item->partner) / partner @endif </td>
                         </tr>
                         @foreach ($item->carts as $no => $cart)
                             <tr>
                                 <td>{{ $no+1 }}</td>
                                 <td>{{ $cart->menu }}</td>
-                                <td>{{ $cart->total_diskon ? 'Rp' . number_format($cart->total_diskon) : 'none'  }}</td>
-                                <td>Rp{{ number_format($cart->total) }}</td>
-                                <td>Rp{{ number_format($cart->profit) }}</td>
+                                <td>{{ $cart->total_diskon ? 'Rp' . number_format($cart->total_diskon) : 'none'  }} </td>
+                                <td>{{ Auth::user()->hasRole('partner') ? 'Rp' . number_format($cart->partner_total) : 'Rp' . number_format($cart->total) }}</td>
+                                <td>{{ Auth::user()->hasRole('partner') ? 'Rp' . number_format($cart->partner_profit) : 'Rp' . number_format($cart->profit) }}</td>
                                 <td>{{ $cart->created_at }}</td>
                             </tr>
                         @endforeach

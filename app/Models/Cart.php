@@ -19,6 +19,9 @@ class Cart extends Model
         'total_diskon',
         'total',
         'profit',
+        'partner_price',
+        'partner_total',
+        'partner_profit',
         'status_id',
         'pembayaran',
         'note'
