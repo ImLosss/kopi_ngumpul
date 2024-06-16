@@ -104,101 +104,103 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-4">
-        <div class="card p-3">
-            <div class="row mb-2">
-                <div class="col">
-                    <h5>Cart</h5>
+    @if ($order->carts->count() > 0)
+        <div class="col-lg-4">
+            <div class="card p-3">
+                <div class="row mb-2">
+                    <div class="col">
+                        <h5>Cart</h5>
+                    </div>
                 </div>
-            </div>
-            @foreach ($order->carts as $item)
-                <div class="row">
-                    <div class="col-1">
-                        <a type="submit" onclick="submit({{ $item->id }})"><i class="fa-solid fa-circle-minus text-danger"></i></a>
-                        
-                        {{-- form delete --}}
-                        <form action="{{ route('cart.destroy', $item->id) }}" id="form_{{ $item->id }}" method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-                        </form>
-                    </div>
-                    <div class="col">
-                        {{$item->menu}} x{{$item->jumlah}}
-                    </div>
-                    <div class="col">
-                        <div class="d-flex justify-content-end flex-wrap">
-                            Rp. {{number_format($item->partner_total )}}
-                        </div>
-                    </div>
-                </div> 
-                @if ($item->diskon_id != null)
+                @foreach ($order->carts as $item)
                     <div class="row">
                         <div class="col-1">
-        
+                            <a type="submit" onclick="submit({{ $item->id }})"><i class="fa-solid fa-circle-minus text-danger"></i></a>
+                            
+                            {{-- form delete --}}
+                            <form action="{{ route('cart.destroy', $item->id) }}" id="form_{{ $item->id }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                            </form>
                         </div>
                         <div class="col">
-                            Disc ({{ $item->discount->percent }}%)
+                            {{$item->menu}} x{{$item->jumlah}}
                         </div>
                         <div class="col">
                             <div class="d-flex justify-content-end flex-wrap">
-                                (Rp. {{ number_format($item->total_diskon) }})
+                                Rp. {{number_format($item->partner_total )}}
+                            </div>
+                        </div>
+                    </div> 
+                    @if ($item->diskon_id != null)
+                        <div class="row">
+                            <div class="col-1">
+            
+                            </div>
+                            <div class="col">
+                                Disc ({{ $item->discount->percent }}%)
+                            </div>
+                            <div class="col">
+                                <div class="d-flex justify-content-end flex-wrap">
+                                    (Rp. {{ number_format($item->total_diskon) }})
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+                <hr>
+                @if ($disc != 0)
+                    <div class="row">
+                        <div class="col font-italic">
+                            Anda hemat:
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-end flex-wrap font-weight-bold font-italic">
+                                (Rp. {{ number_format($disc) }})
                             </div>
                         </div>
                     </div>
                 @endif
-            @endforeach
-            <hr>
-            @if ($disc != 0)
                 <div class="row">
                     <div class="col font-italic">
-                        Anda hemat:
+                        Total:
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-end flex-wrap font-weight-bold font-italic">
-                            (Rp. {{ number_format($disc) }})
+                            Rp. {{ number_format($order->partner_total) }}
                         </div>
                     </div>
                 </div>
-            @endif
-            <div class="row">
-                <div class="col font-italic">
-                    Total:
-                </div>
-                <div class="col">
-                    <div class="d-flex justify-content-end flex-wrap font-weight-bold font-italic">
-                        Rp. {{ number_format($order->partner_total) }}
-                    </div>
-                </div>
-            </div>
-            <form action="{{ route('order.update', $order->id) }}" method="POST">
-                @csrf
-                @method('PATCH')
-                <div class="row mt-3">
-                    <div class="col">
-                        <div class="form-group has-validation">
-                            <label for="kategori" class="form-control-label">{{ __('Nomor Meja : ') }}</label>
-                            <div class="@error('no_meja')border border-danger rounded-3 @enderror">
-                                <select name="no_meja" class="form-control">
-                                    <option value="" selected disabled>Pilih Nomor meja</option>
-                                    @foreach ($tables as $table)
-                                        <option value="{{ $table->id }}">{{ $table->no_meja }} @if ($table->status == 'terpakai')
-                                            ({{ $table->status }})
-                                        @endif</option>
-                                    @endforeach
-                                </select>
-                                @error('no_meja')
-                                    <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                @enderror
+                <form action="{{ route('order.update', $order->id) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <div class="row mt-3">
+                        <div class="col">
+                            <div class="form-group has-validation">
+                                <label for="kategori" class="form-control-label">{{ __('Nomor Meja : ') }}</label>
+                                <div class="@error('no_meja')border border-danger rounded-3 @enderror">
+                                    <select name="no_meja" class="form-control">
+                                        <option value="" selected disabled>Pilih Nomor meja</option>
+                                        @foreach ($tables as $table)
+                                            <option value="{{ $table->id }}">{{ $table->no_meja }} @if ($table->status == 'terpakai')
+                                                ({{ $table->status }})
+                                            @endif</option>
+                                        @endforeach
+                                    </select>
+                                    @error('no_meja')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn bg-gradient-dark btn-md mt-4" {{ $order->carts->count() == 0 ? 'disabled' : '' }}>{{ 'Order' }}</button>
-                </div>
-            </form> 
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn bg-gradient-dark btn-md mt-4" {{ $order->carts->count() == 0 ? 'disabled' : '' }}>{{ 'Order' }}</button>
+                    </div>
+                </form> 
+            </div>
         </div>
-    </div>
+    @endif
 </div>
 @endsection
 
