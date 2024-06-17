@@ -72,8 +72,8 @@ class ReportController extends Controller
         if($user->hasRole('partner')) $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereDate('created_at', '>=', $oneDayAgo);
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
-            $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->whereBetween('created_at', [$request->startDate, $request->endDate]);
-            if($user->hasRole('partner')) $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereBetween('created_at', [$request->startDate, $request->endDate]);
+            $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
+            if($user->hasRole('partner')) $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
         }
 
         $totalPendapatan = $data->sum('total');

@@ -41,13 +41,14 @@ Route::group([
     Route::get('/', [AdminController::class, 'index'])->name('home');
 
     // routeUser
-    Route::resource('user', UserController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy'])->names([
+    Route::resource('user', UserController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'index' => 'user',
         'update'  => 'order.confirm',
         'show'  => 'order.view',
         'edit' => 'user.edit',
-        'store' => 'order.storepayment',
-        'destroy' => 'user.destroy'
+        'store' => 'user.store',
+        'destroy' => 'user.destroy',
+        'create' => 'user.create'
     ]);
 
     Route::get('/getUser', [UserController::class, 'getUser'])->name('admin.dataTable.getUser');

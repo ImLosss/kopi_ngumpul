@@ -122,6 +122,11 @@ class OrderController extends Controller
             ->orWhere('status_id', 3);
         }
 
+        if($user->hasRole('pelayan')) {
+            $data = Order::with('status')
+            ->where('status_id', 3);
+        }
+
         if($user->hasRole('partner')) {
             $data = Order::with('status')
             ->where('status_id', '!=', 1)
@@ -182,6 +187,9 @@ class OrderController extends Controller
                 $query->where('status_id', 2)
                       ->orWhere('status_id', 3);
             });
+        } else if($user->hasRole('pelayan')) {
+            $data = Cart::with('status', 'order', 'product')->where('order_id', $id)
+            ->where('status_id', 3);
         }
 
         return DataTables::of($data)

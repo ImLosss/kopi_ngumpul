@@ -19,7 +19,7 @@
                         <h6>All Users</h6>
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn bg-gradient-dark mb-0" href="#"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add User</a>
+                        <a class="btn bg-gradient-dark mb-0" href="{{ route('user.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add User</a>
                     </div>
                 </div>
             </div>

@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
@@ -28,15 +32,28 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        $data = Role::get();
+        // dd($data);
+        return view('admin.users.create', compact('data'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        //
+        try {
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone' => $request->notelp,
+            ])->assignRole($request->role);
+
+            return redirect()->route('user')->with('alert', 'success')->with('message', 'User berhasil ditambahkan');
+        } catch (\Throwable $e) {
+            return redirect()->route('user')->with('alert', 'error')->with('message', 'Terjadi kesalahan!');
+        }
     }
 
     /**

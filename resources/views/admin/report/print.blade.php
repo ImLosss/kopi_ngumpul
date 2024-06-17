@@ -102,7 +102,7 @@
                 <tbody>
                     @foreach ($order as $item)
                         <tr>
-                            <td colspan="6" class="text-center">{{ $item->created_at }} / kasir: {{ $item->kasir }} @if ($item->partner) / partner @endif </td>
+                            <td colspan="6" class="text-center">{{ $item->created_at }} / kasir: {{ $item->kasir }} / Profit: Rp{{ number_format($item->profit) }} @if ($item->partner) / partner (Rp{{ number_format($item->partner_profit) }}) @endif </td>
                         </tr>
                         @foreach ($item->carts as $no => $cart)
                             <tr>
