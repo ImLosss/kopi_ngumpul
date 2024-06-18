@@ -19,23 +19,48 @@ class AdminController extends Controller
         $startDate = Carbon::now()->subWeek();
         $datesArray = [];
         $series = [];
+        $penjualan = [];
+        $ratingProduk = [];
 
         foreach ($products as $product) {
             $salesData = [];
             $date = $startDate->copy();
             for ($i = 0; $i < 7; $i++) {
                 $date = $date->addDay();
-                $sales = Cart::where('product_id', $product->id)->whereDate('created_at', $date)->sum('jumlah');
+                $sales = Cart::where('product_id', $product->id)->where('pembayaran', true)->whereDate('created_at', $date)->sum('jumlah');
                 $salesData[] = $sales? $sales: null;
             }
-            $series[] = [
-                'name' => $product->name,
-                'data' => $salesData
-            ];
+
+            $nonNullValues = array_filter($salesData, function($value) {
+                return !is_null($value);
+            });
+            
+            // Cek apakah array yang difilter kosong
+            if (!empty($nonNullValues)) {
+                $series[] = [
+                    'name' => $product->name,
+                    'data' => $salesData
+                ];
+            }
+
+            $totaljual = Cart::where('product_id', $product->id)->where('pembayaran', true)->where('created_at', '>=', $startDate)->sum('jumlah');
+
+            if($totaljual > 0) {
+                $tes[] = ['name' => $product->name, 'penjualan' => $totaljual];
+                $penjualan[] = $totaljual;
+                $ratingProdukName[] = $product->name;
+            }
         }
 
+        $maxJual = max($penjualan);
+
+        foreach ($tes as $key => $item) {
+            $tes[$key]['rating'] = $this->calculateRating($item['penjualan'], $maxJual);
+        }
+
+        return $tes;
         for ($i = 0; $i < 7; $i++) {
-            $date = $startDate->addDay(); // Tambahkan hari ke tanggal mulai
+            $date = $startDate->copy()->addDay(); // Tambahkan hari ke tanggal mulai
             $formattedDate = $date->format('d M'); // Format tanggal menjadi '12 Feb'
             $datesArray[] = $formattedDate;
         }
@@ -96,5 +121,16 @@ class AdminController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    private function calculateRating($total_penjualan, $maxPenjualan)
+    {
+        // Jika maxPenjualan adalah 0, atur rating ke 0 untuk menghindari pembagian oleh nol
+        if ($maxPenjualan == 0) {
+            return 0;
+        }
+        
+        // Hitung persentase
+        return ($total_penjualan / $maxPenjualan) * 100;
     }
 }

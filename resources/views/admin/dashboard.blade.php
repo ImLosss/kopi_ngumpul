@@ -231,7 +231,8 @@ var optionsRating = {
   },
   title: {
     text: 'Rating',
-    
+    offsetY: 20 ,
+    offsetX: 20
   },
   colors: ['#00E396'],
   series: [{
