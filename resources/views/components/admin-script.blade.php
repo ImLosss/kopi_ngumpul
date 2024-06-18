@@ -5,6 +5,7 @@
 <script src="{{ asset('assets/js/plugins/smooth-scrollbar.min.js') }}"></script>
 <script src="{{ asset('assets/js/plugins/chartjs.min.js') }}"></script>
 <script src="{{ asset('assets/js/sweetalert.js') }}"></script>
+<script src="{{ asset('assets/js/apexchart.js') }}"></script>
 {{-- DataTable JS --}}
 <link rel="stylesheet" href="{{ asset('assets/css/datatables.min.css') }}">
 <script
