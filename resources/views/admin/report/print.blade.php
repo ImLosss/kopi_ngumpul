@@ -93,27 +93,55 @@
                     <tr>
                         <th>No</th>
                         <th>Menu</th>
-                        <th>diskon</th>
+                        <th>jumlah</th>
+                        @if(Auth::user()->hasRole('partner'))
+                            <th>Harga Asli</th>
+                            <th>MarkUp Harga</th>
+                        @else
+                            <th>Harga</th>
+                            <th>diskon</th>
+                        @endif
                         <th>Total</th>
                         <th>Profit</th>
-                        <th>Waktu pesan</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($order as $item)
                         <tr>
-                            <td colspan="6" class="text-center">{{ $item->created_at }} / kasir: {{ $item->kasir }} / Profit: Rp{{ number_format($item->profit) }} @if ($item->partner) / partner (Rp{{ number_format($item->partner_profit) }}) @endif </td>
+                            <td colspan="8" class="text-center">{{ $item->created_at }} / kasir: {{ $item->kasir }} @if (!Auth::user()->hasRole('partner') && $item->partner) / partner (Rp{{ number_format($item->partner_profit) }}) @endif </td>
                         </tr>
                         @foreach ($item->carts as $no => $cart)
                             <tr>
                                 <td>{{ $no+1 }}</td>
                                 <td>{{ $cart->menu }}</td>
-                                <td>{{ $cart->total_diskon ? 'Rp' . number_format($cart->total_diskon) : 'none'  }} </td>
+                                <td>{{ $cart->jumlah }}</td>
+                                @if (Auth::user()->hasRole('partner'))
+                                    <td>Rp{{ number_format($cart->harga) }}</td>
+                                    <td>Rp{{ number_format($cart->partner_price) }}</td>
+                                @else
+                                    <td>Rp{{ number_format($cart->harga) }}</td>
+                                    <td>{{ $cart->total_diskon ? 'Rp' . number_format($cart->total_diskon) : 'none'  }}</td>
+                                @endif
                                 <td>{{ Auth::user()->hasRole('partner') ? 'Rp' . number_format($cart->partner_total) : 'Rp' . number_format($cart->total) }}</td>
                                 <td>{{ Auth::user()->hasRole('partner') ? 'Rp' . number_format($cart->partner_profit) : 'Rp' . number_format($cart->profit) }}</td>
-                                <td>{{ $cart->created_at }}</td>
                             </tr>
                         @endforeach
+                            <tr>
+                                <td colspan="2" class="text-center"><b>TOTAL</b></td>
+                                <td><b>{{ $item->carts_sum_jumlah }}</b></td>
+                                
+                                @if (Auth::user()->hasRole('partner'))
+                                    <td colspan="2"></td>
+                                    <td><b>Rp{{ number_format($item->partner_total) }}</b></td>
+                                    <td><b>Rp{{ number_format($item->partner_profit) }}</b></td>
+                                @else
+                                    <td></td>
+                                    <td><b>{{ $item->carts_sum_total_diskon ? 'Rp' . number_format($item->carts_sum_total_diskon) : 'none'  }}</b></td>
+                                    <td><b>Rp{{ number_format($item->total) }}</b></td>
+                                    <td><b>Rp{{ number_format($item->profit) }}</b></td>
+                                @endif
+                                    
+                            </tr>
                     @endforeach
                     <!-- Tambahkan baris lain sesuai kebutuhan -->
                 </tbody>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -100,6 +101,9 @@ class AdminController extends Controller
         $data['pemasukanHariIni'] = Cart::where('pembayaran', true)->whereDate('created_at', Carbon::now())->sum('total');
         $data['pemasukan'] = Cart::where('pembayaran', true)->whereDate('created_at', '<=', Carbon::now())->sum('total');
         $data['profitHariIni'] = Cart::where('pembayaran', true)->whereDate('created_at', Carbon::now())->sum('profit');
+        $data['totalUser'] = User::whereHas('roles', function($query) {
+            $query->whereNotIn('name', ['admin']);
+        })->count();
         $data['profit'] = Cart::where('pembayaran', true)->whereDate('created_at', '<=', Carbon::now())->sum('profit');
 
         // dd($data);

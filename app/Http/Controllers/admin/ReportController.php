@@ -8,6 +8,7 @@ use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -43,7 +44,7 @@ class ReportController extends Controller
         $user = Auth::user();
 
         if(!$request->has('id_order')) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada History yang terpilih');
-        $data['order'] = Order::with('carts')->whereIn('id', $request->id_order)->get();
+        $data['order'] = Order::with('carts')->withSum('carts', 'jumlah')->withSum('carts', 'harga')->withSum('carts', 'partner_price')->withSum('carts', 'total_diskon')->whereIn('id', $request->id_order)->get();
         $data['strDate'] = Carbon::now()->format('Y-m-d');
         $data['total'] = $data['order']->sum('total');
         $data['profit'] = $data['order']->sum('profit');

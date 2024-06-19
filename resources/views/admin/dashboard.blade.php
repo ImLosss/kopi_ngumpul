@@ -54,7 +54,7 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Staff</p>
                 <h5 class="font-weight-bolder mb-0">
-                  21
+                  {{ $totalUser }}
                   {{-- <span class="text-success text-sm font-weight-bolder">+5%</span> --}}
                 </h5>
               </div>
@@ -69,16 +69,48 @@
       </div>
     </div>
   </div>
+  @if ($cekstok->count() > 0)
+    <div class="row mb-3">
+      <div class="col-xl-12">
+        <div class="card pb-0 p-3">
+          <div class="row align-items-center">
+            <div class="col-10">
+              <h6>Terdapat {{ $cekstok->count() }} menu yang telah habis. Segera restock!</h6>
+            </div>
+            <div class="col-2 d-flex justify-content-end">
+              <a class="btn bg-gradient-secondary" href="{{ route('product') }}">CEK</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endif
+  @if($habis->count() > 0 && $cekstok->count() == 0)
+    <div class="row mb-3">
+      <div class="col-xl-12">
+        <div class="card pb-0 p-3">
+          <div class="row align-items-center">
+            <div class="col-10">
+              <h6>Terdapat {{ $habis->count() }} menu yang akan habis. Segera restock!</h6>
+            </div>
+            <div class="col-2 d-flex justify-content-end">
+              <a class="btn bg-gradient-secondary" href="{{ route('product') }}">CEK</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endif
   <div class="row mb-3">
     <div class="col-xl-6">
-      <div class="card mb-1 p-2">
+      <div class="card mb-3 p-2">
         <div class="card-body px-0 pt-0 pb-0">
           <div id="chartPenjualan"></div>
         </div>
       </div>
     </div>
     <div class="col-xl-6">
-      <div class="card mb-1 p-2">
+      <div class="card p-2">
         {{-- <div class="card-header pb-3">
           <div class="row">
               <div class="col">
@@ -99,39 +131,7 @@
       </div>
     </div>
   </div>
-  @if ($cekstok->count() > 0)
-    <div class="row mb-3">
-      <div class="col-xl-12">
-        <div class="card pb-0 p-3">
-          <div class="row align-items-center">
-            <div class="col-8">
-              <h6>Terdapat {{ $cekstok->count() }} menu yang telah habis. Segera restock!</h6>
-            </div>
-            <div class="col-4 d-flex justify-content-end">
-              <a class="btn bg-gradient-secondary" href="{{ route('product') }}">CEK</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   
-  @endif
-  @if($habis->count() > 0 && $cekstok->count() == 0)
-    <div class="row mb-3">
-      <div class="col-xl-12">
-        <div class="card pb-0 p-3">
-          <div class="row align-items-center">
-            <div class="col-8">
-              <h6>Terdapat {{ $habis->count() }} menu yang akan habis. Segera restock!</h6>
-            </div>
-            <div class="col-4 d-flex justify-content-end">
-              <a class="btn bg-gradient-secondary" href="{{ route('product') }}">CEK</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  @endif
   {{-- <div class="row">
     <div class="d-flex align-items-center justify-content-center vh-100 text-white">
         @auth
