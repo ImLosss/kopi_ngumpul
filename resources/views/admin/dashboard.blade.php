@@ -167,6 +167,10 @@
 <script>
 var labels = @json($datesArr);
 var series = @json($series);
+var ratingName = @json($ratingChart['name']);
+var ratingSeries = @json($ratingChart['series']);
+
+console.log(ratingName);
 var optionsLine = {
   chart: {
     height: 328,
@@ -235,12 +239,40 @@ var optionsRating = {
     offsetX: 20
   },
   colors: ['#00E396'],
-  series: [{
-    name: 'Rate(%)',
-    data: [100,96,97,76,44,32,88,21]
-  }],
+  series: ratingSeries,
   xaxis: {
-    categories: ['Indomie ayam geprek',1992,1993,1994,1995,1996,1997, 1998,1999],
+    categories: ratingName,
+  },
+  yaxis: {
+    labels: {
+      formatter: function(value) {
+        var maxLength = 10; // Panjang maksimum teks
+        if (value.length > maxLength) {
+            return value.substring(0, maxLength) + '...';
+        } else {
+            return value;
+        }
+      },
+      rotate: -45
+    }
+  },
+  tooltip: {
+      y: {
+        formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+            // return w.globals.labels[dataPointIndex] + ' : ' + w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
+            return w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
+        },
+        // title: {
+        //   formatter: function(seriesName) {
+        //       return ''; // Menghilangkan title dari series
+        //   }
+        // }
+      },
+      x: {
+        formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+            return ratingName[dataPointIndex]; // Menampilkan nama kategori penuh
+        }
+      }
   }
 }
 
@@ -248,5 +280,19 @@ var chartRating = new ApexCharts(document.querySelector("#chartRating"), options
 var chartLine = new ApexCharts(document.querySelector('#chartPenjualan'), optionsLine);
 chartLine.render();
 chartRating.render();
+
+// setTimeout(() => {
+//   chartRating.updateSeries([{ name: 'ssd', data: [21, 23] }]);
+//   chartRating.updateOptions({
+//     xaxis: {categories: ['asdas', 'asdad']},
+//     tooltip: {
+//       x: {
+//         formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+//             return ['asdas', 'asdad'][dataPointIndex];
+//         },
+//       }
+//     }
+//   });
+// }, 3000);
 </script>
 @endsection

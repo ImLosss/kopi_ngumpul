@@ -20,7 +20,7 @@ class AdminController extends Controller
         $datesArray = [];
         $series = [];
         $penjualan = [];
-        $ratingProduk = [];
+        $ratingChart = [];
 
         foreach ($products as $product) {
             $salesData = [];
@@ -46,19 +46,35 @@ class AdminController extends Controller
             $totaljual = Cart::where('product_id', $product->id)->where('pembayaran', true)->where('created_at', '>=', $startDate)->sum('jumlah');
 
             if($totaljual > 0) {
-                $tes[] = ['name' => $product->name, 'penjualan' => $totaljual];
+                $ratingChart[] = ['name' => $product->name, 'penjualan' => $totaljual];
                 $penjualan[] = $totaljual;
-                $ratingProdukName[] = $product->name;
             }
         }
 
         $maxJual = max($penjualan);
 
-        foreach ($tes as $key => $item) {
-            $tes[$key]['rating'] = $this->calculateRating($item['penjualan'], $maxJual);
+        foreach ($ratingChart as $key => $item) {
+            $ratingChart[$key]['rating'] = $this->calculateRating($item['penjualan'], $maxJual);
         }
 
-        return $tes;
+        usort($ratingChart, function($a, $b) {
+            return $b['rating'] <=> $a['rating'];
+        });
+        
+        foreach ($ratingChart as $item) {
+            $data['ratingChart']['name'][] = $item['name'];
+            $ratingJual[] = $item['rating'];
+        }
+
+        // memvbatasi dan menghapus decimal jika bilangan bulat
+        $ratingJual = array_map(function($num) {
+            $num = $this->formatNumber($num);
+            return $num;
+        }, $ratingJual);
+
+        $data['ratingChart']['series'][] = ['name' => 'Rating', 'data' => $ratingJual];
+
+        // return $data['ratingChart']['name'];
         for ($i = 0; $i < 7; $i++) {
             $date = $startDate->copy()->addDay(); // Tambahkan hari ke tanggal mulai
             $formattedDate = $date->format('d M'); // Format tanggal menjadi '12 Feb'
@@ -75,53 +91,6 @@ class AdminController extends Controller
         return view('admin.dashboard', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 
     private function calculateRating($total_penjualan, $maxPenjualan)
     {
@@ -132,5 +101,11 @@ class AdminController extends Controller
         
         // Hitung persentase
         return ($total_penjualan / $maxPenjualan) * 100;
+    }
+    
+    private function formatNumber($num) {
+        $rounded = round($num, 1);
+        // Jika hasil pembulatan adalah bilangan bulat, kembalikan sebagai integer
+        return ($rounded == intval($rounded)) ? intval($rounded) : $rounded;
     }
 }
