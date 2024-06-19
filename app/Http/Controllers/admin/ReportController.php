@@ -67,13 +67,13 @@ class ReportController extends Controller
         $user = Auth::user();
         $oneMonthAgo = Carbon::now()->subMonth();
         $oneDayAgo = Carbon::now()->subDay();
-        $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->whereDate('created_at', '>=', $oneDayAgo);
+        $data = Order::with('status')->where('pembayaran', true)->whereDate('created_at', '>=', $oneDayAgo);
 
-        if($user->hasRole('partner')) $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereDate('created_at', '>=', $oneDayAgo);
+        if($user->hasRole('partner')) $data = Order::with('status')->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereDate('created_at', '>=', $oneDayAgo);
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
-            $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
-            if($user->hasRole('partner')) $data = Order::with('status')->where('status_id', 4)->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
+            $data = Order::with('status')->where('pembayaran', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
+            if($user->hasRole('partner')) $data = Order::with('status')->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
         }
 
         $totalPendapatan = $data->sum('total');

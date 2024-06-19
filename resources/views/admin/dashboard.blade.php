@@ -8,10 +8,10 @@
           <div class="row">
             <div class="col-8">
               <div class="numbers">
-                <p class="text-sm mb-0 text-capitalize font-weight-bold">Today's Money</p>
+                <p class="text-sm mb-0 text-capitalize font-weight-bold">Pemasukan hari ini</p>
                 <h5 class="font-weight-bolder mb-0">
-                  $53,000
-                  <span class="text-success text-sm font-weight-bolder">+55%</span>
+                  Rp{{ number_format($pemasukan) }}
+                  <span class="text-success text-sm font-weight-bolder">+Rp{{ number_format($pemasukanHariIni) }}</span>
                 </h5>
               </div>
             </div>
@@ -169,6 +169,7 @@ var labels = @json($datesArr);
 var series = @json($series);
 var ratingName = @json($ratingChart['name']);
 var ratingSeries = @json($ratingChart['series']);
+var ratingPenjualan = @json($ratingChart['penjualan']);
 
 console.log(ratingName);
 var optionsLine = {
@@ -270,7 +271,7 @@ var optionsRating = {
       },
       x: {
         formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-            return ratingName[dataPointIndex]; // Menampilkan nama kategori penuh
+            return ratingName[dataPointIndex] + '(' + ratingPenjualan[dataPointIndex] + ')'; // Menampilkan nama kategori penuh
         }
       }
   }
@@ -282,7 +283,7 @@ chartLine.render();
 chartRating.render();
 
 // setTimeout(() => {
-//   chartRating.updateSeries([{ name: 'ssd', data: [21, 23] }]);
+//   chartRating.updateSeries([{ name: 'rating', data: [21, 23] }]);
 //   chartRating.updateOptions({
 //     xaxis: {categories: ['asdas', 'asdad']},
 //     tooltip: {

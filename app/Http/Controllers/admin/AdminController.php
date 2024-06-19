@@ -51,6 +51,8 @@ class AdminController extends Controller
             }
         }
 
+        rsort($penjualan, SORT_NUMERIC);
+
         $maxJual = max($penjualan);
 
         foreach ($ratingChart as $key => $item) {
@@ -73,10 +75,11 @@ class AdminController extends Controller
         }, $ratingJual);
 
         $data['ratingChart']['series'][] = ['name' => 'Rating', 'data' => $ratingJual];
+        $data['ratingChart']['penjualan'] = $penjualan;
 
-        // return $data['ratingChart']['name'];
+        // return $data['ratingChart']['series'];
         for ($i = 0; $i < 7; $i++) {
-            $date = $startDate->copy()->addDay(); // Tambahkan hari ke tanggal mulai
+            $date = $startDate->addDay(); // Tambahkan hari ke tanggal mulai
             $formattedDate = $date->format('d M'); // Format tanggal menjadi '12 Feb'
             $datesArray[] = $formattedDate;
         }
@@ -85,12 +88,18 @@ class AdminController extends Controller
         $data['series'] = $series;
         $data['cekstok'] = Product::where('jumlah', 0)->get();
         $data['habis'] = Product::where('jumlah', '<=', 5)->get();
+        $data['pemasukanHariIni'] = Cart::where('pembayaran', true)->whereDate('created_at', Carbon::now())->sum('total');
+        $data['pemasukan'] = Cart::where('pembayaran', true)->whereDate('created_at', '<=', Carbon::now())->sum('total');
 
         // dd($data);
         // return($series);
         return view('admin.dashboard', $data);
     }
 
+    public function updateRatingChart()
+    {
+        //
+    }
 
     private function calculateRating($total_penjualan, $maxPenjualan)
     {
