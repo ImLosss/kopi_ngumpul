@@ -21,6 +21,7 @@ class AdminController extends Controller
         $series = [];
         $penjualan = [];
         $ratingChart = [];
+        $ratingJual = [];
 
         foreach ($products as $product) {
             $salesData = [];
@@ -50,10 +51,14 @@ class AdminController extends Controller
                 $penjualan[] = $totaljual;
             }
         }
-
+        
         rsort($penjualan, SORT_NUMERIC);
 
-        $maxJual = max($penjualan);
+        try {
+            $maxJual = max($penjualan);
+        } catch(\Throwable $e) {
+
+        }
 
         foreach ($ratingChart as $key => $item) {
             $ratingChart[$key]['rating'] = $this->calculateRating($item['penjualan'], $maxJual);
@@ -84,12 +89,18 @@ class AdminController extends Controller
             $datesArray[] = $formattedDate;
         }
 
+
+        if(empty($data['ratingChart']['name'])) {
+            $data['ratingChart']['name'] = [];
+        }
         $data['datesArr'] = $datesArray;
         $data['series'] = $series;
         $data['cekstok'] = Product::where('jumlah', 0)->get();
         $data['habis'] = Product::where('jumlah', '<=', 5)->get();
         $data['pemasukanHariIni'] = Cart::where('pembayaran', true)->whereDate('created_at', Carbon::now())->sum('total');
         $data['pemasukan'] = Cart::where('pembayaran', true)->whereDate('created_at', '<=', Carbon::now())->sum('total');
+        $data['profitHariIni'] = Cart::where('pembayaran', true)->whereDate('created_at', Carbon::now())->sum('profit');
+        $data['profit'] = Cart::where('pembayaran', true)->whereDate('created_at', '<=', Carbon::now())->sum('profit');
 
         // dd($data);
         // return($series);
