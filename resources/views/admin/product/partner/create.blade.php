@@ -78,7 +78,6 @@
                     url: '/get-partner-detail/' + productId,
                     type: 'GET',
                     success: function(data) {
-                        console.log(data);
                         let upHarga = parseFloat($('#upHarga').val());
                         let hargaData = parseFloat(data.harga);
                         $('#productPrice').val(hargaData);

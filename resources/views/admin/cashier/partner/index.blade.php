@@ -12,7 +12,7 @@
 
 @section('content')
 
-<div class="row mt-4">
+<div class="row mt-0">
     <div class="col-lg-8 mb-lg-0 mb-4">
         <div class="card">
             <div class="card-body p-3">
@@ -220,7 +220,6 @@
                     url: '/get-detail/' + productId,
                     type: 'GET',
                     success: function(data) {
-                        console.log(data);
                         stock = data.stock;
                         let jumlah = $('#jumlah').val();
                         if(jumlah > stock) $('#jumlah').val(stock);

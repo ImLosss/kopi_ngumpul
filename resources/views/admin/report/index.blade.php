@@ -99,7 +99,6 @@
             confirmButtonText: "Print",
             showLoaderOnConfirm: true,
             preConfirm: async (login) => {
-                console.log(login);
                 if(!login) return Swal.showValidationMessage('Nama tidak boleh kosong');
 
                 $('#signatory').val(login);

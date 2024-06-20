@@ -155,7 +155,6 @@ var ratingName = @json($ratingChart['name']);
 var ratingSeries = @json($ratingChart['series']);
 var ratingPenjualan = @json($ratingChart['penjualan']);
 
-console.log(ratingName);
 var optionsLine = {
   chart: {
     type: 'line',
