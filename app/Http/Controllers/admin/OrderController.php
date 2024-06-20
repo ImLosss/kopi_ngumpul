@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Product;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,36 +32,12 @@ class OrderController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
         $order = Order::findOrFail($id);
         return view('admin.pesanan.show', compact('order'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
     }
 
     /**
@@ -94,7 +71,7 @@ class OrderController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        
     }
 
     public function getOrder() 
@@ -194,8 +171,12 @@ class OrderController extends Controller
 
         return DataTables::of($data)
         ->addIndexColumn() 
-        ->addColumn('#', function($data) {
-            
+        ->addColumn('#', function($data) use ($user) {
+            if($data->status_id < 4 && ($data->status_id != 2 || $user->hasRole('admin'))) {
+                return '<div class="form-check">
+                <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
+                </div>';
+            }
         })
         ->addColumn('menu', function($data) {
             return $data->menu;
@@ -223,13 +204,13 @@ class OrderController extends Controller
             $update = '';
 
             if($user->hasRole(['admin', 'kasir', 'partner']) && $data->status_id < 4) {
-                $hapus = '<button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="deletePesan"></button>';
+                $hapus = '<a class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')"></a>';
             }
 
-            if(($data->status_id == 2 && $user->can('updateStatusTwo')) || ($data->status_id == 3 && $user->can('updateStatusThree'))) $update = '<button class="fa-solid fa-square-check text-success" onclick="modalUpdateStatus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="updateStatus"></button>';
+            if(($data->status_id == 2 && $user->can('updateStatusTwo')) || ($data->status_id == 3 && $user->can('updateStatusThree'))) $update = '<a href="#" class="fa-solid fa-square-check text-success" style="margin-right: 10px;" onclick="modalUpdateStatus('. $data->id .')"></a>';
 
             return '
-            <form id="form_'. $data->id .'" action="' . route('pesanan.destroy', $data->id) . '" method="POST" class="inline">
+            <form id="formDelete_'. $data->id .'" action="' . route('pesanan.destroy', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
             </form>
@@ -243,20 +224,50 @@ class OrderController extends Controller
     }
 
     public function hapusPesanan($id) {
-        // $data = Cart::findOrFail($id);
+        try {
+            $cart = Cart::with('product')->findOrFail($id);
+            $order = Order::findOrFail($cart->order_id);
 
-        // $data->delete();
+            $message = 'Berhasil menghapus ' . $cart->product->name;
 
-        return redirect()->back()->with('alert', 'info')->with('message', 'Belum tersedia');
+            DB::transaction(function () use ($order, $cart) {
+                $order->update([
+                    'total' => $order->total - $cart->total,
+                    'profit' => $order->profit - $cart->profit,
+                    'partner_total' => $order->partner_total - $cart->partner_total,
+                    'partner_profit' => $order->partner_profit - $cart->partner_profit
+                ]);
+
+                $product = Product::findOrFail($cart->product_id);
+                $product->update([
+                    'jumlah' => $product->jumlah + $cart->jumlah
+                ]);
+
+                $cart->delete();
+            });
+
+            $cek = Cart::where('order_id', $order->id)->first();
+
+            if(!$cek) {
+                $order->delete();
+                return redirect()->route('order.index')->with('alert', 'success')->with('message', $message);
+            }
+
+            return redirect()->back()->with('alert', 'success')->with('message', $message);
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
+        }
     }
 
     public function updateStatus($id) {
         $data = Cart::with('order')->findOrFail($id);
         $user = Auth::user();
 
-        $data->update([
-            'status_id' => $data->status_id + 1
-        ]);
+        if($data->status_id < 4) {
+            $data->update([
+                'status_id' => $data->status_id + 1
+            ]);
+        }
 
         OrderService::checkStatusOrder($data->order->id); 
 
@@ -270,5 +281,67 @@ class OrderController extends Controller
         if($cekPesan) return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update status');
 
         return redirect()->route('order.index')->with('modal_alert', 'success')->with('message', 'Berhasil update status');
+    }
+
+    public function updateOrDelete(Request $request) {
+        // dd($request);
+        if($request->action == 'update') {
+            foreach ($request->selectPesan as $id) {
+                $data = Cart::with('order')->findOrFail($id);
+                $user = Auth::user();
+
+                if($data->status_id < 4) {
+                    $data->update([
+                        'status_id' => $data->status_id + 1
+                    ]);
+                }
+
+                OrderService::checkStatusOrder($data->order->id); 
+
+                $cekPesan = Cart::where('order_id', $data->order_id)->where('status_id', '!=', 4)->first();
+                if($user->hasRole('dapur')) {
+                    $cekPesan = Cart::with('status')
+                    ->where('order_id', $data->order_id)
+                    ->where('status_id', 2)->first();
+                }
+            }
+            if($cekPesan) return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update status');
+
+            return redirect()->route('order.index')->with('modal_alert', 'success')->with('message', 'Berhasil update status');
+        } else if($request->action == 'hapus') {
+            try {
+                foreach($request->selectPesan as $id) {
+                    $cart = Cart::with('product')->findOrFail($id);
+                    $order = Order::findOrFail($cart->order_id);
+        
+                    DB::transaction(function () use ($order, $cart) {
+                        $order->update([
+                            'total' => $order->total - $cart->total,
+                            'profit' => $order->profit - $cart->profit,
+                            'partner_total' => $order->partner_total - $cart->partner_total,
+                            'partner_profit' => $order->partner_profit - $cart->partner_profit
+                        ]);
+        
+                        $product = Product::findOrFail($cart->product_id);
+                        $product->update([
+                            'jumlah' => $product->jumlah + $cart->jumlah
+                        ]);
+        
+                        $cart->delete();
+                    });    
+                    $cek = Cart::where('order_id', $order->id)->first();
+
+                    if(!$cek) {
+                        $order->delete();
+                        return redirect()->route('order.index')->with('alert', 'success')->with('message', 'Berhasil hapus Order');
+                    }
+                }
+                return redirect()->back()->with('alert', 'success')->with('message', 'Berhasil hapus Order');
+            } catch (\Throwable $e) {
+                return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
+            }
+        } else {
+            return redirect()->back()->with('alert', 'info')->with('message', 'Invalid action');
+        }
     }
 }

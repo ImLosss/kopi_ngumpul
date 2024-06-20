@@ -109,6 +109,7 @@ Route::group([
 
     Route::get('/getOrder', [OrderController::class, 'getOrder'])->name('admin.dataTable.getOrder');
     Route::get('/getPesanan/{id}', [OrderController::class, 'getPesanan'])->name('admin.dataTable.getPesanan');
+    Route::post('/pesanan/updateOrDelete', [OrderController::class, 'updateOrDelete'])->name('admin.pesanan.updateOrDelete');
     Route::delete('/pesanan/delete/{id}', [OrderController::class, 'hapusPesanan'])->name('pesanan.destroy');
     Route::patch('pesanan/update/{id}', [OrderController::class, 'updateStatus'])->name('pesanan.updateStatus');
     //endRoute

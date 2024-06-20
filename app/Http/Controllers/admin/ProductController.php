@@ -132,15 +132,6 @@ class ProductController extends Controller
          ->addColumn('harga', function($data) {
             return $data->harga;
          })
-         ->addColumn('rate', function($data) {
-            return '
-            <span class="me-2 text-xs font-weight-bold">100%</span>
-            <div>
-              <div class="progress">
-                <div class="progress-bar bg-gradient-success" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"></div>
-              </div>
-            </div>';
-         })
          ->addColumn('action', function($data) {
             return '
             <a href="' . route('product.edit', $data->id) . '">

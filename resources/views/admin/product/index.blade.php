@@ -46,7 +46,6 @@
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Stock</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Modal</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Harga</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Rate</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
                         </tr>
                         </thead>
@@ -83,7 +82,6 @@
                 { data: 'jumlah', name: 'jumlah' },
                 { data: 'modal', name: 'modal' },
                 { data: 'harga', name: 'harga' },
-                { data: 'rate', name: 'rate' },
                 { data: 'action', name: 'action' }
             ]
         });
