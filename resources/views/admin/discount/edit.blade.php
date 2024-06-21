@@ -5,7 +5,7 @@
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('home') }}">Home</a></li>
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('discount') }}">Discounts</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Add Discount</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Edit Discount</li>
         </ol>
         <h5 class="font-weight-bolder mb-0">Discount</h5>
     </nav>
@@ -17,8 +17,9 @@
             <h5 class="mb-0">{{ __('Add Discount') }}</h5>
         </div>
         <div class="card-body pt-4 p-3">
-            <form action="{{ route('discount.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('discount.update', $diskon->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                @method('PATCH')
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -26,8 +27,8 @@
                             <div class="@error('menu')border border-danger rounded-3 @enderror">
                                 <select name="menu" id="" class="form-control">
                                     <option selected disabled>Pilih Menu</option>
-                                    @foreach ($data as $item)
-                                        <option value="{{ $item->id }}" {{ old('menu') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                    @foreach ($menu as $item)
+                                        <option value="{{ $item->id }}" {{ $item->id == $diskon->product_id ? 'selected' : '' }}>{{ $item->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('menu')
@@ -40,7 +41,7 @@
                         <div class="form-group">
                             <label for="disc_name" class="form-control-label">{{ __('Discount Name') }}</label>
                             <div class="@error('disc_name')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="text" placeholder="Diskon Mahasiswa" name="disc_name" value="{{ old('disc_name') }}">
+                                <input class="form-control" type="text" value="{{ $diskon->name }}" placeholder="Diskon Mahasiswa" name="disc_name">
                                 @error('disc_name')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -51,7 +52,7 @@
                         <div class="form-group">
                             <label for="discount" class="form-control-label">{{ __('Discount (%)') }}</label>
                             <div class="@error('discount')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="20" name="discount" value="{{ old('discount') }}" id="discount">
+                                <input class="form-control" type="number" value="{{ $diskon->percent }}" placeholder="20" name="discount" id="discount">
                                 @error('discount')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -64,8 +65,8 @@
                             <div class="@error('status')border border-danger rounded-3 @enderror">
                                 <select name="status" id="" class="form-control">
                                     <option selected disabled>- Status -</option>
-                                    <option value="Aktif" {{ old('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="Tidak aktif" {{ old('status') == 'Tidak aktif' ? 'selected' : '' }}>Tidak Aktif</option>
+                                    <option value="Aktif" {{ $diskon->status == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="Tidak aktif" {{ $diskon->status == 'Tidak aktif' ? 'selected' : '' }}>Tidak Aktif</option>
                                 </select>
                                 @error('status')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
@@ -75,7 +76,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Add Discount' }}</button>
+                    <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Edit Discount' }}</button>
                 </div>
             </form>
 

@@ -72,7 +72,6 @@
                     <div class="col">
                         <div class="d-flex flex-wrap">
                             <a class="btn bg-gradient-secondary mt-2" href="#" onclick="modal()" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
-                            <a class="btn bg-gradient-success mt-2" href="#"><i class="fa-solid fa-file-excel text-md"></i> Excel</a>
                         </div>
                     </div>
                 </div>

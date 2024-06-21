@@ -107,6 +107,17 @@
                     </a>
                 </li>
             @endcan
+
+            @can('categoryAccess')
+                <li class="nav-item">
+                    <a class="nav-link {{ (Request::is('category','category/*') ? 'active' : '') }}" href="{{ route('category') }}">
+                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-list {{ (Request::is('category','category/*') ? '' : 'text-dark') }} text-sm"></i>                    
+                        </div>
+                        <span class="nav-link-text ms-1">Category</span>
+                    </a>
+                </li>
+            @endcan
             
             @can('discountAccess')
                 <li class="nav-item">

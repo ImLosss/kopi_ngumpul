@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DiscountRequest extends FormRequest
+class CategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,10 +22,7 @@ class DiscountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'menu' => 'required|exists:products,id',
-            'disc_name' => 'required|max:50',
-            'discount' => 'required|numeric|max:100',
-            'status' => 'required'
+            //
         ];
     }
 }

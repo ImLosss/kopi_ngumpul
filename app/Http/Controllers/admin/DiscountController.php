@@ -44,7 +44,8 @@ class DiscountController extends Controller
             Discount::create([
                 'name' => $request->disc_name,
                 'percent' => $request->discount,
-                'product_id' => $request->menu
+                'product_id' => $request->menu,
+                'status' => $request->status
             ]);
 
             return redirect()->route('discount')->with('alert', 'success')->with('message', 'Data berhasil ditambahkan');
@@ -66,7 +67,10 @@ class DiscountController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data['menu'] = Product::get();
+        $data['diskon'] = Discount::findOrFail($id);
+
+        return view('admin.discount.edit', $data);
     }
 
     /**
@@ -74,7 +78,18 @@ class DiscountController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $data = Discount::findOrFail($id);
+
+            $data->update([
+                'product_id' => $request->menu,
+                'name' => $request->disc_name,
+                'percent' => $request->discount,
+                'status' => $request->status
+            ]);
+        } catch (\Throwable $e) {
+
+        }
     }
 
     /**

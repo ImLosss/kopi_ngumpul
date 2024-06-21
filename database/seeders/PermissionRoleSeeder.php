@@ -51,5 +51,7 @@ class PermissionRoleSeeder extends Seeder
         ->assignRole(['admin', 'pelayan', 'partner', 'kasir']);
         Permission::create(['name' => 'partnerProductAcceess'])
         ->assignRole(['partner']);
+        Permission::create(['name' => 'categoryAccess'])
+        ->assignRole(['admin']);
     }
 }

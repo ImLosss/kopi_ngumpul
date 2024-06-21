@@ -3,6 +3,7 @@
 use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\CartController;
 use App\Http\Controllers\admin\CashierController;
+use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\DiscountController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\PartnerProductController;
@@ -87,6 +88,7 @@ Route::group([
         'index' => 'discount',
         'destroy' => 'discount.destroy',
         'edit' => 'discount.edit',
+        'update' => 'discount.update',
         'create' => 'discount.create',
         'store' => 'discount.store'
     ]);
@@ -98,6 +100,14 @@ Route::group([
     Route::resource('cart', CartController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'destroy' => 'cart.destroy',
     ]);
+    //endRoute
+
+    //routeCategory
+    Route::resource('category', CategoryController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'category',
+    ]);
+
+    Route::get('/getCategories', [CategoryController::class, 'getCategories'])->name('admin.dataTable.getCategories');
     //endRoute
 
     //routeOrder

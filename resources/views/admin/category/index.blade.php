@@ -16,10 +16,10 @@
             <div class="card-header pb-3">
                 <div class="row">
                     <div class="col-6 d-flex align-items-center">
-                        <h6>All Discounts</h6>
+                        <h6>All Categories</h6>
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn bg-gradient-dark mb-0" href="{{ route('discount.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Discount</a>
+                        <a class="btn bg-gradient-dark mb-0" href="{{ route('category.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Discount</a>
                     </div>
                 </div>
             </div>
@@ -29,9 +29,6 @@
                         <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Menu</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Deskripsi</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Diskon(%)</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                             </tr>
                         </thead>
@@ -56,24 +53,12 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('admin.dataTable.getDiscount') }}"
+                url: "{{ route('admin.dataTable.getCategories') }}"
             },
             columns: [
                 {
-                    data: 'menu',
-                    name: 'menu'
-                },
-                {
                     data: 'name',
                     name: 'name'
-                },
-                {
-                    data: 'diskon',
-                    name: 'diskon'
-                },
-                {
-                    data: 'status',
-                    name: 'status'
                 },
                 {
                     data: 'action',
