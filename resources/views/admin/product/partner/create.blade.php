@@ -29,7 +29,7 @@
                                         <option value="" disabled selected>Pilih menu</option>
                                     @endif
                                     @forelse ($products as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        <option value="{{ $item->id }}" {{ old('product_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
                                     @empty
                                         <option disabled>Semua harga menu sudah diatur</option>
                                     @endforelse
@@ -44,7 +44,7 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Up Harga') }}</label>
                             <div class="@error('upHarga')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="upHarga" name="upHarga" id="upHarga">
+                                <input class="form-control" type="number" placeholder="upHarga" name="upHarga" value="{{ old('upHarga') }}" id="upHarga">
                                 @error('upHarga')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -54,7 +54,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Total harga setelah up') }}</label>
-                            <input class="form-control" type="number" value="0" placeholder="Total" name="upHargaVal" id="upHargaVal" readonly>
+                            <input class="form-control" type="number" value="0" placeholder="Total" name="upHargaVal" value="" id="upHargaVal" readonly>
                             <input type="number" id="productPrice" value="0" readonly hidden>
                         </div>
                     </div>

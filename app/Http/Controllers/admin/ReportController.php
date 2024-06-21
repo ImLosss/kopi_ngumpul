@@ -89,6 +89,10 @@ class ReportController extends Controller
         ->addColumn('#', function($data) {
             return '<a href="' . route('report.show', $data->id) . '">Klik disini untuk lihat Pesanan</a><input type="text" name="id_order[]" value="' . $data->id . '" readonly hidden>';
         })
+        ->addColumn('customer_name', function($data) {
+            if (!$data->customer_name) return 'none';
+            return $data->customer_name;
+         })
         ->addColumn('kasir', function($data) {
             return $data->kasir;
         })

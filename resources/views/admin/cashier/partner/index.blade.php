@@ -191,6 +191,13 @@
                                         <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
                                 </div>
+                                <label for="name" class="form-control-label mt-3">{{ __('Nama Pelanggan : ') }}</label>
+                                <div class="@error('name')border border-danger rounded-3 @enderror">
+                                    <input type="text" name="name" class="form-control">
+                                    @error('name')
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
