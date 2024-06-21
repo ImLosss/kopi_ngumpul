@@ -29,6 +29,7 @@
                         <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama pelanggan</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No meja</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kasir</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
@@ -66,6 +67,10 @@
                 {
                     data: '#',
                     name: '#'
+                },
+                {
+                    data: 'customer_name',
+                    name: 'customer_name'
                 },
                 {
                     data: 'no_meja',

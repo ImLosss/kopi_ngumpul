@@ -82,7 +82,7 @@
                 <br>Sulawesi Selatan, 90245</p>
             <table>
                 <tr>
-                    <td style="width: 70px; word-break: break-all;">Cashier</td>
+                    <td style="width: 70px; word-break: break-all;">Title: Cashier</td>
                     <td style="width: 70px; word-break: break-all; text-align:center;">OP: {{ Auth::user()->name }}</td>
                     <td style="width: 70px; word-break: break-all; text-align:end">{{ $kasir }}</td>
                 </tr>
@@ -90,9 +90,9 @@
             <table style="border-bottom: 1px dashed black;">
                 @foreach ($order as $key => $item)
                     <tr>
-                        <td style="width: 70px; word-break: break-all;">Order {{ $key+1 }}</td>
+                        <td style="width: 100px; word-break: break-all;">{{ $item->customer_name != null ? $item->customer_name : 'Order ' .  $key+1 }}</td>
                         <td></td>
-                        <td style="width: 140px; word-break: break-all; text-align:end">{{ $item->created_at }}</td>
+                        <td style="width: 110px; word-break: break-all; text-align:end">{{ $item->created_at }}</td>
                     </tr>
                 @endforeach
             </table>

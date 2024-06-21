@@ -17,6 +17,7 @@ class Order extends Model
         'kasir',
         'status_id',
         'pembayaran',
+        'customer_name',
         'partner',
         'partner_profit',
         'partner_total'

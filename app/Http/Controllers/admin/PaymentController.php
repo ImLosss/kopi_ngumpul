@@ -181,6 +181,10 @@ class PaymentController extends Controller
         ->addColumn('#', function($data) {
             return '<a href="' . route('payment.show', $data->id) . '">Klik disini untuk lihat Pesanan</a>';
          })
+         ->addColumn('customer_name', function($data) {
+            if (!$data->customer_name) return 'none';
+            return $data->customer_name;
+         })
          ->addColumn('no_meja', function($data) {
             $no_meja = 'kosong';
             if($data->no_meja) $no_meja = $data->no_meja;
