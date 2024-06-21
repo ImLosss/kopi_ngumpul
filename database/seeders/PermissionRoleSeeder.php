@@ -53,5 +53,7 @@ class PermissionRoleSeeder extends Seeder
         ->assignRole(['partner']);
         Permission::create(['name' => 'categoryAccess'])
         ->assignRole(['admin']);
+        Permission::create(['name' => 'tableAccess'])
+        ->assignRole(['admin']);
     }
 }

@@ -24,6 +24,7 @@ class Cart extends Model
         'partner_profit',
         'status_id',
         'pembayaran',
+        'payment_method',
         'note'
     ];
 

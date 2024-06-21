@@ -24,10 +24,14 @@
                                 <label for="kategori" class="form-control-label">{{ __('Menu') }}</label>
                                 <div class="@error('menu')border border-danger rounded-3 @enderror">
                                     <select name="menu" id="menuSelect" class="form-control">
-                                        <option value="" selected disabled>Pilih Menu</option>
-                                        @foreach ($products as $item)
-                                            <option value="{{ $item->id }}" {{ $item->jumlah == 0 ? 'disabled' : '' }}>{{ $item->name }} {{ $item->jumlah == 0 ? '(kosong)' : '' }}</option>
-                                        @endforeach
+                                        @if ($products->isEmpty())
+                                            <option value="" selected disabled>Atur menu terlebih dahulu</option>
+                                        @else
+                                            <option value="" selected disabled>Pilih Menu</option>
+                                            @foreach ($products as $item)
+                                                <option value="{{ $item->id }}" {{ $item->jumlah == 0 ? 'disabled' : '' }}>{{ $item->name }} {{ $item->jumlah == 0 ? '(kosong)' : '' }}</option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                     @error('menu')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>

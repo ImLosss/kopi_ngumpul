@@ -3,7 +3,7 @@
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" @role('admin')href="{{ route('home') }}"@endrole">Home</a></li>
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" @role('admin')href="{{ route('home') }}"@endrole>Home</a></li>
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('payment') }}">Payments</a></li>
             <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Show</li>
         </ol>
@@ -39,6 +39,9 @@
                     <form action="{{ route('payment.billOrUpdate') }}" method="POST" enctype="multipart/form-data" id="formCetakNota">
                         @csrf
                         <input type="text" name="action" id="action" hidden>
+                        <input type="text" name="payment" id="payment" hidden>
+                        <input type="text" name="updateMeja" id="updateMeja" hidden>
+                        <input type="text" name="no_meja" value="{{ $order->no_meja }}" hidden>
                         <table class="table" id="dataTable3">
                             <thead>
                                 <tr>
@@ -66,6 +69,30 @@
 
 @section('script')
 <script>
+    function modalUpdateStatusAll() {
+        Swal.fire({
+            title: 'Metode pembayaran',
+            html:
+                '<select class="form-control" id="paymentAlert"><option>Tunai</option><option>Non Tunai</option></select><br>' +
+                '<label for="updateMeja">' +
+                '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>',
+            focusConfirm: false,
+            showCancelButton: true,
+            preConfirm: () => {
+                let payment = $('#paymentAlert').val();
+                let updateTable = false;
+                if ($('#updateMejaAlert').prop('checked')) {
+                    updateTable = true;
+                }
+
+                $('#action').val('updatePayment');
+                $('#payment').val(payment);
+                $('#updateMeja').val(updateTable);
+
+                submit_form();
+            }
+        });
+    }
 
     function updateStatus(key) {
         $('#formUpdate_'+key).submit();
@@ -174,36 +201,62 @@
     }
 
     function modalUpdateStatus(id) {
+        // Swal.fire({
+        //     title: "Kamu yakin?",
+        //     text: "Kamu tidak akan bisa membatalkannya setelah ini!",
+        //     icon: "warning",
+        //     showCancelButton: true,
+        //     confirmButtonColor: "#3085d6",
+        //     cancelButtonColor: "#d33",
+        //     confirmButtonText: "Selesaikan pembayaran!"
+        // }).then((result) => {
+        //     if (result.isConfirmed) {
+        //         updateStatus(id);
+        //     }
+        // });
+
         Swal.fire({
-            title: "Kamu yakin?",
-            text: "Kamu tidak akan bisa membatalkannya setelah ini!",
-            icon: "warning",
+            title: 'Metode pembayaran',
+            html:
+                '<select class="form-control" id="paymentAlert"><option>Tunai</option><option>Non Tunai</option></select><br>' +
+                '<label for="updateMeja">' +
+                '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>',
+            focusConfirm: false,
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Selesaikan pembayaran!"
-        }).then((result) => {
-            if (result.isConfirmed) {
+            confirmButtonText: "Selesaikan pembayaran!",
+            confirmButtonColor: "#3085d6",  
+            preConfirm: () => {
+                let payment = $('#paymentAlert').val();
+                let updateTable = false;
+                if ($('#updateMejaAlert').prop('checked')) {
+                    updateTable = true;
+                }
+
+                let code = `<input name="paymentSingle" value="${ payment }" hidden> <input name="updateMejaSingle" value="${ updateTable }" hidden> <input name="no_meja_single" value="{{ $order->no_meja }}" hidden>`;
+                $('#formUpdate_'+id).append(code);
+
                 updateStatus(id);
             }
         });
     }
 
-    function modalUpdateStatusAll() {
-        Swal.fire({
-            title: "Kamu yakin?",
-            text: "Kamu tidak akan bisa membatalkannya setelah ini!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Selesaikan pembayaran!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $('#action').val('updatePayment');
-                submit_form();
-            }
-        });
-    }
+    
+
+    // function modalUpdateStatusAll() {
+    //     Swal.fire({
+    //         title: "Kamu yakin?",
+    //         text: "Kamu tidak akan bisa membatalkannya setelah ini!",
+    //         icon: "warning",
+    //         showCancelButton: true,
+    //         confirmButtonColor: "#3085d6",
+    //         cancelButtonColor: "#d33",
+    //         confirmButtonText: "Selesaikan pembayaran!"
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             $('#action').val('updatePayment');
+    //             submit_form();
+    //         }
+    //     });
+    // }
 </script>
 @endsection

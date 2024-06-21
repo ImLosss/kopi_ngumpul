@@ -103,6 +103,7 @@
                         @endif
                         <th>Total</th>
                         <th>Profit</th>
+                        <th>Payment</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -124,6 +125,7 @@
                                 @endif
                                 <td>{{ Auth::user()->hasRole('partner') ? 'Rp' . number_format($cart->partner_total) : 'Rp' . number_format($cart->total) }}</td>
                                 <td>{{ Auth::user()->hasRole('partner') ? 'Rp' . number_format($cart->partner_profit) : 'Rp' . number_format($cart->profit) }}</td>
+                                <td>{{ $cart->payment_method }}</td>
                             </tr>
                         @endforeach
                             <tr>
@@ -134,11 +136,13 @@
                                     <td colspan="2"></td>
                                     <td><b>Rp{{ number_format($item->partner_total) }}</b></td>
                                     <td><b>Rp{{ number_format($item->partner_profit) }}</b></td>
+                                    <td></td>
                                 @else
                                     <td></td>
                                     <td><b>{{ $item->carts_sum_total_diskon ? 'Rp' . number_format($item->carts_sum_total_diskon) : 'none'  }}</b></td>
                                     <td><b>Rp{{ number_format($item->total) }}</b></td>
                                     <td><b>Rp{{ number_format($item->profit) }}</b></td>
+                                    <td></td>
                                 @endif
                                     
                             </tr>

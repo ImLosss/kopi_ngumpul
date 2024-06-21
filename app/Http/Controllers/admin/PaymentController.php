@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Table;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -93,13 +94,22 @@ class PaymentController extends Controller
     }
 
 
-    public function updateStatus($id) {
-        // dd($id);
+    public function updateStatus(Request $request, string $id) {
+        // dd($request);
         $cart = Cart::with('product', 'order')->findOrFail($id);
 
         $cart->update([
-            'pembayaran' => true
+            'pembayaran' => true,
+            'payment_method' => $request->paymentSingle
         ]);
+
+        if($request->updateMejaSingle == 'true') {
+            $table = Table::where('no_meja', $request->no_meja_single)->first();
+
+            $table->update([
+                'status' => 'kosong'
+            ]);
+        }
 
         $orderIdsArr = $cart->pluck('order_id')->toArray();
 
@@ -124,11 +134,21 @@ class PaymentController extends Controller
             
             return view('admin.pembayaran.nota', $data);
         } else if ($request->action == 'updatePayment') {
+            // dd($request);
             $carts = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
+
+            if($request->updateMeja == 'true') {
+                $table = Table::where('no_meja', $request->no_meja)->first();
+
+                $table->update([
+                    'status' => 'kosong'
+                ]);
+            }
 
             foreach ($carts as $cart) {
                 $cart->update([
-                    'pembayaran' => true
+                    'pembayaran' => true,
+                    'payment_method' => $request->payment
                 ]);
             }
 

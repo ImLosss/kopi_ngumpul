@@ -27,6 +27,7 @@ return new class extends Migration
             $table->bigInteger('partner_total')->default(0);
             $table->unsignedBigInteger('status_id');
             $table->boolean('pembayaran')->default(false);
+            $table->string('payment_method')->nullable();
             $table->longText('note')->nullable();
             $table->timestamps();
         });

@@ -9,6 +9,11 @@ class Table extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'status',
+        'no_meja'
+    ];
+
     public function order()
     {
         return $this->hasMany(Order::class, 'no_meja', 'id');

@@ -7,6 +7,7 @@ use App\Http\Requests\OrderRequest;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Table;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -58,6 +59,11 @@ class OrderController extends Controller
 
             $order->update([
                 'no_meja' => $request->no_meja
+            ]);
+
+            Table::where('no_meja', $request->no_meja)->first()
+            ->update([
+                'status' => 'terpakai'
             ]);
 
             OrderService::checkStatusOrder($id);

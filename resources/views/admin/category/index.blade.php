@@ -4,9 +4,9 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('home') }}">Home</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Discounts</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Categories</li>
         </ol>
-        <h5 class="font-weight-bolder mb-0">Discount</h5>
+        <h5 class="font-weight-bolder mb-0">Category</h5>
     </nav>
 @endsection
 @section('content')
@@ -19,7 +19,7 @@
                         <h6>All Categories</h6>
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn bg-gradient-dark mb-0" href="{{ route('category.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Discount</a>
+                        <a class="btn bg-gradient-dark mb-0" href="{{ route('category.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Category</a>
                     </div>
                 </div>
             </div>
@@ -48,10 +48,28 @@
         $('#form_'+key).submit();
     }
 
+    function modalHapus(id) {
+        Swal.fire({
+            title: "Kamu yakin?",
+            text: "Aksi ini akan menghapus produk dengan Kategori yang sama!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#a1a1a1",
+            confirmButtonText: "Ya, hapus saja!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submit(id);
+            }
+        });
+    }
+    
+
     $(document).ready( function () {
         var table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
+            ordering: false,
             ajax: {
                 url: "{{ route('admin.dataTable.getCategories') }}"
             },
