@@ -53,7 +53,8 @@ class OrderController extends Controller
 
             foreach($order->carts as $cart) {
                 $cart->update([
-                    'status_id' => 2
+                    'status_id' => 2,
+                    'update_status_by' => Auth::user()->name
                 ]);
             }
 
@@ -96,19 +97,16 @@ class OrderController extends Controller
         ->where('status_id', '!=', 1)
         ->where('partner', false)
         ->where(function ($query) {
-            $query->where('status_id', '!=', 4)
+            $query->where('status_id', '!=', 5)
                   ->orWhere('pembayaran', false);
         });
         
-        if($user->hasRole('dapur')) {
+        if($user->hasRole(['dapur', 'pelayan'])) {
             $data = Order::with('status')
+            ->where('status_id', '!=', 1)
             ->where('status_id', 2)
-            ->orWhere('status_id', 3);
-        }
-
-        if($user->hasRole('pelayan')) {
-            $data = Order::with('status')
-            ->where('status_id', 3);
+            ->orWhere('status_id', 3)
+            ->orWhere('status_id', 4);
         }
 
         if($user->hasRole('partner')) {
@@ -116,7 +114,7 @@ class OrderController extends Controller
             ->where('status_id', '!=', 1)
             ->where('partner', true)
             ->where(function ($query) {
-                $query->where('status_id', '!=', 4)
+                $query->where('status_id', '!=', 5)
                       ->orWhere('pembayaran', false);
             });
         }
@@ -166,34 +164,34 @@ class OrderController extends Controller
             $data = Cart::with('status', 'order', 'product')->where('order_id', $id)
             ->where(function ($query) {
                 $query->where('status_id', '!=', 1)
-                    ->where('status_id', '!=', 4)
+                    ->where('status_id', '!=', 5)
                     ->orWhere('pembayaran', false);
             });
-        } else if($user->hasRole('dapur')) {
+        } else if($user->hasRole(['dapur', 'pelayan'])) {
             $data = Cart::with('status', 'order', 'product')->where('order_id', $id)
             ->where(function ($query) {
                 $query->where('status_id', 2)
-                      ->orWhere('status_id', 3);
+                      ->orWhere('status_id', 3)
+                      ->orWhere('status_id', 4);
             });
-        } else if($user->hasRole('pelayan')) {
-            $data = Cart::with('status', 'order', 'product')->where('order_id', $id)
-            ->where('status_id', 3);
         }
 
         return DataTables::of($data)
         ->addIndexColumn() 
         ->addColumn('#', function($data) use ($user) {
-            if($data->status_id < 4 && ($data->status_id != 2 || $user->hasRole('admin'))) {
+            if(($data->status_id < 5 && ($data->status_id != 2 && $data->status_id != 3 || $user->hasRole('admin')))) {
                 return '<div class="form-check">
                 <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
                 </div>';
-            }
+            } else if($user->hasRole('dapur') && ($data->status_id == 2 || $data->status_id == 3)) return '<div class="form-check">
+            <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
+            </div>';
         })
         ->addColumn('menu', function($data) {
             return $data->menu;
         })
         ->addColumn('status_pembayaran', function($data) use($user) {
-            if ($data->pembayaran) return 'Lunas';
+            if ($data->pembayaran) return 'Lunas <input class="form-check-input" type="checkbox" value="done" id="payment[]" name="payment[]" checked hidden>';
             else {
                 if($user->can('paymentAccess')) return '<a href="' . route('payment.show', $data->order_id) . '">Klik disini untuk selesaikan pembayaran</a>';
                 return 'Belum Lunas';
@@ -214,11 +212,11 @@ class OrderController extends Controller
             $hapus = '';
             $update = '';
 
-            if($user->hasRole(['admin', 'kasir', 'partner']) && $data->status_id < 4) {
+            if($user->hasRole(['admin', 'kasir', 'partner']) && $data->status_id < 4 && !$data->pembayaran) {
                 $hapus = '<a class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')"></a>';
             }
 
-            if(($data->status_id == 2 && $user->can('updateStatusTwo')) || ($data->status_id == 3 && $user->can('updateStatusThree'))) $update = '<a href="#" class="fa-solid fa-square-check text-success" style="margin-right: 10px;" onclick="modalUpdateStatus('. $data->id .')"></a>';
+            if(($data->status_id == 2 && $user->can('updateStatusTwo')) || ($data->status_id == 3 && $user->can('updateStatusThree')) || ($data->status_id == 4 && $user->can('updateStatusFourth'))) $update = '<a href="#" class="fa-solid fa-square-check text-success" style="margin-right: 10px;" onclick="modalUpdateStatus('. $data->id .')"></a>';
 
             return '
             <form id="formDelete_'. $data->id .'" action="' . route('pesanan.destroy', $data->id) . '" method="POST" class="inline">
@@ -274,7 +272,7 @@ class OrderController extends Controller
         $data = Cart::with('order')->findOrFail($id);
         $user = Auth::user();
 
-        if($data->status_id < 4) {
+        if($data->status_id < 5) {
             $data->update([
                 'status_id' => $data->status_id + 1
             ]);
@@ -282,11 +280,18 @@ class OrderController extends Controller
 
         OrderService::checkStatusOrder($data->order->id); 
 
-        $cekPesan = Cart::where('order_id', $data->order_id)->where('status_id', '!=', 4)->first();
+        $cekPesan = Cart::where('order_id', $data->order_id)->where('status_id', '!=', 5)->where('status_id', '!=', 1)->first();
         if($user->hasRole('dapur')) {
             $cekPesan = Cart::with('status')
             ->where('order_id', $data->order_id)
-            ->where('status_id', 2)->first();
+            ->where(function ($query) {
+                $query->where('status_id', 2)
+                      ->orWhere('status_id', 3);
+            })->first();
+        } else if($user->hasRole('pelayan')) {
+            $cekPesan = Cart::with('status')
+            ->where('order_id', $data->order_id)
+            ->where('status_id', 4)->first();
         }
         
         if($cekPesan) return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update status');
@@ -296,12 +301,13 @@ class OrderController extends Controller
 
     public function updateOrDelete(Request $request) {
         // dd($request);
+        if(!$request->selectPesan) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada pesanan yang terpilih');
         if($request->action == 'update') {
             foreach ($request->selectPesan as $id) {
                 $data = Cart::with('order')->findOrFail($id);
                 $user = Auth::user();
 
-                if($data->status_id < 4) {
+                if($data->status_id < 5) {
                     $data->update([
                         'status_id' => $data->status_id + 1
                     ]);
@@ -309,11 +315,18 @@ class OrderController extends Controller
 
                 OrderService::checkStatusOrder($data->order->id); 
 
-                $cekPesan = Cart::where('order_id', $data->order_id)->where('status_id', '!=', 4)->first();
+                $cekPesan = Cart::where('order_id', $data->order_id)->where('status_id', '!=', 5)->where('status_id', '!=', 1)->first();
                 if($user->hasRole('dapur')) {
                     $cekPesan = Cart::with('status')
                     ->where('order_id', $data->order_id)
-                    ->where('status_id', 2)->first();
+                    ->where(function ($query) {
+                        $query->where('status_id', 2)
+                              ->orWhere('status_id', 3);
+                    })->first();
+                } else if($user->hasRole('pelayan')) {
+                    $cekPesan = Cart::with('status')
+                    ->where('order_id', $data->order_id)
+                    ->where('status_id', 4)->first();
                 }
             }
             if($cekPesan) return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update status');
@@ -321,6 +334,7 @@ class OrderController extends Controller
             return redirect()->route('order.index')->with('modal_alert', 'success')->with('message', 'Berhasil update status');
         } else if($request->action == 'hapus') {
             try {
+                if($request->payment) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak bisa menghapus pesanan yang sudah Lunas');
                 foreach($request->selectPesan as $id) {
                     $cart = Cart::with('product')->findOrFail($id);
                     $order = Order::findOrFail($cart->order_id);

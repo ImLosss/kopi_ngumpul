@@ -9,7 +9,7 @@ class OrderService {
     {
         $order = Order::findOrFail($id);
         $cart = Cart::where('order_id', $id)->where('status_id', '!=', 1)->orderBy('status_id', 'asc')->first();
-        $antar = Cart::where('order_id', $id)->where('status_id', 3)->first();
+        $antar = Cart::where('order_id', $id)->where('status_id', 4)->first();
         $payment = Cart::where('order_id', $id)->where('pembayaran', false)->first();
         
         if($payment)
@@ -41,7 +41,7 @@ class OrderService {
         foreach ($orderIds as $id) {
             $order = Order::findOrFail($id);
             $cart = Cart::where('order_id', $id)->where('status_id', '!=', 1)->orderBy('status_id', 'asc')->first();
-            $antar = Cart::where('order_id', $id)->where('status_id', 3)->first();
+            $antar = Cart::where('order_id', $id)->where('status_id', 4)->first();
             $payment = Cart::where('order_id', $id)->where('pembayaran', false)->first();
             
             if($payment)

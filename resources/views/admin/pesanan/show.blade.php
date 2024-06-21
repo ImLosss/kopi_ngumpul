@@ -101,7 +101,7 @@
         });
 
         function checkSelected() {
-            let code = `<button class="btn bg-gradient-success mb-1" onclick="modalUpdateStatusAll()">Selesaikan pesanan</button>
+            let code = `<button class="btn bg-gradient-success mb-1" onclick="modalUpdateStatusAll()">Update status</button>
                         <button class="btn bg-gradient-danger mb-1" id="btnHapus" onclick="modalHapusAll()">Hapus</button>`;
             if ($('input[name="selectPesan[]"]:checked').length > 0) {
                 if($('#textPartner').length) {

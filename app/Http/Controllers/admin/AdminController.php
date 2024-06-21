@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -16,6 +17,10 @@ class AdminController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
+        if($user->hasRole('dapur')) return redirect()->route('order.index');
+        if($user->hasRole(['kasir', 'partner', 'pelayan'])) return redirect()->route('cashier');
+
         $products = Product::all();
         $startDate = Carbon::now()->subWeek();
         $datesArray = [];

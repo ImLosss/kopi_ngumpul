@@ -74,6 +74,7 @@
             title: 'Metode pembayaran',
             html:
                 '<select class="form-control" id="paymentAlert"><option>Tunai</option><option>Non Tunai</option></select><br>' +
+                '<p class="text-danger text-xs mt-2">Anda tidak akan dapat menghapus pesanan ini setelah pembayaran Lunas</p>' +
                 '<label for="updateMeja">' +
                 '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>',
             focusConfirm: false,
@@ -219,6 +220,7 @@
             title: 'Metode pembayaran',
             html:
                 '<select class="form-control" id="paymentAlert"><option>Tunai</option><option>Non Tunai</option></select><br>' +
+                '<p class="text-danger text-xs mt-2">Anda tidak akan dapat menghapus pesanan ini setelah pembayaran Lunas</p>' +
                 '<label for="updateMeja">' +
                 '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>',
             focusConfirm: false,

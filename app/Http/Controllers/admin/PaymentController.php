@@ -100,7 +100,8 @@ class PaymentController extends Controller
 
         $cart->update([
             'pembayaran' => true,
-            'payment_method' => $request->paymentSingle
+            'payment_method' => $request->paymentSingle,
+            'update_payment_by' => Auth::user()->name
         ]);
 
         if($request->updateMejaSingle == 'true') {
@@ -148,7 +149,8 @@ class PaymentController extends Controller
             foreach ($carts as $cart) {
                 $cart->update([
                     'pembayaran' => true,
-                    'payment_method' => $request->payment
+                    'payment_method' => $request->payment,
+                    'update_payment_by' => Auth::user()->name
                 ]);
             }
 

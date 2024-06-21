@@ -25,7 +25,9 @@ class Cart extends Model
         'status_id',
         'pembayaran',
         'payment_method',
-        'note'
+        'note',
+        'update_status_by',
+        'update_payment_by'
     ];
 
     public function order() {

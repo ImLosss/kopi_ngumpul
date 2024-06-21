@@ -29,6 +29,8 @@ return new class extends Migration
             $table->boolean('pembayaran')->default(false);
             $table->string('payment_method')->nullable();
             $table->longText('note')->nullable();
+            $table->string('update_status_by')->nullable();
+            $table->string('update_payment_by')->nullable();
             $table->timestamps();
         });
     }

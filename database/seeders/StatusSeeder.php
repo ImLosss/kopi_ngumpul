@@ -18,11 +18,15 @@ class StatusSeeder extends Seeder
         ]);
 
         Status::create([
-            'desc' => 'Dapur',
+            'desc' => 'Menunggu konfirmasi Dapur',
         ]);
 
         Status::create([
-            'desc' => 'Siap diantarkan',
+            'desc' => 'Sedang dibuat',
+        ]);
+
+        Status::create([
+            'desc' => 'Pengantaran',
         ]);
 
         Status::create([
