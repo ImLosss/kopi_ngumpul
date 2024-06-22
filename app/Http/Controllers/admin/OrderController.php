@@ -161,14 +161,14 @@ class OrderController extends Controller
     {
         $user = Auth::user();
         if($user->hasRole(['admin', 'kasir', 'partner'])) {
-            $data = Cart::with('status', 'order', 'product')->where('order_id', $id)
+            $data = Cart::withTrashed()->with('status', 'order', 'product')->where('order_id', $id)
             ->where(function ($query) {
                 $query->where('status_id', '!=', 1)
                     ->where('status_id', '!=', 5)
                     ->orWhere('pembayaran', false);
             });
         } else if($user->hasRole(['dapur', 'pelayan'])) {
-            $data = Cart::with('status', 'order', 'product')->where('order_id', $id)
+            $data = Cart::withTrashed()->with('status', 'order', 'product')->where('order_id', $id)
             ->where(function ($query) {
                 $query->where('status_id', 2)
                       ->orWhere('status_id', 3)
@@ -179,16 +179,23 @@ class OrderController extends Controller
         return DataTables::of($data)
         ->addIndexColumn() 
         ->addColumn('#', function($data) use ($user) {
-            if(($data->status_id < 5 && ($data->status_id != 2 && $data->status_id != 3 || $user->hasRole('admin')))) {
+            if($user->can('updateStatusTwo') && $data->status_id == 2) {
                 return '<div class="form-check">
                 <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
                 </div>';
-            } else if($user->hasRole('dapur') && ($data->status_id == 2 || $data->status_id == 3)) return '<div class="form-check">
+            } else if($user->can('updateStatusThree') && $data->status_id == 3) return '<div class="form-check">
+            <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
+            </div>';
+            else if($user->can('updateStatusFourth') && $data->status_id == 4) return '<div class="form-check">
             <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
             </div>';
         })
         ->addColumn('menu', function($data) {
             return $data->menu;
+        })
+        ->addColumn('colspan', function($data) {
+            // Tentukan kondisi untuk colspan
+            if($data->trashed()) return 7;
         })
         ->addColumn('status_pembayaran', function($data) use($user) {
             if ($data->pembayaran) return 'Lunas <input class="form-check-input" type="checkbox" value="done" id="payment[]" name="payment[]" checked hidden>';
@@ -212,7 +219,10 @@ class OrderController extends Controller
             $hapus = '';
             $update = '';
 
-            if($user->hasRole(['admin', 'kasir', 'partner']) && $data->status_id < 4 && !$data->pembayaran) {
+            if($user->hasRole(['admin', 'kasir', 'partner', 'dapur']) && $data->status_id < 3 && !$data->pembayaran) {
+                $hapus = '<a class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')"></a>';
+            }
+            if($user->hasRole(['dapur']) && $data->status_id < 4 && !$data->pembayaran) {
                 $hapus = '<a class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')"></a>';
             }
 
@@ -236,6 +246,8 @@ class OrderController extends Controller
         try {
             $cart = Cart::with('product')->findOrFail($id);
             $order = Order::findOrFail($cart->order_id);
+
+            if($cart->pembayaran) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak bisa menghapus pesanan yang sudah Lunas');
 
             $message = 'Berhasil menghapus ' . $cart->product->name;
 
@@ -338,7 +350,9 @@ class OrderController extends Controller
                 foreach($request->selectPesan as $id) {
                     $cart = Cart::with('product')->findOrFail($id);
                     $order = Order::findOrFail($cart->order_id);
-        
+
+                    if($cart->pembayaran) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak bisa menghapus pesanan yang sudah Lunas');
+
                     DB::transaction(function () use ($order, $cart) {
                         $order->update([
                             'total' => $order->total - $cart->total,

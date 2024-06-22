@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cart extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'menu',
@@ -29,6 +30,8 @@ class Cart extends Model
         'update_status_by',
         'update_payment_by'
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function order() {
         return $this->belongsTo(Order::class, 'order_id', 'id');

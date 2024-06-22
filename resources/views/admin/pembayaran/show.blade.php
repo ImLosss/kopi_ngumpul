@@ -79,6 +79,8 @@
                 '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>',
             focusConfirm: false,
             showCancelButton: true,
+            confirmButtonText: "Selesaikan pembayaran!",
+            confirmButtonColor: "#3085d6",  
             preConfirm: () => {
                 let payment = $('#paymentAlert').val();
                 let updateTable = false;

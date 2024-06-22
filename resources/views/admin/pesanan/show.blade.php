@@ -102,7 +102,9 @@
 
         function checkSelected() {
             let code = `<button class="btn bg-gradient-success mb-1" onclick="modalUpdateStatusAll()">Update status</button>
-                        <button class="btn bg-gradient-danger mb-1" id="btnHapus" onclick="modalHapusAll()">Hapus</button>`;
+            <button class="btn bg-gradient-danger mb-1" id="btnHapus" onclick="modalHapusAll()">Hapus</button>`;
+            if ($('input[name="payment[]"]:checked').length > 0) code = `<button class="btn bg-gradient-success mb-1" onclick="modalUpdateStatusAll()">Update status</button>
+            <button class="btn bg-gradient-danger mb-1" id="btnHapus" onclick="modalHapusAll()" disabled>Hapus</button>`;
             if ($('input[name="selectPesan[]"]:checked').length > 0) {
                 if($('#textPartner').length) {
                     $('#btnUpdate').removeClass('col-6').addClass('col-3');
@@ -155,6 +157,7 @@
                     data: 'action',
                     name: 'action'
                 },
+                { data: 'colspan', name: 'colspan', visible: false }
             ],
             language: {
                 emptyTable: "Semua pesanan telah selesai",
@@ -162,13 +165,31 @@
             },
             drawCallback: function(settings) {
                 var api = this.api();
+
                 setTimeout(function() {
                     api.ajax.reload(null, false); // user paging is not reset on reload
                 }, 20000); // 10000 milidetik = 10 detik
+                
             },
             headerCallback: function(thead, data, start, end, display) {
                 $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
             },
+            rowCallback: function(row, data, index) {
+                    // Debugging: cek data yang diterima
+                    console.log(data);
+
+                    // Periksa nilai colspan dari data
+                    if (data.colspan && data.colspan > 1) {
+                        // Tambahkan colspan ke kolom menu dan kosongkan kolom lainnya
+                        $('td:eq(0)', row).attr('colspan', data.colspan);
+                        $('td:eq(0)', row).text(`Deleted Order(${ data.menu })`);
+                        $('td:eq(0)', row).addClass('text-center');
+                        // $(`td:eq(0)`, row).remove();
+                        for (let i = 1; i < 7; i++) {
+                            $(`td:eq(1)`, row).remove();
+                        }
+                    }
+                },
             columnDefs: [
                 { width: '150px', targets: 4 },
                 { width: '40px', targets: 0 }

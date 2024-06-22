@@ -32,6 +32,7 @@ return new class extends Migration
             $table->string('update_status_by')->nullable();
             $table->string('update_payment_by')->nullable();
             $table->timestamps();
+            $table->softDeletes(); 
         });
     }
 
