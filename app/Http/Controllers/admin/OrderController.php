@@ -254,6 +254,11 @@ class OrderController extends Controller
 
             if(($data->status_id == 2 && $user->can('updateStatusTwo')) || ($data->status_id == 3 && $user->can('updateStatusThree')) || ($data->status_id == 4 && $user->can('updateStatusFourth'))) $update = '<a href="#" class="fa-solid fa-square-check text-success" style="margin-right: 10px;" onclick="modalUpdateStatus('. $data->id .')"></a>';
 
+            if($data->trashed()) {
+                $hapus = '';
+                $update = '';
+            }
+            
             return '
             <form id="formDelete_'. $data->id .'" action="' . route('pesanan.destroy', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
