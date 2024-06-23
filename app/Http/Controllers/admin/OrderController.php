@@ -202,18 +202,18 @@ class OrderController extends Controller
             if(($user->can('deleteStatusTwo') || $user->can('updateStatusTwo')) && $data->status_id == 2) {
                 if($data->pembayaran) {
                     return '<div class="form-check">
-                    <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" data-payment="true" id="selectPesan[]" name="selectPesan[]">
+                    <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" data-payment="true" data-status="two" id="selectPesan[]" name="selectPesan[]">
                     </div>';
                 } else {
                     return '<div class="form-check">
-                    <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
+                    <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" data-status="two" id="selectPesan[]" name="selectPesan[]">
                     </div>';
                 }
             } else if(($user->can('deleteStatusThree') || $user->can('updateStatusThree')) && $data->status_id == 3) return '<div class="form-check">
-            <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
+            <input class="form-check-input" type="checkbox" value="' . $data->id . '" data-status="three" id="selectPesan[]" name="selectPesan[]">
             </div>';
             else if(($user->can('deleteStatusFourth') || $user->can('updateStatusFourth')) && $data->status_id == 4) return '<div class="form-check">
-            <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
+            <input class="form-check-input" type="checkbox" value="' . $data->id . '" data-status="fourth" id="selectPesan[]" name="selectPesan[]">
             </div>';
         })
         ->addColumn('menu', function($data) {

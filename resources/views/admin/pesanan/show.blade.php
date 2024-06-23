@@ -106,7 +106,7 @@
         });
 
         function checkSelected() {
-            let code = `<button class="btn bg-gradient-success mb-1" onclick="modalUpdateStatusAll()">Update status</button>
+            let code = `<button class="btn bg-gradient-success mb-1" id="btnUpdate2" onclick="modalUpdateStatusAll()">Update status</button>
             <button class="btn bg-gradient-danger mb-1" id="btnHapus" onclick="modalHapusAll()">Hapus</button>`;
             if ($('input[name="selectPesan[]"]:checked').length > 0) {
                 if($('#textPartner').length) {
@@ -127,6 +127,31 @@
                     $('#btnHapus').removeAttr('disabled');
                     // $('#btnHapus').attr('disabled', 'disabled');
                 }
+
+                $('.selectPesan:checked').each(function() {
+                    // Menggunakan .data()
+                    var status = $(this).data('status');
+                    
+                    $('#btnUpdate2').removeAttr('disabled');
+
+                    if(status == 'two') {
+                        @cannot('updateStatusTwo') 
+                            $('#btnUpdate2').attr('disabled', 'disabled');
+                            return false;
+                        @endcannot
+                    } else if(status == 'three') {
+                        @cannot('updateStatusThree') 
+                            $('#btnUpdate2').attr('disabled', 'disabled');
+                            return false;
+                        @endcannot
+                    } else if(status == 'fourth') {
+                        @cannot('updateStatusFourth') 
+                            $('#btnUpdate2').attr('disabled', 'disabled');
+                            return false;
+                        @endcannot
+                    }
+                });
+                
             } else {
                 $('#textPartner').removeClass('col-3').addClass('col-6');
                 $('#btnUpdate').empty();
