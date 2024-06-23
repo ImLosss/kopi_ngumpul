@@ -199,7 +199,7 @@ class OrderController extends Controller
         return DataTables::of($data)
         ->addIndexColumn() 
         ->addColumn('#', function($data) use ($user) {
-            if($user->can('updateStatusTwo') && $data->status_id == 2) {
+            if(($user->can('deleteStatusTwo') || $user->can('updateStatusTwo')) && $data->status_id == 2) {
                 if($data->pembayaran) {
                     return '<div class="form-check">
                     <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" data-payment="true" id="selectPesan[]" name="selectPesan[]">
@@ -209,10 +209,10 @@ class OrderController extends Controller
                     <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
                     </div>';
                 }
-            } else if($user->can('updateStatusThree') && $data->status_id == 3) return '<div class="form-check">
+            } else if(($user->can('deleteStatusThree') || $user->can('updateStatusThree')) && $data->status_id == 3) return '<div class="form-check">
             <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
             </div>';
-            else if($user->can('updateStatusFourth') && $data->status_id == 4) return '<div class="form-check">
+            else if(($user->can('deleteStatusFourth') || $user->can('updateStatusFourth')) && $data->status_id == 4) return '<div class="form-check">
             <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
             </div>';
         })
