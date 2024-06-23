@@ -86,7 +86,10 @@
                     data: 'action',
                     name: 'action'
                 }
-            ]
+            ],
+            headerCallback: function(thead, data, start, end, display) {
+                $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
+            },
         });
 
         // function reloadTable() {

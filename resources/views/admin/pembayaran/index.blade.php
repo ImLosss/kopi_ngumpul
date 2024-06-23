@@ -102,7 +102,8 @@
             ],
             language: {
                 emptyTable: "Tidak menemukan order yang belum Lunas",
-                loadingRecords: "Memuat..."
+                loadingRecords: "Memuat...",
+                zeroRecords:    "Tidak ada data ditemukan",
             },
             drawCallback: function(settings) {
                 var api = this.api();

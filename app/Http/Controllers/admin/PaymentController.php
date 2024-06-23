@@ -106,13 +106,31 @@ class PaymentController extends Controller
 
         if($request->updateMejaSingle == 'true') {
             $table = Table::where('no_meja', $request->no_meja_single)->first();
-
-            $table->update([
-                'status' => 'kosong'
-            ]);
+            
+            if($table) {
+                $table->update([
+                    'status' => 'kosong'
+                ]);
+            }
         }
 
         $orderIdsArr = $cart->pluck('order_id')->toArray();
+
+        foreach ($orderIdsArr as $id) {
+            $cekPesan = Cart::where('order_id', $id)->where(function ($query) {
+                $query->where('status_id', '!=', 5)
+                ->where('status_id', '!=', 1)
+                ->orWhere('pembayaran', false);
+            })->first();            
+
+            if(!$cekPesan) {
+                $cekTrash = Cart::onlyTrashed()->where('order_id', $id)->get();
+
+                foreach ($cekTrash as $trash) {
+                    $trash->forceDelete();
+                }
+            }
+        }
 
         OrderService::checkStatusOrderArr($orderIdsArr); 
 
@@ -141,9 +159,11 @@ class PaymentController extends Controller
             if($request->updateMeja == 'true') {
                 $table = Table::where('no_meja', $request->no_meja)->first();
 
-                $table->update([
-                    'status' => 'kosong'
-                ]);
+                if($table) {
+                    $table->update([
+                        'status' => 'kosong'
+                    ]);
+                }
             }
 
             foreach ($carts as $cart) {
@@ -157,13 +177,30 @@ class PaymentController extends Controller
             $order_id = Cart::with('order')->distinct('order_id')->whereIn('id', $request->selectPesan)->get(['order_id']);
             $orderIdsArr = $order_id->pluck('order_id')->toArray();
 
+            foreach ($orderIdsArr as $id) {
+                $cekPesan = Cart::where('order_id', $id)->where(function ($query) {
+                    $query->where('status_id', '!=', 5)
+                    ->where('status_id', '!=', 1)
+                    ->orWhere('pembayaran', false);
+                })->first();
+
+                // dd($cekPesan);
+                if(!$cekPesan) {
+                    $cekTrash = Cart::onlyTrashed()->where('order_id', $id)->get();
+
+                    foreach ($cekTrash as $trash) {
+                        $trash->forceDelete();
+                    }
+                }
+            }
+
             OrderService::checkStatusOrderArr($orderIdsArr);
 
             return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update Pembayaran');
         } else return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
     }
 
-    public function getAllOrder()
+    public function getAllOrder(Request $request)
     {
         $user = Auth::user();
         $data = Order::with('status')
@@ -210,24 +247,41 @@ class PaymentController extends Controller
          ->addColumn('waktu_pesan', function($data) {
             return $data->created_at;
          })
+         ->filter(function ($query) use ($request) {
+            if ($request->has('search') && $request->input('search.value')) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search) {
+                    $query->where('customer_name', 'like', "%{$search}%")
+                    ->orWhere('kasir', 'like', "%{$search}%")
+                    ->orWhere('no_meja', 'like', "%{$search}%")
+                    ->orWhere('created_at', 'like', "%{$search}%");
+                    
+                    if (strtolower($search) === 'lunas') {
+                        $query->orWhere('pembayaran', true);
+                    } elseif (strtolower($search) === 'belum lunas') {
+                        $query->orWhere('pembayaran', false);
+                    }
+                });
+            }
+        })
         ->rawColumns(['#', 'action'])
         ->toJson(); 
     }
 
-    public function getPayment($no_meja) {
+    public function getPayment(Request $request, $no_meja) {
         $user = Auth::user();
         if($user->hasRole(['admin', 'kasir'])) {
             $data = Cart::with('status', 'order', 'product')
             ->where('pembayaran', false)
             ->whereHas('order', function ($query) use ($no_meja) {
                 $query->where('no_meja', $no_meja)->where('partner', false);
-            })->get();
+            });
         } else if($user->hasRole('partner')) {
             $data = Cart::with('status', 'order', 'product')
             ->where('pembayaran', false)
             ->whereHas('order', function ($query) use ($no_meja) {
                 $query->where('no_meja', $no_meja)->where('partner', true);
-            })->get();
+            });
         }
 
         // dd($data);
@@ -263,6 +317,20 @@ class PaymentController extends Controller
                 ' . csrf_field() . '
                 ' . method_field('PATCH') . '
             </form>' . $update . $hapus;
+        })
+        ->filter(function ($query) use ($request) {
+            if ($request->has('search') && $request->input('search.value')) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search) {
+                    $query->where('menu', 'like', "%{$search}%");
+
+                    if (strtolower($search) === 'lunas') {
+                        $query->orWhere('pembayaran', true);
+                    } elseif (strtolower($search) === 'belum lunas' || strtolower($search) === 'belum') {
+                        $query->orWhere('pembayaran', false);
+                    }
+                });
+            }
         })
         ->rawColumns(['#', 'action'])
         ->toJson(); 

@@ -82,7 +82,7 @@ class OrderController extends Controller
         
     }
 
-    public function getOrder() 
+    public function getOrder(Request $request) 
     {
         // $data = Order::with('status')->where('status_id', '!=', 1)->where('status_id', '!=', 4);
 
@@ -153,11 +153,31 @@ class OrderController extends Controller
          ->addColumn('waktu_pesan', function($data) {
             return $data->created_at;
          })
+         ->filter(function ($query) use ($request) {
+            if ($request->has('search') && $request->input('search.value')) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search) {
+                    $query->where('customer_name', 'like', "%{$search}%")
+                    ->orWhere('kasir', 'like', "%{$search}%")
+                    ->orWhere('no_meja', 'like', "%{$search}%")
+                    ->orWhere('created_at', 'like', "%{$search}%")
+                    ->orWhereHas('status', function ($query) use ($search) {
+                        $query->where('desc', 'like', "%{$search}%");
+                    });
+                    
+                    if (strtolower($search) === 'lunas') {
+                        $query->orWhere('pembayaran', true);
+                    } elseif (strtolower($search) === 'belum lunas') {
+                        $query->orWhere('pembayaran', false);
+                    }
+                });
+            }
+        })
         ->rawColumns(['#', 'action'])
         ->toJson(); 
     }
 
-    public function getPesanan($id) 
+    public function getPesanan(Request $request, $id) 
     {
         $user = Auth::user();
         if($user->hasRole(['admin', 'kasir', 'partner'])) {
@@ -180,9 +200,15 @@ class OrderController extends Controller
         ->addIndexColumn() 
         ->addColumn('#', function($data) use ($user) {
             if($user->can('updateStatusTwo') && $data->status_id == 2) {
-                return '<div class="form-check">
-                <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
-                </div>';
+                if($data->pembayaran) {
+                    return '<div class="form-check">
+                    <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" data-payment="true" id="selectPesan[]" name="selectPesan[]">
+                    </div>';
+                } else {
+                    return '<div class="form-check">
+                    <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
+                    </div>';
+                }
             } else if($user->can('updateStatusThree') && $data->status_id == 3) return '<div class="form-check">
             <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
             </div>';
@@ -198,7 +224,7 @@ class OrderController extends Controller
             if($data->trashed()) return 7;
         })
         ->addColumn('status_pembayaran', function($data) use($user) {
-            if ($data->pembayaran) return 'Lunas <input class="form-check-input" type="checkbox" value="done" id="payment[]" name="payment[]" checked hidden>';
+            if ($data->pembayaran) return 'Lunas';
             else {
                 if($user->can('paymentAccess')) return '<a href="' . route('payment.show', $data->order_id) . '">Klik disini untuk selesaikan pembayaran</a>';
                 return 'Belum Lunas';
@@ -237,6 +263,25 @@ class OrderController extends Controller
                 ' . csrf_field() . '
                 ' . method_field('PATCH') . '
             </form>' . $update . $hapus;
+        })
+        ->filter(function ($query) use ($request) {
+            if ($request->has('search') && $request->input('search.value')) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search) {
+                    $query->where('menu', 'like', "%{$search}%")
+                    ->orWhere('update_status_by', 'like', "%{$search}%")
+                    ->orWhere('jumlah', 'like', "%{$search}%")
+                    ->orWhereHas('status', function ($query) use ($search) {
+                        $query->where('desc', 'like', "%{$search}%");
+                    });
+                    
+                    if (strtolower($search) === 'lunas') {
+                        $query->orWhere('pembayaran', true);
+                    } elseif (strtolower($search) === 'belum lunas') {
+                        $query->orWhere('pembayaran', false);
+                    }
+                });
+            }
         })
         ->rawColumns(['#', 'action', 'status_pembayaran', 'note'])
         ->toJson(); 
@@ -286,13 +331,15 @@ class OrderController extends Controller
 
         if($data->status_id < 5) {
             $data->update([
-                'status_id' => $data->status_id + 1
+                'status_id' => $data->status_id + 1,
+                'update_status_by' => $user->name
             ]);
         }
 
         OrderService::checkStatusOrder($data->order->id); 
 
         $cekPesan = Cart::where('order_id', $data->order_id)->where('status_id', '!=', 5)->where('status_id', '!=', 1)->first();
+
         if($user->hasRole('dapur')) {
             $cekPesan = Cart::with('status')
             ->where('order_id', $data->order_id)
@@ -307,6 +354,19 @@ class OrderController extends Controller
         }
         
         if($cekPesan) return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update status');
+
+        $cekTrash = Cart::where('order_id', $data->order_id)->where(function ($query) {
+            $query->where('status_id', '!=', 5)
+            ->where('status_id', '!=', 1)
+            ->orWhere('pembayaran', false);
+        })->first();        
+        if(!$cekTrash) {
+            $cekTrash = Cart::onlyTrashed()->where('order_id', $data->order_id)->get();
+
+            foreach ($cekTrash as $trash) {
+                $trash->forceDelete();
+            }
+        }
 
         return redirect()->route('order.index')->with('modal_alert', 'success')->with('message', 'Berhasil update status');
     }
@@ -328,6 +388,7 @@ class OrderController extends Controller
                 OrderService::checkStatusOrder($data->order->id); 
 
                 $cekPesan = Cart::where('order_id', $data->order_id)->where('status_id', '!=', 5)->where('status_id', '!=', 1)->first();
+
                 if($user->hasRole('dapur')) {
                     $cekPesan = Cart::with('status')
                     ->where('order_id', $data->order_id)
@@ -342,6 +403,20 @@ class OrderController extends Controller
                 }
             }
             if($cekPesan) return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update status');
+
+            $cekTrash = Cart::where('order_id', $data->order_id)->where(function ($query) {
+                $query->where('status_id', '!=', 5)
+                ->where('status_id', '!=', 1)
+                ->orWhere('pembayaran', false);
+            })->first();
+
+            if(!$cekTrash) {
+                $cekTrash = Cart::onlyTrashed()->where('order_id', $data->order_id)->get();
+                
+                foreach ($cekTrash as $trash) {
+                    $trash->forceDelete();
+                }
+            }
 
             return redirect()->route('order.index')->with('modal_alert', 'success')->with('message', 'Berhasil update status');
         } else if($request->action == 'hapus') {

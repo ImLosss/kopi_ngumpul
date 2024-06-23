@@ -85,7 +85,10 @@
                 { data: 'jumlah', name: 'jumlah' },
                 { data: 'harga', name: 'harga' },
                 { data: 'action', name: 'action' }
-            ]
+            ],
+            headerCallback: function(thead, data, start, end, display) {
+                $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
+            },
         });
 
         // Fungsi update untuk memperbarui tabel berdasarkan kategori yang dipilih

@@ -183,11 +183,15 @@
             ],
             language: {
                 emptyTable: "Tidak menemukan pesanan yang belum Lunas",
-                loadingRecords: "Memuat..."
+                loadingRecords: "Memuat...",
+                zeroRecords:    "Tidak ada data ditemukan",
             },
             columnDefs: [
                 { width: '40px', targets: 0 }
             ],
+            headerCallback: function(thead, data, start, end, display) {
+                $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
+            },
         });
     } );
 

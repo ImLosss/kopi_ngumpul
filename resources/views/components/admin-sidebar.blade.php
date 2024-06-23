@@ -132,7 +132,7 @@
 
             @can('tableAccess')
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('table','table/*') ? 'active' : '') }}" href="{{ route('discount') }}">
+                    <a class="nav-link {{ (Request::is('table','table/*') ? 'active' : '') }}" href="{{ route('table') }}">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-caret-down {{ (Request::is('table','table/*') ? '' : 'text-dark') }} text-sm"></i>                
                         </div>

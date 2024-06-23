@@ -11,6 +11,7 @@ use App\Http\Controllers\admin\PaymentController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
+use App\Http\Controllers\admin\TableController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\auth\LogoutController;
@@ -160,4 +161,15 @@ Route::group([
     Route::get('/getPartnerProduct', [PartnerProductController::class, 'getPartnerProduct'])->name('admin.dataTable.getPartnerProduct');
     Route::get('/get-partner-detail/{id}', [PartnerProductController::class, 'getPartnerProductDetail']);
     //endRoute
+
+    // routeTable
+    Route::resource('table', TableController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'table',
+        'edit' => 'table.edit',
+        'update' => 'table.update',
+        'destroy' => 'table.destroy'
+    ]);
+
+    Route::get('/getTables', [TableController::class, 'getTables'])->name('admin.dataTable.getTables');
+    // endRoute
 });

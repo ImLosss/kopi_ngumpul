@@ -104,7 +104,8 @@
             ],
             language: {
                 emptyTable: "Semua pesanan telah selesai",
-                loadingRecords: "Memuat..."
+                loadingRecords: "Memuat...",
+                zeroRecords:    "Tidak ada data ditemukan",
             },
             drawCallback: function(settings) {
                 var api = this.api();

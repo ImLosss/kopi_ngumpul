@@ -60,6 +60,7 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status pembayaran</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Note</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last update By</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                                 </tr>
                             </thead>
@@ -107,8 +108,6 @@
         function checkSelected() {
             let code = `<button class="btn bg-gradient-success mb-1" onclick="modalUpdateStatusAll()">Update status</button>
             <button class="btn bg-gradient-danger mb-1" id="btnHapus" onclick="modalHapusAll()">Hapus</button>`;
-            if ($('input[name="payment[]"]:checked').length > 0) code = `<button class="btn bg-gradient-success mb-1" onclick="modalUpdateStatusAll()">Update status</button>
-            <button class="btn bg-gradient-danger mb-1" id="btnHapus" onclick="modalHapusAll()" disabled>Hapus</button>`;
             if ($('input[name="selectPesan[]"]:checked').length > 0) {
                 if($('#textPartner').length) {
                     $('#btnUpdate').removeClass('col-6').addClass('col-3');
@@ -118,6 +117,16 @@
                 }
                 $('#btnUpdate').empty();
                 $('#btnUpdate').append(code);
+
+                var anyChecked = $('.selectPesan[data-payment="true"]:checked').length > 0;
+                
+                // console.log(anyChecked);
+                if (anyChecked) {
+                    $('#btnHapus').attr('disabled', 'disabled');
+                } else {
+                    $('#btnHapus').removeAttr('disabled');
+                    // $('#btnHapus').attr('disabled', 'disabled');
+                }
             } else {
                 $('#textPartner').removeClass('col-3').addClass('col-6');
                 $('#btnUpdate').empty();
@@ -158,6 +167,10 @@
                     name: 'status'
                 },
                 {
+                    data: 'update_status_by',
+                    name: 'update_status_by'
+                },
+                {
                     data: 'action',
                     name: 'action'
                 },
@@ -165,7 +178,8 @@
             ],
             language: {
                 emptyTable: "Semua pesanan telah selesai",
-                loadingRecords: "Memuat..."
+                loadingRecords: "Memuat...",
+                zeroRecords:    "Tidak ada data ditemukan",
             },
             drawCallback: function(settings) {
                 var api = this.api();
@@ -179,8 +193,6 @@
                 $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
             },
             rowCallback: function(row, data, index) {
-                    // Debugging: cek data yang diterima
-                    console.log(data);
 
                     // Periksa nilai colspan dari data
                     if (data.colspan && data.colspan > 1) {
