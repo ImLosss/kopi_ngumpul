@@ -22,9 +22,11 @@
                     <div class="col-6 d-flex align-items-center">
                         <h6>All Tables</h6>
                     </div>
-                    <div class="col-6 text-end">
-                        <a class="btn bg-gradient-dark mb-0" href="{{ route('category.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Table</a>
-                    </div>
+                    @can('updateTable')
+                        <div class="col-6 text-end">
+                            <a class="btn bg-gradient-dark mb-0" href="{{ route('table.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Table</a>
+                        </div>
+                    @endcan
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">

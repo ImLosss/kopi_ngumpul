@@ -45,8 +45,7 @@ Route::group([
     // routeUser
     Route::resource('user', UserController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'index' => 'user',
-        'update'  => 'order.confirm',
-        'show'  => 'order.view',
+        'update'  => 'user.update',
         'edit' => 'user.edit',
         'store' => 'user.store',
         'destroy' => 'user.destroy',

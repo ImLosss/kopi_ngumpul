@@ -315,7 +315,8 @@ class PaymentController extends Controller
 
             return '<form id="formUpdate_'. $data->id .'" action="' . route('payment.updateStatus', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
-                ' . method_field('PATCH') . '
+                ' . method_field('PATC
+                H') . '
             </form>' . $update . $hapus;
         })
         ->filter(function ($query) use ($request) {
