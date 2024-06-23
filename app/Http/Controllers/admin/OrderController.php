@@ -309,7 +309,7 @@ class OrderController extends Controller
                     'jumlah' => $product->jumlah + $cart->jumlah
                 ]);
 
-                $cart->forceDelete();
+                $cart->delete();
             });
 
             $cek = Cart::where('order_id', $order->id)->first();

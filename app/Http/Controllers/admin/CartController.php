@@ -83,7 +83,7 @@ class CartController extends Controller
                     'jumlah' => $product->jumlah + $cart->jumlah
                 ]);
 
-                $cart->delete();
+                $cart->forceDelete();
             });
 
             return redirect()->back()->with('alert', 'success')->with('message', $message);
