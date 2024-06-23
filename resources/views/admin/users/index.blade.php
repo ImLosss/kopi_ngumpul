@@ -1,5 +1,9 @@
 @extends('layouts.admin-layout')
 
+@section('title')
+    - User
+@endsection
+
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
@@ -9,6 +13,7 @@
         <h5 class="font-weight-bolder mb-0">User Management</h5>
     </nav>
 @endsection
+
 @section('content')
 <div class="row">
     <div class="col-12">

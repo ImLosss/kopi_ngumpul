@@ -1,5 +1,9 @@
 @extends('layouts.admin-layout')
 
+@section('title')
+    - Laporan
+@endsection
+
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
@@ -59,7 +63,7 @@
                                 <tbody></tbody>
                                 <tfoot>
                                     <tr>
-                                        <th colspan="2">Total</th>
+                                        <th colspan="3">Total</th>
                                         <th id="totalPendapatan"></th>
                                         <th id="totalProfit"></th>
                                         <th></th>
