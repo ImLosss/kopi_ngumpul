@@ -59,6 +59,7 @@
         var table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
+            ordering: false,
             ajax: {
                 url: "{{ route('admin.dataTable.getDiscount') }}"
             },

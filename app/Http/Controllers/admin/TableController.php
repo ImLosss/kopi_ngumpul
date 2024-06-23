@@ -78,9 +78,9 @@ class TableController extends Controller
         }
     }
 
-    public function getTables() 
+    public function getTables(Request $request) 
     {
-        $data = Table::all();
+        $data = Table::query();
 
         // dd($data);
         return DataTables::of($data)
@@ -98,6 +98,14 @@ class TableController extends Controller
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
             </form>';
+        })
+        ->filter(function ($query) use ($request) {
+            if ($request->has('search') && $request->input('search.value')) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search) {
+                    $query->where('status', 'like', "%{$search}%");
+                });
+            }
         })
         ->rawColumns(['action'])
         ->toJson(); 

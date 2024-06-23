@@ -87,8 +87,10 @@ class DiscountController extends Controller
                 'percent' => $request->discount,
                 'status' => $request->status
             ]);
-        } catch (\Throwable $e) {
 
+            return redirect()->route('discount')->with('alert', 'success')->with('message', 'Data berhasil diubah');
+        } catch (\Throwable $e) {
+            return redirect()->route('discount')->with('alert', 'error')->with('message', 'Something Error!');
         }
     }
 
@@ -104,12 +106,12 @@ class DiscountController extends Controller
         return redirect()->route('discount')->with('alert', 'success')->with('message', 'Data berhasil dihapus');
     }
 
-    public function getDiscount() {
+    public function getDiscount(Request $request) {
         $data = Discount::with('product');
 
         // dd($data);
         return DataTables::of($data)
-        ->addIndexColumn() 
+        ->addIndexColumn()
         ->addColumn('menu', function($data) {
             return $data->product->name;
         })
@@ -127,11 +129,18 @@ class DiscountController extends Controller
                 ' . method_field('DELETE') . '
             </form>';
         })
-        ->filterColumn('menu', function($data, $keyword) {
-            // Meng-handle search untuk kolom role
-            $data->whereHas('product', function ($query) use ($keyword) {
-                $query->where('name', 'like', "%{$keyword}%");
-            });
+        ->filter(function ($query) use ($request) {
+            if ($request->has('search') && $request->input('search.value')) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhereHas('product', function ($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%");
+                    });
+                    
+                });
+            }
         })
         ->rawColumns(['rate', 'action'])
         ->toJson(); 
