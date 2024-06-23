@@ -40,6 +40,21 @@
   {{-- jQuery --}}
   <script src="{{ asset('assets/js/jquery-1.11.1.min.js') }}"
   crossorigin="anonymous"></script>
+  
+  <!-- Select2 CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet">
+
+  <!-- Select2 JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+  <style>
+    .custom-hr {
+      border: 0;
+      height: 1px;
+      background: #333;
+      background-image: linear-gradient(to right, #8a8a8a, #333, #8a8a8a);
+      margin: 10px 0;
+    }
+  </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">

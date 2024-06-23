@@ -38,7 +38,7 @@ class CashierController extends Controller
                 ]);
             }
 
-            $data['products'] = Product::get();
+            $data['categories'] = Category::with('product')->get();
             $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status_id', 1)->where('partner', false)->first();
             $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
             $data['tables'] = Table::get();
@@ -228,11 +228,13 @@ class CashierController extends Controller
             $diskonData = [];
             if ($product->discount->isNotEmpty()) {
                 foreach ($product->discount as $diskon) {
-                    $diskonData[] = [
-                        'id' => $diskon->id,
-                        'name' => $diskon->name,
-                        'percent' => $diskon->percent
-                    ];
+                    if($diskon->status == 'Aktif') {
+                        $diskonData[] = [
+                            'id' => $diskon->id,
+                            'name' => $diskon->name,
+                            'percent' => $diskon->percent
+                        ];
+                    }
                 }
             }
 

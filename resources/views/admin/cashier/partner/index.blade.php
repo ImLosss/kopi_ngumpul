@@ -224,6 +224,7 @@
     }
 
     $(document).ready(function() {
+        $('#menuSelect').select2();
         $('#menuSelect').change(function() {
             var productId = $(this).val();
             if (productId) {
