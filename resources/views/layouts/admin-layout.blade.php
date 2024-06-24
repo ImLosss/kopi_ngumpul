@@ -33,9 +33,6 @@
   <link href="{{ asset('./assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('./assets/css/soft-ui-dashboard.css?v=1.0.7') }}" rel="stylesheet" />
-  <!-- Nepcha Analytics (nepcha.com) -->
-  <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
-  <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
 
   {{-- jQuery --}}
   <script src="{{ asset('assets/js/jquery-1.11.1.min.js') }}"
