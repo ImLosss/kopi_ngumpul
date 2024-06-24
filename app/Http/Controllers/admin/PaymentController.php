@@ -66,31 +66,7 @@ class PaymentController extends Controller
         }
 
         if($data) return view('admin.pembayaran.show', compact('order'));
-        return view('admin.pembayaran.index');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('payment');
     }
 
 
@@ -238,11 +214,13 @@ class PaymentController extends Controller
          })
          ->addColumn('total', function($data) {
             if($data->partner) return 'Rp' . number_format($data->partner_total);
-            return $data->total;
+            return 'Rp' . number_format($data->total);
          })
          ->addColumn('status_pembayaran', function($data) {
-            if ($data->pembayaran) return 'Lunas';
-            else return 'Belum Lunas';
+            if ($data->pembayaran) return '<span class="badge badge-sm bg-gradient-primary">Lunas</span>';
+            else {
+                return '<span class="badge badge-sm bg-gradient-warning">Belum Lunas</span>';
+            }
          })
          ->addColumn('status', function($data) {
             return $data->status->desc;
@@ -267,7 +245,7 @@ class PaymentController extends Controller
                 });
             }
         })
-        ->rawColumns(['#', 'action'])
+        ->rawColumns(['#', 'action', 'status_pembayaran'])
         ->toJson(); 
     }
 

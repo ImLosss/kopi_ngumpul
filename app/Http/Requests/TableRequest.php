@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TableRequest extends FormRequest
 {
@@ -21,8 +22,15 @@ class TableRequest extends FormRequest
      */
     public function rules(): array
     {
+        $tableId = $this->route('table'); 
+        
+        // dd($tableId);
         return [
-            'no_meja' => 'required|numeric|unique:tables,no_meja',
+            'no_meja' => [
+                'required',
+                'numeric',
+                Rule::unique('tables')->ignore($tableId),
+            ],
             'status' => 'required|exists:tables,status'
         ];
     }
@@ -34,6 +42,7 @@ class TableRequest extends FormRequest
      */
     public function messages()
     {
+        
         return [
             'no_meja.unique' => 'Nomor meja sudah ada.'
         ];

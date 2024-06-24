@@ -27,13 +27,13 @@
                             <div class="col">
                                 <div class="d-flex justify-content-end">
                                     <div style="margin-right: 20px">
-                                        <input type="date" class="form-control" name="startDate" id="startDate" onchange="start()">
+                                        <input type="date" class="form-control" name="startDate" placeholder="Masukkan tanggal awal" id="startDate" onchange="start()">
                                     </div>
                                     <div style="margin-right: 20px">
                                         -
                                     </div>
                                     <div>
-                                        <input type="date" class="form-control" name="endDate" id="endDate" onchange="end()">
+                                        <input type="date" class="form-control" name="endDate" placeholder="Masukkan tanggal Akhir" id="endDate" onchange="end()">
                                     </div>
                                 </div>
                             </div>

@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Models\Cart;
 use App\Models\Order;
+use Illuminate\Support\Facades\Auth;
 
 class OrderService {
     public static function checkStatusOrder ($id) 
@@ -38,6 +39,7 @@ class OrderService {
 
     public static function checkStatusOrderArr ($orderIds) 
     {
+        // dd($orderIds);
         foreach ($orderIds as $id) {
             $order = Order::findOrFail($id);
             $cart = Cart::where('order_id', $id)->where('status_id', '!=', 1)->orderBy('status_id', 'asc')->first();
@@ -68,6 +70,33 @@ class OrderService {
             $order->update([
                 'status_id' => $cart->status_id
             ]);
+        }
+    }
+
+    public function fixAllStatusOrder() 
+    {
+        try {
+            $user = Auth::user();
+
+            if($user->hasRole('partner')) {
+                $order_id = Cart::with('order')->where('partner_price', '!=', 0)->distinct('order_id')->get(['order_id']);
+                
+                $orderIdsArr = $order_id->pluck('order_id')->toArray();
+
+                $this->checkStatusOrderArr($orderIdsArr);
+
+                return redirect()->back()->with('alert', 'success')->with('message', 'Order berhasil di fix');
+            } else {
+                $order_id = Cart::with('order')->where('partner_price', 0)->distinct('order_id')->get(['order_id']);
+                
+                $orderIdsArr = $order_id->pluck('order_id')->toArray();
+
+                $this->checkStatusOrderArr($orderIdsArr);
+
+                return redirect()->back()->with('alert', 'success')->with('message', 'Order berhasil di fix');
+            }
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('alert', 'error')->with('message', 'Something Error');
         }
     }
 }

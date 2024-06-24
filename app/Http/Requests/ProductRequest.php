@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProductRequest extends FormRequest
 {
@@ -21,12 +22,32 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
+        $productId = $this->route('product'); 
+
+        // dd($productId);
+
         return [
-            'name' => 'required',
+            'name' => [
+                'required',
+                Rule::unique('products')->ignore($productId),
+            ],
             'kategori' => 'required|exists:categories,id',
             'modal' => 'required',
             'harga' => 'required',
             'stock' => 'required'
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        
+        return [
+            'name.unique' => 'Menu ini sudah ada.'
         ];
     }
 }

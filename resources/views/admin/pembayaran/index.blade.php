@@ -45,6 +45,16 @@
                     </table>
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <form id="formFixOrder" action="{{ route('order.fixStatusOrder') }}" method="GET">
+                        @csrf
+                    </form>
+                    <div class="d-flex flex-wrap">
+                        <a class="btn bg-gradient-info mt-2" onclick="modalFixStatusOrder()" style="margin-right: 10px"><i class="fa-solid fa-wrench text-md"></i> fix all order status</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -53,6 +63,9 @@
 @section('script')
 <script>
 
+    function submitFixOrder() {
+        $('#formFixOrder').submit();
+    }
     function submit(key) {
         $('#form_'+key).submit();
     }
@@ -145,6 +158,21 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 updateStatus(id);
+            }
+        });
+    }
+
+    function modalFixStatusOrder() {
+        Swal.fire({
+            title: "Status order mengalami bug?",
+            text: "Gunakan fitur ini untuk memperbaiki order yang rusak atau tidak bisa dibuka!",
+            icon: "info",
+            showCancelButton: true,
+            cancelButtonColor: "#a1a1a1",
+            confirmButtonText: "Ya, perbaiki!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitFixOrder();
             }
         });
     }

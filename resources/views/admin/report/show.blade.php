@@ -15,6 +15,15 @@
     </nav>
 @endsection
 @section('content')
+<style>
+    .custom-checkbox {
+        /* Tambahkan gaya kustom sesuai kebutuhan */
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+    
+</style>
 <div class="row">
     <div class="col-12">
         <div class="card mb-1 p-3">
@@ -30,20 +39,37 @@
             </div>
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">
-                    <table class="table" id="dataTable3">
-                        <thead>
-                            <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Menu</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jumlah</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Harga</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Diskon</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profit</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Payment</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <form action="{{ route('payment.billOrUpdate') }}" method="POST" enctype="multipart/form-data" id="formCetakNota">
+                        @csrf
+                        <input type="text" name="action" id="action" hidden>
+                        <table class="table" id="dataTable3">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        <div class="form-check">
+                                            <input class="form-check-input custom-checkbox" type="checkbox" value="" id="selectPesanAll">
+                                        </div>
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Menu</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jumlah</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Harga</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Diskon</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profit</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Payment</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Update Payment By</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="d-flex flex-wrap">
+                        <button class="btn bg-gradient-dark mt-2" href="#" id="btnCetakNota" disabled>Cetak nota</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,7 +94,42 @@
         $('#formUpdate_'+key).submit();
     }
 
+    function submit_form() {
+        $('#formCetakNota').submit();
+    }
+
+    $('#btnCetakNota').on('click', function() {
+        $('#action').val('printBill');
+        submit_form()
+    });
+
     $(document).ready( function () {
+        // Handle select all checkbox
+        $('#selectPesanAll').on('click', function() {
+            $('input[name="selectPesan[]"]').prop('checked', this.checked);
+            checkSelected();
+        });
+
+        // Handle individual checkbox to update select all checkbox state
+        $(document).on('click', 'input[name="selectPesan[]"]', function() {
+            if ($('input[name="selectPesan[]"]:checked').length == $('input[name="selectPesan[]"]').length) {
+                $('#selectPesanAll').prop('checked', true);
+            } else {
+                $('#selectPesanAll').prop('checked', false);
+            }
+            checkSelected()
+        });
+
+        function checkSelected() {
+            if ($('input[name="selectPesan[]"]:checked').length > 0) {
+                // Jika ada, hilangkan attribute disabled dari button
+                $('#btnCetakNota').removeAttr('disabled');
+            } else {
+                // Jika tidak ada, tambahkan attribute disabled ke button
+                $('#btnCetakNota').attr('disabled', 'disabled');
+            }
+        }
+
         var table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
@@ -78,6 +139,10 @@
                 url: "{{ route('admin.dataTable.getReport', $order->id) }}"
             },
             columns: [
+                {
+                    data: '#',
+                    name: '#'
+                },
                 {
                     data: 'menu',
                     name: 'menu'
@@ -105,6 +170,10 @@
                 {
                     data: 'payment_method',
                     name: 'payment_method'
+                },
+                {
+                    data: 'payment_update_by',
+                    name: 'payment_update_by'
                 },
             ],
             language: {

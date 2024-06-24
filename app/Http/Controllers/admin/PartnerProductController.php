@@ -54,19 +54,18 @@ class PartnerProductController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-        //
+        // return 'tess';
+        $productIdArr = PartnerProduct::get(['product_id'])->pluck('product_id')->toArray();
+        // dd($productIdArr);
+        $data['products'] = Product::whereNotIn('id', $productIdArr)->get();
+        $data['category'] = Category::get();
+        $data['data'] = PartnerProduct::with('product')->findOrFail($id);
+        // dd($data);
+        return view('admin.product.partner.edit', $data);
     }
 
     /**
@@ -74,7 +73,7 @@ class PartnerProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        return 'tess';
     }
 
     /**
@@ -121,7 +120,7 @@ class PartnerProductController extends Controller
          })
          ->addColumn('action', function($data) {
             return '
-            <a href="' . route('product.partner.edit', $data->id) . '">
+            <a href="' . route('partnerProduct.edit', $data->id) . '">
                 <i class="fa-solid fa-pen-to-square text-secondary"></i>
             </a>
             <button class="cursor-pointer fas fa-trash text-danger" onclick="submit('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>

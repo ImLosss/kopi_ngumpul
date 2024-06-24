@@ -119,6 +119,11 @@ class ReportController extends Controller
         $data = Cart::with('status', 'order', 'product')->where('order_id', $id);
 
         return DataTables::of($data)
+        ->addColumn('#', function($data) {
+            return '<div class="form-check">
+            <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
+            </div>';
+        })
         ->addColumn('menu', function($data) {
             return $data->menu;
         })
@@ -141,6 +146,10 @@ class ReportController extends Controller
             if($data->order->partner) return 'Rp' . number_format($data->partner_profit);
             return 'Rp' . number_format($data->profit);
         })
+        ->addColumn('payment_update_by', function($data) {
+            return $data->update_payment_by;
+        })
+        ->rawColumns(['#'])
         ->toJson(); 
     }
 }

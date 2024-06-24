@@ -15,6 +15,7 @@ use App\Http\Controllers\admin\TableController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\auth\LogoutController;
+use App\Services\OrderService;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -118,6 +119,7 @@ Route::group([
     ]);
 
     Route::get('/getOrder', [OrderController::class, 'getOrder'])->name('admin.dataTable.getOrder');
+    Route::get('/fixStatusOrder', [OrderService::class, 'fixAllStatusOrder'])->name('order.fixStatusOrder');
     Route::get('/getPesanan/{id}', [OrderController::class, 'getPesanan'])->name('admin.dataTable.getPesanan');
     Route::post('/pesanan/updateOrDelete', [OrderController::class, 'updateOrDelete'])->name('admin.pesanan.updateOrDelete');
     Route::delete('/pesanan/delete/{id}', [OrderController::class, 'hapusPesanan'])->name('pesanan.destroy');
@@ -153,7 +155,7 @@ Route::group([
         'index' => 'partnerProduct',
         'create' => 'product.partner.create',
         'store' => 'product.partner.store',
-        'edit' => 'product.partner.edit',
+        'edit' => 'partnerProduct.edit',
         'destroy' => 'product.partner.destroy'
     ]);
 
