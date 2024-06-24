@@ -140,15 +140,20 @@ class OrderController extends Controller
             return $data->kasir;
          })
          ->addColumn('total', function($data) use($user) {
-            if($data->partner) return $data->partner_total;
-            return $data->total;
+            if($data->partner) return 'Rp' . number_format($data->partner_total);
+            return 'Rp' . number_format($data->total);
          })
          ->addColumn('status_pembayaran', function($data) {
-            if ($data->pembayaran) return 'Lunas';
-            else return 'Belum Lunas';
+            if ($data->pembayaran) return '<span class="badge badge-sm bg-gradient-primary">Lunas</span>';
+            else return '<span class="badge badge-sm bg-gradient-warning">Belum Lunas</span>';
          })
          ->addColumn('status', function($data) {
-            return $data->status->desc;
+            $color = 'secondary';
+
+            if($data->status_id == 4) $color = 'success';
+            if($data->status_id == 5) $color = 'primary';
+
+            return '<span class="badge badge-sm bg-gradient-' . $color . '">'. $data->status->desc .'</span>';
          })
          ->addColumn('waktu_pesan', function($data) {
             return $data->created_at;
@@ -173,7 +178,7 @@ class OrderController extends Controller
                 });
             }
         })
-        ->rawColumns(['#', 'action'])
+        ->rawColumns(['#', 'action', 'status', 'status_pembayaran'])
         ->toJson(); 
     }
 
@@ -232,10 +237,10 @@ class OrderController extends Controller
             if($data->trashed()) return 7;
         })
         ->addColumn('status_pembayaran', function($data) use($user) {
-            if ($data->pembayaran) return 'Lunas';
+            if ($data->pembayaran) return '<span class="badge badge-sm bg-gradient-primary">Lunas</span>';
             else {
                 if($user->can('paymentAccess')) return '<a href="' . route('payment.show', $data->order_id) . '">Klik disini untuk selesaikan pembayaran</a>';
-                return 'Belum Lunas';
+                return '<span class="badge badge-sm bg-gradient-warning">Belum Lunas</span>';
             }
         })
         ->addColumn('note', function($data) {
@@ -244,7 +249,12 @@ class OrderController extends Controller
             return '<span title="'.$note.'">'.(strlen($note) > 50 ? substr($note, 0, 35) . '…' : $note).'</span>';
         })
         ->addColumn('status', function($data) {
-            return $data->status->desc;
+            $color = 'secondary';
+
+            if($data->status_id == 4) $color = 'success';
+            if($data->status_id == 5) $color = 'primary';
+
+            return '<span class="badge badge-sm bg-gradient-' . $color . '">'. $data->status->desc .'</span>';
         })
         ->addColumn('waktu_pesan', function($data) {
             return $data->created_at;
@@ -304,7 +314,7 @@ class OrderController extends Controller
                 });
             }
         })
-        ->rawColumns(['#', 'action', 'status_pembayaran', 'note'])
+        ->rawColumns(['#', 'action', 'status_pembayaran', 'note', 'status'])
         ->toJson(); 
     }
 

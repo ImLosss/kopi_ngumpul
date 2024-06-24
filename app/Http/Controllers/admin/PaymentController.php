@@ -132,6 +132,7 @@ class PaymentController extends Controller
             }
         }
 
+        // dd($orderIdsArr);
         OrderService::checkStatusOrderArr($orderIdsArr); 
 
         return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update Pembayaran');
@@ -154,6 +155,7 @@ class PaymentController extends Controller
             return view('admin.pembayaran.nota', $data);
         } else if ($request->action == 'updatePayment') {
             // dd($request);
+            
             $carts = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
 
             if($request->updateMeja == 'true') {
@@ -194,6 +196,7 @@ class PaymentController extends Controller
                 }
             }
 
+            // dd($orderIdsArr);
             OrderService::checkStatusOrderArr($orderIdsArr);
 
             return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update Pembayaran');
@@ -297,8 +300,10 @@ class PaymentController extends Controller
             return $data->menu;
         })
         ->addColumn('status_pembayaran', function($data) {
-            if ($data->pembayaran) return 'Lunas';
-            else return 'Belum Lunas';
+            if ($data->pembayaran) return '<span class="badge badge-sm bg-gradient-primary">Lunas</span>';
+            else {
+                return '<span class="badge badge-sm bg-gradient-warning">Belum Lunas</span>';
+            }
         })
         ->addColumn('waktu_pesan', function($data) {
             return $data->created_at;
@@ -315,8 +320,7 @@ class PaymentController extends Controller
 
             return '<form id="formUpdate_'. $data->id .'" action="' . route('payment.updateStatus', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
-                ' . method_field('PATC
-                H') . '
+                ' . method_field('PATCH') . '
             </form>' . $update . $hapus;
         })
         ->filter(function ($query) use ($request) {
@@ -333,7 +337,7 @@ class PaymentController extends Controller
                 });
             }
         })
-        ->rawColumns(['#', 'action'])
+        ->rawColumns(['#', 'action', 'status_pembayaran'])
         ->toJson(); 
     }
 }

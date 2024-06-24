@@ -44,6 +44,8 @@ class OrderService {
             $antar = Cart::where('order_id', $id)->where('status_id', 4)->first();
             $payment = Cart::where('order_id', $id)->where('pembayaran', false)->first();
             
+            // dd($payment);
+
             if($payment)
                 $order->update([
                     'pembayaran' => $payment->pembayaran
