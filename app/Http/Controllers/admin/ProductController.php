@@ -144,6 +144,6 @@ class ProductController extends Controller
             </form>';
          })
          ->rawColumns(['rate', 'action'])
-        ->toJson(); 
+        ->toJson();
     }
 }

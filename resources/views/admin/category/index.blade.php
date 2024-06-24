@@ -75,7 +75,12 @@
             serverSide: true,
             ordering: false,
             ajax: {
-                url: "{{ route('admin.dataTable.getCategories') }}"
+                url: "{{ route('admin.dataTable.getCategories') }}",
+                error: function(xhr, error, thrown){
+                    // console.log('An error occurred while fetching data.');
+                    // Hide the default error message
+                    $('#example').DataTable().clear().draw();
+                }
             },
             columns: [
                 {

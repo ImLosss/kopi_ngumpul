@@ -77,7 +77,12 @@
             serverSide: true,
             ordering: false,
             ajax: {
-                url: "{{ route('admin.dataTable.getDiscount') }}"
+                url: "{{ route('admin.dataTable.getDiscount') }}",
+                error: function(xhr, error, thrown){
+                    // console.log('An error occurred while fetching data.');
+                    // Hide the default error message
+                    $('#example').DataTable().clear().draw();
+                }
             },
             columns: [
                 {

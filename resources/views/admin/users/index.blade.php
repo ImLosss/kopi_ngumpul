@@ -80,7 +80,12 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('admin.dataTable.getUser') }}"
+                url: "{{ route('admin.dataTable.getUser') }}",
+                error: function(xhr, error, thrown){
+                    // console.log('An error occurred while fetching data.');
+                    // Hide the default error message
+                    $('#example').DataTable().clear().draw();
+                }
             },
             columns: [
                 {

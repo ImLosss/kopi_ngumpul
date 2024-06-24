@@ -77,6 +77,11 @@
                 url: "{{ route('admin.dataTable.getProduct') }}",
                 data: function (d) {
                     d.category_id = $('#categorySelect').val(); // Mengirim category_id ke server
+                },
+                error: function(xhr, error, thrown){
+                    // console.log('An error occurred while fetching data.');
+                        // Hide the default error message
+                        $('#example').DataTable().clear().draw();
                 }
             },
             columns: [

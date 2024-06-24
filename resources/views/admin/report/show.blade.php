@@ -136,7 +136,12 @@
             responsive: true,
             ordering: false,
             ajax: {
-                url: "{{ route('admin.dataTable.getReport', $order->id) }}"
+                url: "{{ route('admin.dataTable.getReport', $order->id) }}",
+                error: function(xhr, error, thrown){
+                    // console.log('An error occurred while fetching data.');
+                    // Hide the default error message
+                    $('#example').DataTable().clear().draw();
+                }
             },
             columns: [
                 {

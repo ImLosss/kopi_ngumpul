@@ -81,7 +81,12 @@
             responsive: true,
             ordering: false,
             ajax: {
-                url: "{{ route('admin.dataTable.getAllOrder') }}"
+                url: "{{ route('admin.dataTable.getAllOrder') }}",
+                error: function(xhr, error, thrown){
+                    // console.log('An error occurred while fetching data.');
+                    // Hide the default error message
+                    $('#example').DataTable().clear().draw();
+                }
             },
             columns: [
                 {

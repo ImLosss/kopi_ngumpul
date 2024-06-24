@@ -153,7 +153,12 @@
             //     { "orderable": false, "targets": 0 }  // Menonaktifkan pengurutan pada kolom pertama (index 0)
             // ],
             ajax: {
-                url: "{{ route('admin.dataTable.getPayment', $order->no_meja) }}"
+                url: "{{ route('admin.dataTable.getPayment', $order->no_meja) }}",
+                error: function(xhr, error, thrown){
+                    // console.log('An error occurred while fetching data.');
+                    // Hide the default error message
+                    $('#example').DataTable().clear().draw();
+                }
             },
             columns: [
                 {
