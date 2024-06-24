@@ -186,7 +186,7 @@
                                     <select name="no_meja" class="form-control">
                                         <option value="" selected disabled>Pilih Nomor meja</option>
                                         @foreach ($tables as $table)
-                                            <option value="{{ $table->id }}">{{ $table->no_meja }} @if ($table->status == 'terpakai')
+                                            <option value="{{ $table->no_meja }}">{{ $table->no_meja }} @if ($table->status == 'terpakai')
                                                 ({{ $table->status }})
                                             @endif</option>
                                         @endforeach
