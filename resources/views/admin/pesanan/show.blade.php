@@ -119,17 +119,9 @@
                 $('#btnUpdate').append(code);
 
                 var anyChecked = $('.selectPesan[data-payment="true"]:checked').length > 0;
-                var anyCantDelete = $('.selectPesan[data-hapus="false"]:checked').length > 0;
                 
                 // console.log(anyChecked);
                 if (anyChecked) {
-                    $('#btnHapus').attr('disabled', 'disabled');
-                } else {
-                    $('#btnHapus').removeAttr('disabled');
-                    // $('#btnHapus').attr('disabled', 'disabled');
-                }
-
-                if (anyCantDelete) {
                     $('#btnHapus').attr('disabled', 'disabled');
                 } else {
                     $('#btnHapus').removeAttr('disabled');
@@ -157,6 +149,19 @@
                             $('#btnUpdate2').attr('disabled', 'disabled');
                             return false;
                         @endcannot
+                    }
+                });
+
+                $('.selectPesan:checked').each(function() {
+                    // Menggunakan .data()
+                    var hapus = $(this).data('hapus');
+                    
+                    console.log(hapus);
+                    
+                    if(hapus == false) {
+                        console.log('ini jalan')
+                        $('#btnHapus').attr('disabled', 'disabled');
+                        return false;
                     }
                 });
                 
