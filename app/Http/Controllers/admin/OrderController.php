@@ -199,21 +199,28 @@ class OrderController extends Controller
         return DataTables::of($data)
         ->addIndexColumn() 
         ->addColumn('#', function($data) use ($user) {
+            $canDelete = '';
+            if($user->hasRole(['admin', 'kasir', 'partner', 'dapur']) && $data->status_id < 3 && $data->pembayaran) {
+                $canDelete = 'data-hapus="false"';
+            }
+            if($user->hasRole(['dapur']) && $data->status_id < 4 && $data->pembayaran) {
+                $canDelete = 'data-hapus="false"';
+            }
             if(($user->can('deleteStatusTwo') || $user->can('updateStatusTwo')) && $data->status_id == 2) {
                 if($data->pembayaran) {
                     return '<div class="form-check">
-                    <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" data-payment="true" data-status="two" id="selectPesan[]" name="selectPesan[]">
+                    <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '"' . $canDelete . ' data-payment="true" data-status="two" id="selectPesan[]" name="selectPesan[]">
                     </div>';
                 } else {
                     return '<div class="form-check">
-                    <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" data-status="two" id="selectPesan[]" name="selectPesan[]">
+                    <input class="form-check-input selectPesan" type="checkbox" value="' . $data->id . '" ' . $canDelete . 'data-status="two" id="selectPesan[]" name="selectPesan[]">
                     </div>';
                 }
             } else if(($user->can('deleteStatusThree') || $user->can('updateStatusThree')) && $data->status_id == 3) return '<div class="form-check">
-            <input class="form-check-input" type="checkbox" value="' . $data->id . '" data-status="three" id="selectPesan[]" name="selectPesan[]">
+            <input class="form-check-input" type="checkbox" value="' . $data->id . '" ' . $canDelete . 'data-status="three" id="selectPesan[]" name="selectPesan[]">
             </div>';
             else if(($user->can('deleteStatusFourth') || $user->can('updateStatusFourth')) && $data->status_id == 4) return '<div class="form-check">
-            <input class="form-check-input" type="checkbox" value="' . $data->id . '" data-status="fourth" id="selectPesan[]" name="selectPesan[]">
+            <input class="form-check-input" type="checkbox" value="' . $data->id . '" ' . $canDelete . 'data-status="fourth" id="selectPesan[]" name="selectPesan[]">
             </div>';
         })
         ->addColumn('menu', function($data) {
@@ -246,10 +253,10 @@ class OrderController extends Controller
             $update = '';
 
             if($user->hasRole(['admin', 'kasir', 'partner', 'dapur']) && $data->status_id < 3 && !$data->pembayaran) {
-                $hapus = '<a class="cursor-pointer fas fa-trash text-danger check-delete" onclick="modalHapus('. $data->id .')" data-hapus="false"></a>';
+                $hapus = '<a class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')"></a>';
             }
             if($user->hasRole(['dapur']) && $data->status_id < 4 && !$data->pembayaran) {
-                $hapus = '<a class="cursor-pointer fas fa-trash text-danger check-delete" data-hapus="false" onclick="modalHapus('. $data->id .')"></a>';
+                $hapus = '<a class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')"></a>';
             }
 
             if(($data->status_id == 2 && $user->can('updateStatusTwo')) || ($data->status_id == 3 && $user->can('updateStatusThree')) || ($data->status_id == 4 && $user->can('updateStatusFourth'))) $update = '<a href="#" class="fa-solid fa-square-check text-success" style="margin-right: 10px;" onclick="modalUpdateStatus('. $data->id .')"></a>';

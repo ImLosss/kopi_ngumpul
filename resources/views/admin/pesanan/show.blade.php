@@ -119,7 +119,7 @@
                 $('#btnUpdate').append(code);
 
                 var anyChecked = $('.selectPesan[data-payment="true"]:checked').length > 0;
-                var anyCantDelete = $('.check-delete[data-hapus="false"]').length > 0;
+                var anyCantDelete = $('.selectPesan[data-hapus="false"]:checked').length > 0;
                 
                 // console.log(anyChecked);
                 if (anyChecked) {
