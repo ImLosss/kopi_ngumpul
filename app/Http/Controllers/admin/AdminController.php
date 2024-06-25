@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Carbon\Carbon;
@@ -22,12 +23,22 @@ class AdminController extends Controller
         if($user->hasRole(['kasir', 'partner', 'pelayan'])) return redirect()->route('cashier');
 
         $products = Product::all();
+        $productsRating = Category::with('product')->first();
         $startDate = Carbon::now()->subWeek();
         $datesArray = [];
         $series = [];
         $penjualan = [];
         $ratingChart = [];
         $ratingJual = [];
+
+        foreach ($productsRating->product as $product) {
+            $totaljual = Cart::where('product_id', $product->id)->where('pembayaran', true)->where('created_at', '>=', $startDate)->sum('jumlah');
+
+            if($totaljual > 0) {
+                $ratingChart[] = ['name' => $product->name, 'penjualan' => $totaljual];
+                $penjualan[] = $totaljual;
+            }
+        }
 
         foreach ($products as $product) {
             $salesData = [];
@@ -48,13 +59,6 @@ class AdminController extends Controller
                     'name' => $product->name,
                     'data' => $salesData
                 ];
-            }
-
-            $totaljual = Cart::where('product_id', $product->id)->where('pembayaran', true)->where('created_at', '>=', $startDate)->sum('jumlah');
-
-            if($totaljual > 0) {
-                $ratingChart[] = ['name' => $product->name, 'penjualan' => $totaljual];
-                $penjualan[] = $totaljual;
             }
         }
         
@@ -95,13 +99,14 @@ class AdminController extends Controller
             $datesArray[] = $formattedDate;
         }
 
-
         if(empty($data['ratingChart']['name'])) {
             $data['ratingChart']['name'] = [];
         }
+
         $data['datesArr'] = $datesArray;
         $data['series'] = $series;
         $data['cekstok'] = Product::where('jumlah', 0)->get();
+        $data['categories'] = Category::get();
         $data['habis'] = Product::where('jumlah', '<=', 5)->get();
         $data['pemasukanHariIni'] = Cart::where('pembayaran', true)->whereDate('created_at', Carbon::now())->sum('total');
         $data['pemasukan'] = Cart::where('pembayaran', true)->whereDate('created_at', '<=', Carbon::now())->sum('total');
@@ -136,5 +141,68 @@ class AdminController extends Controller
         $rounded = round($num, 1);
         // Jika hasil pembulatan adalah bilangan bulat, kembalikan sebagai integer
         return ($rounded == intval($rounded)) ? intval($rounded) : $rounded;
+    }
+
+    public function filterRating(Request $request) 
+    {
+
+        $products = Product::where('category_id', $request->option)->get();
+        $startDate = Carbon::now()->subWeek();
+        $penjualan = [];
+        $ratingChart = [];
+        $ratingJual = [];
+
+        foreach ($products as $product) {
+            $totaljual = Cart::where('product_id', $product->id)->where('pembayaran', true)->where('created_at', '>=', $startDate)->sum('jumlah');
+
+            if($totaljual > 0) {
+                $ratingChart[] = ['name' => $product->name, 'penjualan' => $totaljual];
+                $penjualan[] = $totaljual;
+            }
+        }
+        
+        rsort($penjualan, SORT_NUMERIC);
+
+        try {
+            $maxJual = max($penjualan);
+        } catch(\Throwable $e) {
+
+        }
+
+        foreach ($ratingChart as $key => $item) {
+            $ratingChart[$key]['rating'] = $this->calculateRating($item['penjualan'], $maxJual);
+        }
+
+        usort($ratingChart, function($a, $b) {
+            return $b['rating'] <=> $a['rating'];
+        });
+        
+        foreach ($ratingChart as $item) {
+            $data['ratingChart']['name'][] = $item['name'];
+            $ratingJual[] = $item['rating'];
+        }
+
+        // memvbatasi dan menghapus decimal jika bilangan bulat
+        $ratingJual = array_map(function($num) {
+            $num = $this->formatNumber($num);
+            return $num;
+        }, $ratingJual);
+
+        $data['ratingChart']['series'][] = ['name' => 'Rating', 'data' => $ratingJual];
+        $data['ratingChart']['penjualan'] = $penjualan;
+
+        if(empty($data['ratingChart']['name'])) {
+            $data['ratingChart']['name'] = [];
+        }
+
+
+        // dd($data);
+        return [
+            'series' => $data['ratingChart']['series'],
+            'penjualan' => $penjualan,
+            'name' => $data['ratingChart']['name']
+        ];
+        // return($series);
+        return view('admin.dashboard', $data);
     }
 }

@@ -119,21 +119,22 @@
       </div>
     </div>
     <div class="col-xl-6">
-      <div class="card p-2">
-        {{-- <div class="card-header pb-3">
+      <div class="card">
+        <div class="card-header pb-0">
           <div class="row">
-              <div class="col">
+            <div class="col">
                 <div class="d-flex justify-content-end flex-wrap">
-                    <div style="margin-right: 20px">
-                        <select class="form-control" onchange="update(this.value)" id="categorySelect">
-                            <option value="" selected>Weakly</option>
-                                <option value="asdd">Monthly</option>
-                        </Select>
+                    <div class="mb-2" style="margin-right: 20px">
+                      <select class="form-control" id="categorySelect">
+                          @foreach ($categories as $category)
+                              <option value="{{ $category->id }}">{{ $category->name }}</option>
+                          @endforeach
+                      </Select>
                     </div>
                 </div>
             </div>
           </div>
-        </div>  --}}
+        </div> 
         <div class="card-body px-0 pt-0 pb-0">
           <div id="chartRating"></div>
         </div>
@@ -212,17 +213,22 @@ var optionsRating = {
   chart: {
     type: 'bar',
   },
+  title: {
+    text: 'Rating',
+    align: 'left',
+    offsetX: 20
+  },
+  subtitle: {
+    text: 'Monthly',
+    offsetY: 20,
+    offsetX: 20
+  },
   plotOptions: {
     bar: {
       horizontal: true,
       borderRadius: 4,
       borderRadiusApplication: 'end',
     }
-  },
-  title: {
-    text: 'Rating',
-    offsetY: 20 ,
-    offsetX: 20
   },
   colors: ['#00E396'],
   series: ratingSeries,
@@ -246,7 +252,13 @@ var optionsRating = {
       y: {
         formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
             // return w.globals.labels[dataPointIndex] + ' : ' + w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
-            return w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
+            // return w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
+            let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+
+            if (ratingVal > 79) return 'Sangat Direkomendasikan';
+            else if(ratingVal > 54) return 'Direkomendasikan';
+            else if(ratingVal > 30) return 'Dipertimbangkan Kembali';
+            else if(ratingVal > 0) return 'Tidak direkomendasikan';
         },
         // title: {
         //   formatter: function(seriesName) {
@@ -280,5 +292,48 @@ chartRating.render();
 //     }
 //   });
 // }, 3000);
+
+$(document).ready(function() {
+    $('#categorySelect').on('change', function() {
+        // Get the selected value
+        var selectedValue = $(this).val();
+        // console.log(selectedValue);
+
+        // Perform an AJAX GET request
+        $.ajax({
+            url: '{{ route("filterRating") }}',  // Replace with your endpoint
+            type: 'GET',
+            data: { option: selectedValue },
+            success: function(data) {
+                  chartRating.updateSeries(data.series);
+                  chartRating.updateOptions({
+                    xaxis: {categories: data.name},
+                    tooltip: {
+                      x: {
+                        formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+                            return data.name[dataPointIndex] + '(' + data.penjualan[dataPointIndex] + ')';
+                        },
+                      },
+                      y: {
+                        formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+                            // return w.globals.labels[dataPointIndex] + ' : ' + w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
+                            let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+
+                            if (ratingVal > 79) return 'Sangat Direkomendasikan';
+                            else if(ratingVal > 54) return 'Direkomendasikan';
+                            else if(ratingVal > 30) return 'Dipertimbangkan Kembali';
+                            else if(ratingVal > 0) return 'Tidak direkomendasikan';
+                        },
+                      },
+                    }
+                  });
+            },
+            error: function(xhr, status, error) {
+                // Handle errors
+                $('#result').html('Error occurred: ' + error);
+            }
+        });
+    });
+});
 </script>
 @endsection

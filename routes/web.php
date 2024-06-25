@@ -41,7 +41,11 @@ Route::group([
     'namespace'  => 'App\Http\Controllers\admin',
     'prefix'     => '/',
 ], function () {
+
+    // routeDahboard
     Route::get('/', [AdminController::class, 'index'])->name('home');
+    Route::get('/filterRating', [AdminController::class, 'filterRating'])->name('filterRating');
+    //endRoute
 
     // routeUser
     Route::resource('user', UserController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
