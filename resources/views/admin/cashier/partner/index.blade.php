@@ -30,7 +30,7 @@
                                     <select name="menu" id="menuSelect" class="form-control">
                                         
                                         @if ($products->isEmpty())
-                                            <option>Belum mengatur harga partner</option>
+                                            <option selected disabled>Belum mengatur harga partner</option>
                                         @else
                                             <option value="" selected disabled>Pilih Menu</option>
                                         @endif

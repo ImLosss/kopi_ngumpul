@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DiscountRequest;
+use App\Models\Category;
 use App\Models\Discount;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -30,9 +31,9 @@ class DiscountController extends Controller
      */
     public function create()
     {
-        $data = Product::get();
+        $data['categories'] = Category::with('product')->get();
 
-        return view('admin.discount.create', compact('data'));
+        return view('admin.discount.create', $data);
     }
 
     /**

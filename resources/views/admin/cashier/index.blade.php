@@ -28,7 +28,9 @@
                                 <label for="kategori" class="form-control-label">{{ __('Menu') }}</label>
                                 <div class="@error('menu')border border-danger rounded-3 @enderror">
                                     <select name="menu" id="menuSelect" class="form-control">
-                                            <option value="" selected disabled>Pilih Menu</option>
+                                        @if ($categories->isEmpty())
+                                            <option value="" selected disabled>Atur menu terlebih dahulu</option>
+                                        @else
                                             @foreach ($categories as $category)
                                                 @if ($category->product->isEmpty())
                                                     <optgroup label="{{ $category->name }}">
@@ -42,7 +44,7 @@
                                                     </optgroup>
                                                 @endif
                                             @endforeach
-                                    
+                                        @endif
                                     </select>
                                     @error('menu')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>

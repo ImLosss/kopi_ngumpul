@@ -75,6 +75,7 @@
 
 @section('script')
     <script>
+        $('#name').select2();
         $('#name').change(function() {
             var productId = $(this).val();
             if (productId) {
