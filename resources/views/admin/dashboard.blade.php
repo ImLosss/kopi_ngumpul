@@ -31,6 +31,9 @@
               </div>
             </div>
           </div>
+          <div class="row mt-2">
+            <div id="chartPemasukan"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -53,24 +56,50 @@
               </div>
             </div>
           </div>
+          <div class="row mt-2">
+            <div id="chartProfit"></div>
+          </div>
         </div>
       </div>
     </div>
     <div class="col-xl-2 col-sm-6">
-      <div class="card">
-        <div class="card-body p-3">
-          <div class="row">
-            <div class="col-8">
-              <div class="numbers">
-                <p class="text-sm mb-0 text-capitalize font-weight-bold">Staff</p>
-                <h5 class="font-weight-bolder mb-0">
-                  {{ $totalUser }}
-                </h5>
+      <div class="row mb-2">
+        <div class="card">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="col-8">
+                <div class="numbers">
+                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Staff</p>
+                  <h5 class="font-weight-bolder mb-0">
+                    {{ $totalUser }}
+                  </h5>
+                </div>
+              </div>
+              <div class="col-4 text-end">
+                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                  <i class="fa-solid fa-users text-lg opacity-10"></i>
+                </div>
               </div>
             </div>
-            <div class="col-4 text-end">
-              <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                <i class="fa-solid fa-users text-lg opacity-10"></i>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="col-8">
+                <div class="numbers">
+                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Partner</p>
+                  <h5 class="font-weight-bolder mb-0">
+                    {{ $totalPartner }}
+                  </h5>
+                </div>
+              </div>
+              <div class="col-4 text-end">
+                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                  <i class="fa-solid fa-handshake text-lg opacity-10"></i>
+                </div>
               </div>
             </div>
           </div>
@@ -158,6 +187,13 @@ var series = @json($series);
 var ratingName = @json($ratingChart['name']);
 var ratingSeries = @json($ratingChart['series']);
 var ratingPenjualan = @json($ratingChart['penjualan']);
+var pemasukanSeries = @json($pemasukanChart['series']);
+var pemasukanDates = @json($pemasukanChart['dates']);
+var profitSeries = @json($profitChart['series']);
+var profitDates = @json($profitChart['dates']);
+
+pemasukanSeries[0].data = pemasukanSeries[0].data.map(Number);
+profitSeries[0].data = profitSeries[0].data.map(Number);
 
 // Menghitung tinggi chart berdasarkan jumlah data
 var ratingBaseHeight = 180; // Tinggi minimum chart
@@ -282,25 +318,105 @@ var optionsRating = {
   }
 };
 
+var optionsPemasukan = {
+  chart: {
+    id: 'spark1',
+    group: 'sparks',
+    type: 'line',
+    height: 80,
+    sparkline: {
+      enabled: true
+    },
+    dropShadow: {
+      enabled: true,
+      top: 1,
+      left: 1,
+      blur: 1,
+      opacity: 1,
+    }
+  },
+  series: pemasukanSeries,
+  xaxis: {
+    categories: pemasukanDates,
+  },
+  stroke: {
+    curve: 'smooth'
+  },
+  colors: ['#00E396'],
+  tooltip: {
+    x: {
+      show: true,
+    },
+    y: {
+      title: {
+        formatter: function formatter(val) {
+          return '';
+        }
+      },
+      formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+        let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+
+        let formattedNumber = ratingVal.toLocaleString('id-ID');
+        return 'Rp' + formattedNumber
+      }
+    }
+  }
+}
+
+var optionsProfit = {
+  chart: {
+    id: 'spark2',
+    group: 'sparks',
+    type: 'line',
+    height: 80,
+    sparkline: {
+      enabled: true
+    },
+    dropShadow: {
+      enabled: true,
+      top: 1,
+      left: 1,
+      blur: 1,
+      opacity: 1,
+    }
+  },
+  series: profitSeries,
+  xaxis: {
+    categories: profitDates,
+  },
+  stroke: {
+    curve: 'smooth'
+  },
+  colors: ['#00E396'],
+  tooltip: {
+    x: {
+      show: true,
+    },
+    y: {
+      title: {
+        formatter: function formatter(val) {
+          return '';
+        }
+      },
+      formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+        let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+
+        let formattedNumber = ratingVal.toLocaleString('id-ID');
+        return 'Rp' + formattedNumber
+      }
+    }
+  }
+}
 
 var chartRating = new ApexCharts(document.querySelector("#chartRating"), optionsRating);
+var chartPemasukan = new ApexCharts(document.querySelector("#chartPemasukan"), optionsPemasukan);
+var chartProfit = new ApexCharts(document.querySelector("#chartProfit"), optionsProfit);
 var chartLine = new ApexCharts(document.querySelector('#chartPenjualan'), optionsLine);
 chartLine.render();
 chartRating.render();
+chartPemasukan.render();
+chartProfit.render();
 
-// setTimeout(() => {
-//   chartRating.updateSeries([{ name: 'rating', data: [21, 23] }]);
-//   chartRating.updateOptions({
-//     xaxis: {categories: ['asdas', 'asdad']},
-//     tooltip: {
-//       x: {
-//         formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-//             return ['asdas', 'asdad'][dataPointIndex];
-//         },
-//       }
-//     }
-//   });
-// }, 3000);
 
 $(document).ready(function() {
     $('#categorySelect').on('change', function() {

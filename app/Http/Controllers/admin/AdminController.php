@@ -97,12 +97,43 @@ class AdminController extends Controller
             $date = $startDate->addDay(); // Tambahkan hari ke tanggal mulai
             $formattedDate = $date->format('d M'); // Format tanggal menjadi '12 Feb'
             $datesArray[] = $formattedDate;
+
+            $cekPemasukan = Cart::where('pembayaran', true)->whereDate('created_at', $date)->sum('total');
+            if($cekPemasukan != 0) {
+                $datesPemasukan[] = $formattedDate;
+                $datesProfit[] = $formattedDate;
+                $pemasukan[] = Cart::where('pembayaran', true)->whereDate('created_at', $date)->sum('total');
+                $profit[] = Cart::where('pembayaran', true)->whereDate('created_at', $date)->sum('profit');
+            }
         }
 
         if(empty($data['ratingChart']['name'])) {
             $data['ratingChart']['name'] = [];
         }
+        
+        if(empty($pemasukan)) {
+            $data['pemasukanChart']['series'][] = [
+                'data' => []
+            ];
 
+            $data['profitChart']['series'][] = [
+                'data' => []
+            ];
+
+            $data['profitChart']['dates'] = [];
+            $data['pemasukanChart']['dates'] = [];
+        } else {
+            $data['pemasukanChart']['series'][] = [
+                'data' => $pemasukan
+            ];
+
+            $data['profitChart']['series'][] = [
+                'data' => $profit
+            ];
+
+            $data['profitChart']['dates'] = $datesProfit;
+            $data['pemasukanChart']['dates'] = $datesPemasukan;
+        }
         $data['datesArr'] = $datesArray;
         $data['series'] = $series;
         $data['cekstok'] = Product::where('jumlah', 0)->get();
@@ -112,12 +143,15 @@ class AdminController extends Controller
         $data['pemasukan'] = Cart::where('pembayaran', true)->whereDate('created_at', '<=', Carbon::now())->sum('total');
         $data['profitHariIni'] = Cart::where('pembayaran', true)->whereDate('created_at', Carbon::now())->sum('profit');
         $data['totalUser'] = User::whereHas('roles', function($query) {
-            $query->whereNotIn('name', ['admin']);
+            $query->whereNotIn('name', ['admin', 'partner']);
+        })->count();
+        $data['totalPartner'] = User::whereHas('roles', function($query) {
+            $query->where('name', 'partner');
         })->count();
         $data['profit'] = Cart::where('pembayaran', true)->whereDate('created_at', '<=', Carbon::now())->sum('profit');
 
         // dd($data);
-        // return($series);
+        // return($data['pemasukanChart']['series']);
         return view('admin.dashboard', $data);
     }
 
