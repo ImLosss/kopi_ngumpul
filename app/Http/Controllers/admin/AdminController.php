@@ -31,6 +31,7 @@ class AdminController extends Controller
         $ratingChart = [];
         $ratingJual = [];
 
+        if(empty($productsRating)) return redirect()->route('product')->with('alert', 'info')->with('message', 'Tambahkan produk terlebih dahulu');
         foreach ($productsRating->product as $product) {
             $totaljual = Cart::where('product_id', $product->id)->where('pembayaran', true)->where('created_at', '>=', $startDate)->sum('jumlah');
 

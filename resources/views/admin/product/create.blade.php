@@ -40,10 +40,15 @@
                             <label for="kategori" class="form-control-label">{{ __('Kategori') }}</label>
                             <div class="@error('kategori')border border-danger rounded-3 @enderror">
                                 <select name="kategori" id="" class="form-control">
-                                    <option value="" selected disabled>Pilih Kategori</option>
-                                    @foreach ($data as $item)
-                                        <option value="{{ $item->id }}" {{ old('kategori') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
-                                    @endforeach
+                                    @if ($data->isEmpty())
+                                        <option value="" selected disabled>Atur kategori terlebih dahulu</option>
+                                    @else
+                                        <option value="" selected disabled>Pilih Kategori</option>
+                                        @foreach ($data as $item)
+                                            <option value="{{ $item->id }}" {{ old('kategori') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                        @endforeach
+                                    @endif
+                                    
                                 </select>
                                 @error('kategori')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
