@@ -159,12 +159,22 @@ var ratingName = @json($ratingChart['name']);
 var ratingSeries = @json($ratingChart['series']);
 var ratingPenjualan = @json($ratingChart['penjualan']);
 
+// Menghitung tinggi chart berdasarkan jumlah data
+var ratingBaseHeight = 180; // Tinggi minimum chart
+var ratingHeightPerData = 30; // Tinggi tambahan per data
+var ratingChartHeight = ratingBaseHeight + (ratingSeries[0].data.length * ratingHeightPerData);
+
+var lineBaseHeight = 180; 
+var lineHeightPerData = 9; 
+var lineChartHeight = lineBaseHeight + (series.length * lineHeightPerData);
+
 var optionsLine = {
   chart: {
     type: 'line',
     zoom: {
       enabled: false
-    }
+    },
+    height: lineChartHeight
   },
   stroke: {
     curve: 'smooth',
@@ -212,6 +222,7 @@ var optionsLine = {
 var optionsRating = {
   chart: {
     type: 'bar',
+    height: ratingChartHeight // Mengatur tinggi chart dinamis
   },
   title: {
     text: 'Rating',
@@ -219,7 +230,7 @@ var optionsRating = {
     offsetX: 20
   },
   subtitle: {
-    text: 'Monthly',
+    text: 'Weakly',
     offsetY: 20,
     offsetX: 20
   },
@@ -245,26 +256,20 @@ var optionsRating = {
             return value;
         }
       },
-      rotate: -45
+      rotate: -45,
+      offsetY: -10
     }
   },
   tooltip: {
       y: {
         formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-            // return w.globals.labels[dataPointIndex] + ' : ' + w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
-            // return w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
             let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
 
             if (ratingVal > 79) return 'Sangat Direkomendasikan';
-            else if(ratingVal > 54) return 'Direkomendasikan';
-            else if(ratingVal > 30) return 'Dipertimbangkan Kembali';
+            else if(ratingVal > 49) return 'Direkomendasikan';
+            else if(ratingVal > 29) return 'Dipertimbangkan Kembali';
             else if(ratingVal > 0) return 'Tidak direkomendasikan';
-        },
-        // title: {
-        //   formatter: function(seriesName) {
-        //       return ''; // Menghilangkan title dari series
-        //   }
-        // }
+        }
       },
       x: {
         formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
@@ -272,7 +277,8 @@ var optionsRating = {
         }
       }
   }
-}
+};
+
 
 var chartRating = new ApexCharts(document.querySelector("#chartRating"), optionsRating);
 var chartLine = new ApexCharts(document.querySelector('#chartPenjualan'), optionsLine);
@@ -305,28 +311,34 @@ $(document).ready(function() {
             type: 'GET',
             data: { option: selectedValue },
             success: function(data) {
-                  chartRating.updateSeries(data.series);
-                  chartRating.updateOptions({
-                    xaxis: {categories: data.name},
-                    tooltip: {
-                      x: {
-                        formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-                            return data.name[dataPointIndex] + '(' + data.penjualan[dataPointIndex] + ')';
-                        },
-                      },
-                      y: {
-                        formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-                            // return w.globals.labels[dataPointIndex] + ' : ' + w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
-                            let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+              // Menghitung tinggi chart berdasarkan jumlah data
+              ratingChartHeight = ratingBaseHeight + (data.series[0].data.length * ratingHeightPerData);
 
-                            if (ratingVal > 79) return 'Sangat Direkomendasikan';
-                            else if(ratingVal > 54) return 'Direkomendasikan';
-                            else if(ratingVal > 30) return 'Dipertimbangkan Kembali';
-                            else if(ratingVal > 0) return 'Tidak direkomendasikan';
-                        },
-                      },
-                    }
-                  });
+              chartRating.updateSeries(data.series);
+              chartRating.updateOptions({
+                chart: {
+                  height: ratingChartHeight
+                },
+                xaxis: {categories: data.name},
+                tooltip: {
+                  x: {
+                    formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+                        return data.name[dataPointIndex] + '(' + data.penjualan[dataPointIndex] + ')';
+                    },
+                  },
+                  y: {
+                    formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+                      // return w.globals.labels[dataPointIndex] + ' : ' + w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
+                      let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+
+                      if (ratingVal > 79) return 'Sangat Direkomendasikan';
+                      else if(ratingVal > 49) return 'Direkomendasikan';
+                      else if(ratingVal > 29) return 'Dipertimbangkan Kembali';
+                      else if(ratingVal > 0) return 'Tidak direkomendasikan';
+                    },
+                  },
+                }
+              });
             },
             error: function(xhr, status, error) {
                 // Handle errors
