@@ -12,7 +12,7 @@
 @endsection
 @section('content')
   <div class="row mb-3">
-    <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+    <div class="col-xl-5 col-sm-6 mb-xl-0 mb-4">
       <div class="card">
         <div class="card-body p-3">
           <div class="row">
@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+    <div class="col-xl-5 col-sm-6 mb-xl-0 mb-4">
       <div class="card">
         <div class="card-body p-3">
           <div class="row">
@@ -56,7 +56,7 @@
         </div>
       </div>
     </div>
-    <div class="col-xl-4 col-sm-6">
+    <div class="col-xl-2 col-sm-6">
       <div class="card">
         <div class="card-body p-3">
           <div class="row">
