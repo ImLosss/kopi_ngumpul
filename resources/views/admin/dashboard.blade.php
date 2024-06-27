@@ -168,6 +168,9 @@ var lineBaseHeight = 180;
 var lineHeightPerData = 9; 
 var lineChartHeight = lineBaseHeight + (series.length * lineHeightPerData);
 
+if (ratingSeries[0].data.length == 0) ratingChartHeight = 300;
+if (series.length == 0) lineChartHeight = 360;
+
 var optionsLine = {
   chart: {
     type: 'line',
