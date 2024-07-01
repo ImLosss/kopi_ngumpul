@@ -25,15 +25,21 @@
                     <div class="col">
                         <div class="d-flex justify-content-end flex-wrap">
                             <div class="mb-2" style="margin-right: 20px">
-                                <select class="form-control" onchange="update(this.value)" id="categorySelect">
-                                    <option value="" selected disabled>Pilih Kategori</option>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </Select>
+                                @if (!$categories->isEmpty())
+                                    <select class="form-control" onchange="update(this.value)" id="categorySelect">
+                                        
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
                             </div>
                             <div>
-                                <a class="btn bg-gradient-dark mb-0" href="{{ route('product.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Product</a>
+                                @if ($categories->isEmpty())
+                                    <a class="btn bg-gradient-dark mb-0" href="{{ route('category.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Category</a>
+                                @else
+                                    <a class="btn bg-gradient-dark mb-0" href="{{ route('product.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Product</a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -50,6 +56,7 @@
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Stock</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Modal</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Harga</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Rate</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
                         </tr>
                         </thead>
@@ -91,6 +98,7 @@
                 { data: 'jumlah', name: 'jumlah' },
                 { data: 'modal', name: 'modal' },
                 { data: 'harga', name: 'harga' },
+                { data: 'rate', name: 'rate' },
                 { data: 'action', name: 'action' }
             ],
             headerCallback: function(thead, data, start, end, display) {
