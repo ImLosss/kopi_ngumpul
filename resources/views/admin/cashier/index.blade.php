@@ -31,6 +31,7 @@
                                         @if ($categories->isEmpty())
                                             <option value="" selected disabled>Atur menu terlebih dahulu</option>
                                         @else
+                                            <option value="" selected disabled>- Pilih Menu -</option>
                                             @foreach ($categories as $category)
                                                 @if ($category->product->isEmpty())
                                                     <optgroup label="{{ $category->name }}">
