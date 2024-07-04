@@ -163,9 +163,6 @@ class UserController extends Controller
         ->addColumn('since', function($data) {
             return $data->updated_at;
         })
-        ->addColumn('status', function($data) {
-            return 'Inactive';
-        })
         ->addColumn('action', function ($data) {
             // $user = auth()->user();
             // $editHidden = !$user->role('admin') ? 'hidden' : '';
