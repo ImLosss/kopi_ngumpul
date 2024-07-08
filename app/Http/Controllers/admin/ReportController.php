@@ -70,19 +70,19 @@ class ReportController extends Controller
         $oneDayAgo = Carbon::now()->subDay();
         $data = Order::with('status')->where('pembayaran', true)->whereDate('created_at', '>=', $oneDayAgo);
 
-        if($user->hasRole('partner')) $data = Order::with('status')->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereDate('created_at', '>=', $oneDayAgo);
+        if($user->hasRole('partner')) $data = Order::with('status')->where('user_id', $user->id)->where('pembayaran', true)->where('partner', true)->whereDate('created_at', '>=', $oneDayAgo);
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $data = Order::with('status')->where('pembayaran', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
-            if($user->hasRole('partner')) $data = Order::with('status')->where('pembayaran', true)->where('kasir', $user->name)->where('partner', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
+            if($user->hasRole('partner')) $data = Order::with('status')->where('user_id', $user->id)->where('pembayaran', true)->where('partner', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
         }
 
         $totalPendapatan = $data->sum('total');
         $totalProfit = $data->sum('profit');
 
         if($user->hasRole('partner')) {
-            $totalPendapatan = $data->sum('partner_total');
-            $totalProfit = $data->sum('partner_profit');
+            $totalPendapatan = $data->where('user_id', $user->id)->sum('partner_total');
+            $totalProfit = $data->where('user_id', $user->id)->sum('partner_profit');
         }
 
         return DataTables::of($data)

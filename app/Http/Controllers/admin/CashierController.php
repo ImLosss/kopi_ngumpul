@@ -52,7 +52,8 @@ class CashierController extends Controller
                 $order = Order::create([
                     'kasir' => Auth::user()->name,
                     'status_id' => 1,
-                    'partner' => true
+                    'partner' => true,
+                    'user_id' => Auth::user()->id
                 ]);
             }
 
@@ -137,7 +138,8 @@ class CashierController extends Controller
                         $order = Order::create([
                             'kasir' => Auth::user()->name,
                             'status_id' => 1,
-                            'partner' => true
+                            'partner' => true,
+                            'user_id' => Auth::user()->id
                         ]);
                     }
 
@@ -173,6 +175,7 @@ class CashierController extends Controller
                         'profit' => $profit,
                         'partner_profit' => $partner_profit,
                         'partner_total' => $partner_total,
+                        'user_id' => Auth::user()->id
                     ]);
 
                 });

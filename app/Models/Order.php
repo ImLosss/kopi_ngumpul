@@ -20,7 +20,8 @@ class Order extends Model
         'customer_name',
         'partner',
         'partner_profit',
-        'partner_total'
+        'partner_total',
+        'user_id'
     ];
 
     public function carts() {

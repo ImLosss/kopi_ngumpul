@@ -74,12 +74,27 @@
                             <label for="kategori" class="form-control-label">{{ __('Role') }}</label>
                             <div class="@error('role')border border-danger rounded-3 @enderror">
                                 <select name="role" id="" class="form-control">
-                                    <option value="" selected disabled>Pilih Role</option>
+                                    <option value="" selected disabled>- Pilih Role -</option>
                                     @foreach ($data as $item)
                                         <option value="{{ $item->name }}" {{ old('role') == $item->name ? 'selected' : '' }}>{{ $item->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('role')
+                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="status" class="form-control-label">{{ __('Status') }}</label>
+                            <div class="@error('status')border border-danger rounded-3 @enderror">
+                                <select name="status" id="" class="form-control">
+                                    <option value="" selected disabled>- Pilih Status -</option>
+                                    <option value="aktif">Aktif</option>
+                                    <option value="tidak aktif">Tidak Aktif</option>
+                                </select>
+                                @error('status')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
                             </div>

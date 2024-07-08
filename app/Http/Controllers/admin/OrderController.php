@@ -60,7 +60,8 @@ class OrderController extends Controller
 
             $order->update([
                 'no_meja' => $request->no_meja,
-                'customer_name' => $request->name
+                'customer_name' => $request->name,
+                'user_id' => Auth::user()->id
             ]);
 
             Table::where('no_meja', $request->no_meja)->first()
@@ -111,6 +112,7 @@ class OrderController extends Controller
 
         if($user->hasRole('partner')) {
             $data = Order::with('status')
+            ->where('user_id', $user->id)
             ->where('status_id', '!=', 1)
             ->where('partner', true)
             ->where(function ($query) {

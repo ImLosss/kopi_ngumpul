@@ -49,6 +49,7 @@ class UserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'phone' => $request->notelp,
+                'status' => $request->status
             ])->assignRole($request->role);
 
             return redirect()->route('user')->with('alert', 'success')->with('message', 'User berhasil ditambahkan');
@@ -88,12 +89,14 @@ class UserController extends Controller
     public function update(UserEditRequest $request, string $id)
     {
         try {
+            // dd($request);
             $user = User::findOrFail($id);
 
             $user->update([
                 'name' => $request->name,
                 'email' => $request->email,
-                'phone' => $request->notelp
+                'phone' => $request->notelp,
+                'status' => $request->status
             ]);
 
             if($request->password) {
@@ -185,6 +188,7 @@ class UserController extends Controller
                     $query->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%")
                     ->orWhereHas('roles', function($query) use ($search) {
                         $query->where('name', 'like', "%{$search}%");
                     });

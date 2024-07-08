@@ -189,6 +189,7 @@ class PaymentController extends Controller
 
         if($user->hasRole('partner')) {
             $data = Order::with('status')
+            ->where('user_id', $user->id)
             ->where('status_id', '!=', 1)
             ->where('partner', true)
             ->where('pembayaran', false);

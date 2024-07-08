@@ -104,6 +104,10 @@
                     name: 'role'
                 },
                 {
+                    data: 'status',
+                    name: 'status'
+                },
+                {
                     data: 'since',
                     name: 'since'
                 },

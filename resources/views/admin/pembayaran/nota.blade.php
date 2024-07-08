@@ -103,7 +103,7 @@
                         <tr>
                             <td class="quantity">{{ $item->jumlah }}</td>
                             <td class="description">{{ $item->menu }}</td>
-                            <td class="price">{{ $item->partner_total != 0 ? $item->partner_total : 'Rp' . number_format($item->total + $item->total_diskon) }}</td>
+                            <td class="price">{{ $item->partner_total != 0 ? 'Rp' . number_format($item->partner_total) : 'Rp' . number_format($item->total + $item->total_diskon) }}</td>
                         </tr>
                         @if ($item->diskon_id != null)
                             <td class="quantity"></td>

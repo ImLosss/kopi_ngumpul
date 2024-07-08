@@ -86,6 +86,21 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="status" class="form-control-label">{{ __('Status') }}</label>
+                            <div class="@error('status')border border-danger rounded-3 @enderror">
+                                <select name="status" id="" class="form-control">
+                                    <option value="" disabled>- Pilih Status -</option>
+                                    <option value="aktif" {{ $user->status == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="tidak aktif" {{ $user->status == 'tidak aktif' ? 'selected' : '' }}>Tidak Aktif</option>
+                                </select>
+                                @error('status')
+                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Edit User' }}</button>
