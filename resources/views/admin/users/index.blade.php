@@ -37,6 +37,7 @@
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Email</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Phone</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Role</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Since</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                         </tr>
