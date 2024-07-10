@@ -142,20 +142,20 @@ class ProductController extends Controller
         ->addIndexColumn() 
         ->addColumn('name', function($data) {
             return $data->name;
-         })
-         ->addColumn('category', function($data) {
+        })
+        ->addColumn('category', function($data) {
             return $data->category->name;
-         })
-         ->addColumn('jumlah', function($data) {
+        })
+        ->addColumn('jumlah', function($data) {
             return $data->jumlah;
-         })
-         ->addColumn('modal', function($data) {
+        })
+        ->addColumn('modal', function($data) {
             return $data->modal;
-         })
-         ->addColumn('harga', function($data) {
+        })
+        ->addColumn('harga', function($data) {
             return $data->harga;
-         })
-         ->addColumn('rate', function($data) use($maxJual, $date) {
+        })
+        ->addColumn('rate', function($data) use($maxJual, $date) {
             $totaljual = Cart::where('product_id', $data->id)->where('pembayaran', true)->where('created_at', '>=', $date)->sum('jumlah');
             $rating = $this->calculateRating($totaljual, $maxJual);
 
@@ -172,8 +172,8 @@ class ProductController extends Controller
                     </div>
                 </div>
             </div>';
-         })
-         ->addColumn('action', function($data) {
+        })
+        ->addColumn('action', function($data) {
             return '
             <a href="' . route('product.edit', $data->id) . '">
                 <i class="fa-solid fa-pen-to-square text-secondary"></i>
@@ -183,7 +183,25 @@ class ProductController extends Controller
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
             </form>';
-         })
+        })
+        ->filter(function ($query) use ($request) {
+            if ($request->has('search') && $request->input('search.value')) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search) {
+                    $query->where('customer_name', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhere('harga', 'like', "%{$search}%")
+                    ->orWhere('rate', 'like', "%{$search}%")
+                    ->orWhere('modal', 'like', "%{$search}%");
+                    
+                    if (strtolower($search) === 'lunas') {
+                        $query->orWhere('pembayaran', true);
+                    } elseif (strtolower($search) === 'belum lunas') {
+                        $query->orWhere('pembayaran', false);
+                    }
+                });
+            }
+        })
          ->rawColumns(['rate', 'action'])
         ->toJson();
     }
