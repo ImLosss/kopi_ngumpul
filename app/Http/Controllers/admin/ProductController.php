@@ -193,12 +193,6 @@ class ProductController extends Controller
                     ->orWhere('harga', 'like', "%{$search}%")
                     ->orWhere('rate', 'like', "%{$search}%")
                     ->orWhere('modal', 'like', "%{$search}%");
-                    
-                    if (strtolower($search) === 'lunas') {
-                        $query->orWhere('pembayaran', true);
-                    } elseif (strtolower($search) === 'belum lunas') {
-                        $query->orWhere('pembayaran', false);
-                    }
                 });
             }
         })
