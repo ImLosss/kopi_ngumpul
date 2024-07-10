@@ -190,7 +190,6 @@ class ProductController extends Controller
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
                     ->orWhere('harga', 'like', "%{$search}%")
-                    ->orWhere('rate', 'like', "%{$search}%")
                     ->orWhere('modal', 'like', "%{$search}%");
                 });
             }
