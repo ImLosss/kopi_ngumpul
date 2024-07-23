@@ -1,8 +1,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" sizes="32x32" type="image/x-icon" href="{{ asset('./assets/img/logo.png')  }}">
-    <link rel="shortcut icon" sizes="32x32" href="{{ asset('./assets/img/logo.png')  }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('./assets/img/logo.png')  }}">
     <link rel="icon" type="image/png" href="{{ asset('./assets/img/logo.png')  }}">
     <title>
       Kopingumpul - Login
