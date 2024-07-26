@@ -50,7 +50,7 @@ class PartnerProductController extends Controller
             'up_price' => $request->upHarga
         ]);
 
-        return redirect()->route('partnerProduct')->with('alert', 'success')->with('message', 'Berhasil menambahkan product');
+        return redirect()->route('partnerProduct')->with('alert', 'success')->with('message', 'Berhasil menambahkan produk');
     }
 
     /**
@@ -73,7 +73,13 @@ class PartnerProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        return 'tess';
+        $data = PartnerProduct::findOrFail($id);
+
+        $data->update([
+            'up_price' => $request->upHarga
+        ]);
+
+        return redirect()->route('partnerProduct')->with('alert', 'success')->with('message', 'Berhasil update Produk');
     }
 
     /**
@@ -85,7 +91,7 @@ class PartnerProductController extends Controller
 
         $data->delete();
 
-        return redirect()->back()->with('alert', 'success')->with('message', 'Product berhasil dihapus');
+        return redirect()->back()->with('alert', 'success')->with('message', 'Produk berhasil dihapus');
     }
 
     public function getPartnerProduct(Request $request) {

@@ -21,23 +21,15 @@
             <h5 class="mb-0">{{ __('Edit Product') }}</h5>
         </div>
         <div class="card-body pt-4 p-3">
-            <form action="{{ route('product.partner.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('product.partner.update', $data->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                @method('PATCH')
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group has-validation">
                             <label for="user-name" class="form-control-label">{{ __('Nama produk') }}</label>
                             <div class="@error('product_id')border border-danger rounded-3 @enderror">
-                                <select name="product_id" class="form-control" id="name">
-                                    @if (!$products->isEmpty())
-                                        <option value="" disabled>Pilih menu</option>
-                                    @endif
-                                    @forelse ($products as $item)
-                                        <option value="{{ $item->id }}" {{ $data->product_id == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
-                                    @empty
-                                        <option disabled>Semua harga menu sudah diatur</option>
-                                    @endforelse
-                                </select>
+                                <input type="text" class="form-control" readonly value="{{ $data->product->name }}"> 
                                 @error('product_id')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -48,7 +40,8 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Up Harga') }}</label>
                             <div class="@error('upHarga')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="upHarga" name="upHarga" value="{{ $data->up_price }}" id="upHarga">
+                                <input class="form-control" type="text" placeholder="upHarga" oninput="formatNumberInput(this.value)" id="upHargaView" value="{{ number_format($data->up_price, 0, ',', '.') }}">
+                                <input class="form-control" type="hidden" placeholder="upHarga" name="upHarga" value="{{ $data->up_price }}" id="upHarga">
                                 @error('upHarga')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -58,7 +51,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Total harga setelah up') }}</label>
-                            <input class="form-control" type="number" value="{{ $data->up_price + $data->product->harga }}" placeholder="Total" name="upHargaVal" id="upHargaVal" readonly>
+                            <input class="form-control" type="text" placeholder="Total" value="{{ number_format($data->up_price + $data->product->harga, 0, ',', '.') }}" id="upTotalHargaView" readonly>
+                            <input class="form-control" type="hidden" value="{{ $data->up_price + $data->product->harga }}" placeholder="Total" name="upHargaVal" id="upHargaVal">
                             <input type="number" id="productPrice" value="{{ $data->product->harga }}" readonly hidden>
                         </div>
                     </div>
@@ -75,6 +69,20 @@
 
 @section('script')
     <script>
+        function formatNumberInput(input) {
+            // Ambil nilai input dan hapus semua karakter non-digit
+            let value = Number(input.replace(/\D/g, ''));
+
+            if(value == NaN) value = 0;
+
+            let productPrice = parseFloat($('#productPrice').val());
+            let totalHarga = value + productPrice
+            $('#upHargaVal').val(totalHarga);
+            $('#upTotalHargaView').val(totalHarga.toLocaleString('id-ID'));
+            $('#upHarga').val(value);
+            $('#upHargaView').val(value.toLocaleString('id-ID'));
+        }
+
         $('#name').change(function() {
             var productId = $(this).val();
             if (productId) {
@@ -82,24 +90,18 @@
                     url: '/get-partner-detail/' + productId,
                     type: 'GET',
                     success: function(data) {
-                        let upHarga = parseFloat($('#upHarga').val());
-                        let hargaData = parseFloat(data.harga);
+                        let upHarga = Number($('#upHarga').val());
+                        let hargaData = Number(data.harga);
+                        let totalHarga = upHarga + hargaData
                         $('#productPrice').val(hargaData);
-                        
+                        $('#upTotalHargaView').val(totalHarga.toLocaleString('id-ID'));
                         if(!upHarga) return $('#upHargaVal').val(hargaData);
-                        $('#upHargaVal').val(upHarga + hargaData);
+                        $('#upHargaVal').val(totalHarga);
                     }
                 });
             } else {
                 $('#harga').val(0);
             }
         });
-
-        $('#upHarga').change(function() {
-            let upHarga = parseFloat($('#upHarga').val());
-            let productPrice = parseFloat($('#productPrice').val());
-
-            $('#upHargaVal').val(upHarga + productPrice);
-        })
     </script>
 @endsection

@@ -154,12 +154,13 @@ Route::group([
     Route::post('/report/print', [ReportController::class, 'printReport'])->name('report.printReport');
     //endRoute
 
-    // routeReport
+    // routePartnerProduct
     Route::resource('partnerProduct', PartnerProductController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'index' => 'partnerProduct',
         'create' => 'product.partner.create',
         'store' => 'product.partner.store',
         'edit' => 'partnerProduct.edit',
+        'update' => 'product.partner.update',
         'destroy' => 'product.partner.destroy'
     ]);
 

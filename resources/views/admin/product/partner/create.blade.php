@@ -48,7 +48,8 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Up Harga') }}</label>
                             <div class="@error('upHarga')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="upHarga" name="upHarga" value="{{ old('upHarga') }}" id="upHarga">
+                                <input class="form-control" type="text" placeholder="upHarga" oninput="formatNumberInput(this.value)" id="upHargaView" value="{{ old('upHarga') }}">
+                                <input class="form-control" type="hidden" placeholder="upHarga" name="upHarga" id="upHarga">
                                 @error('upHarga')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -58,7 +59,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Total harga setelah up') }}</label>
-                            <input class="form-control" type="number" value="0" placeholder="Total" name="upHargaVal" value="" id="upHargaVal" readonly>
+                            <input class="form-control" type="text" value="0" placeholder="Total" name="upTotalHargaView" value="" id="upTotalHargaView" readonly>
+                            <input class="form-control" type="hidden" value="0" placeholder="Total" name="upHargaVal" value="" id="upHargaVal">
                             <input type="number" id="productPrice" value="0" readonly hidden>
                         </div>
                     </div>
@@ -75,6 +77,20 @@
 
 @section('script')
     <script>
+        function formatNumberInput(input) {
+            // Ambil nilai input dan hapus semua karakter non-digit
+            let value = Number(input.replace(/\D/g, ''));
+
+            if(value == NaN) value = 0;
+
+            let productPrice = parseFloat($('#productPrice').val());
+            let totalHarga = value + productPrice
+            $('#upHargaVal').val(totalHarga);
+            $('#upTotalHargaView').val(totalHarga.toLocaleString('id-ID'));
+            $('#upHarga').val(value);
+            $('#upHargaView').val(value.toLocaleString('id-ID'));
+        }
+
         $('#name').select2();
         $('#name').change(function() {
             var productId = $(this).val();
@@ -83,24 +99,18 @@
                     url: '/get-partner-detail/' + productId,
                     type: 'GET',
                     success: function(data) {
-                        let upHarga = parseFloat($('#upHarga').val());
-                        let hargaData = parseFloat(data.harga);
+                        let upHarga = Number($('#upHarga').val());
+                        let hargaData = Number(data.harga);
+                        let totalHarga = upHarga + hargaData
                         $('#productPrice').val(hargaData);
-                        
+                        $('#upTotalHargaView').val(totalHarga.toLocaleString('id-ID'));
                         if(!upHarga) return $('#upHargaVal').val(hargaData);
-                        $('#upHargaVal').val(upHarga + hargaData);
+                        $('#upHargaVal').val(totalHarga);
                     }
                 });
             } else {
                 $('#harga').val(0);
             }
         });
-
-        $('#upHarga').change(function() {
-            let upHarga = parseFloat($('#upHarga').val());
-            let productPrice = parseFloat($('#productPrice').val());
-
-            $('#upHargaVal').val(upHarga + productPrice);
-        })
     </script>
 @endsection
