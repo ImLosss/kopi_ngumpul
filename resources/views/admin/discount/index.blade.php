@@ -1,5 +1,9 @@
 @extends('layouts.admin-layout')
 
+@section('title')
+    - Discount
+@endsection
+
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
@@ -31,6 +35,7 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Menu</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Deskripsi</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Diskon(%)</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                             </tr>
                         </thead>
@@ -50,12 +55,34 @@
         $('#form_'+key).submit();
     }
 
+    function modalHapus(id) {
+        Swal.fire({
+            title: "Kamu yakin?",
+            text: "Kamu tidak akan bisa membatalkannya setelah ini!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#a1a1a1",
+            confirmButtonText: "Ya, hapus saja!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submit(id);
+            }
+        });
+    }
+
     $(document).ready( function () {
         var table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
+            ordering: false,
             ajax: {
-                url: "{{ route('admin.dataTable.getDiscount') }}"
+                url: "{{ route('admin.dataTable.getDiscount') }}",
+                error: function(xhr, error, thrown){
+                    // console.log('An error occurred while fetching data.');
+                    // Hide the default error message
+                    $('#example').DataTable().clear().draw();
+                }
             },
             columns: [
                 {
@@ -71,10 +98,17 @@
                     name: 'diskon'
                 },
                 {
+                    data: 'status',
+                    name: 'status'
+                },
+                {
                     data: 'action',
                     name: 'action'
                 }
-            ]
+            ],
+            headerCallback: function(thead, data, start, end, display) {
+                $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
+            },
         });
 
         // function reloadTable() {

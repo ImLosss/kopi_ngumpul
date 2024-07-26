@@ -11,12 +11,25 @@ class Order extends Model
 
     protected $fillable = [
         'no_meja',
+        'profit',
         'total',
         'status',
-        'kasir'
+        'kasir',
+        'status_id',
+        'pembayaran',
+        'customer_name',
+        'partner',
+        'partner_profit',
+        'partner_total',
+        'user_id'
     ];
 
     public function carts() {
         return $this->hasMany(Cart::class, 'order_id', 'id');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_id', 'id');
     }
 }

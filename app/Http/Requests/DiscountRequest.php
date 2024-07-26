@@ -24,7 +24,8 @@ class DiscountRequest extends FormRequest
         return [
             'menu' => 'required|exists:products,id',
             'disc_name' => 'required|max:50',
-            'discount' => 'required|numeric|max:100'
+            'discount' => 'required|numeric|max:100',
+            'status' => 'required'
         ];
     }
 }

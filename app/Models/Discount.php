@@ -12,7 +12,8 @@ class Discount extends Model
     protected $fillable = [
         'name',
         'percent',
-        'product_id'
+        'product_id',
+        'status'
     ];
 
     public function product() 

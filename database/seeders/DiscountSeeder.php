@@ -16,13 +16,15 @@ class DiscountSeeder extends Seeder
         Discount::create([
             'name' => 'Diskon Mahasiswa',
             'percent' => 20,
-            'product_id' => 1
+            'product_id' => 1,
+            'status' => 'Aktif'
         ]);
 
         Discount::create([
             'name' => 'Diskon Harian',
             'percent' => 15,
-            'product_id' => 1
+            'product_id' => 1,
+            'status' => 'Aktif'
         ]);
     }
 }

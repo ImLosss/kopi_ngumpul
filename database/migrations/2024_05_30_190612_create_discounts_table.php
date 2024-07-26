@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->bigInteger('percent');
             $table->unsignedBigInteger('product_id');
+            $table->string('status');
             $table->timestamps();
         });
     }

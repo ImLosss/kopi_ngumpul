@@ -1,5 +1,9 @@
 @extends('layouts.admin-layout')
 
+@section('title')
+    - User
+@endsection
+
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
@@ -9,6 +13,7 @@
         <h5 class="font-weight-bolder mb-0">User Management</h5>
     </nav>
 @endsection
+
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -19,7 +24,7 @@
                         <h6>All Users</h6>
                     </div>
                     <div class="col-6 text-end">
-                        <a class="btn bg-gradient-dark mb-0" href="#"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add User</a>
+                        <a class="btn bg-gradient-dark mb-0" href="{{ route('user.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add User</a>
                     </div>
                 </div>
             </div>
@@ -53,12 +58,34 @@
         $('#form_'+key).submit();
     }
 
+    function modalHapus(id) {
+        Swal.fire({
+            title: "Kamu yakin?",
+            text: "Kamu tidak akan bisa membatalkannya setelah ini!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#a1a1a1",
+            confirmButtonText: "Ya, hapus saja!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submit(id);
+            }
+        });
+    }
+
+
     $(document).ready( function () {
         var table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('admin.dataTable.getUser') }}"
+                url: "{{ route('admin.dataTable.getUser') }}",
+                error: function(xhr, error, thrown){
+                    // console.log('An error occurred while fetching data.');
+                    // Hide the default error message
+                    $('#example').DataTable().clear().draw();
+                }
             },
             columns: [
                 {
@@ -89,7 +116,10 @@
                     data: 'action',
                     name: 'action'
                 }
-            ]
+            ],
+            headerCallback: function(thead, data, start, end, display) {
+                $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
+            },
         });
 
         // function reloadTable() {

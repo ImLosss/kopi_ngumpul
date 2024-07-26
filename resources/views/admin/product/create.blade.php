@@ -1,5 +1,9 @@
 @extends('layouts.admin-layout')
 
+@section('title')
+    - Add Product
+@endsection
+
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
@@ -24,7 +28,7 @@
                         <div class="form-group has-validation">
                             <label for="user-name" class="form-control-label">{{ __('Nama produk') }}</label>
                             <div class="@error('name')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="text" placeholder="Name" name="name">
+                                <input class="form-control" type="text" placeholder="Name" name="name" value="{{ old('name') }}">
                                 @error('name')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -36,10 +40,15 @@
                             <label for="kategori" class="form-control-label">{{ __('Kategori') }}</label>
                             <div class="@error('kategori')border border-danger rounded-3 @enderror">
                                 <select name="kategori" id="" class="form-control">
-                                    <option value="" selected disabled>Pilih Kategori</option>
-                                    @foreach ($data as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach
+                                    @if ($data->isEmpty())
+                                        <option value="" selected disabled>Atur kategori terlebih dahulu</option>
+                                    @else
+                                        <option value="" selected disabled>Pilih Kategori</option>
+                                        @foreach ($data as $item)
+                                            <option value="{{ $item->id }}" {{ old('kategori') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                        @endforeach
+                                    @endif
+                                    
                                 </select>
                                 @error('kategori')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
@@ -51,7 +60,7 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Modal') }}</label>
                             <div class="@error('modal')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="modal" name="modal">
+                                <input class="form-control" type="number" placeholder="modal" name="modal" value="{{ old('modal') }}">
                                 @error('modal')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -62,7 +71,7 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Harga') }}</label>
                             <div class="@error('harga')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="harga" name="harga">
+                                <input class="form-control" type="number" placeholder="harga" name="harga" value="{{ old('harga') }}">
                                 @error('harga')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -73,7 +82,7 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Stock') }}</label>
                             <div class="@error('stock')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="Stock" name="stock">
+                                <input class="form-control" type="number" placeholder="Stock" name="stock" value="{{ old('stock') }}">
                                 @error('stock')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror

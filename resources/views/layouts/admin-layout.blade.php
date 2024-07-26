@@ -18,11 +18,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('./assets/img/apple-icon.png') }}">
-  <link rel="icon" type="image/png" href="{{ asset('./assets/img/favicon.png') }}">
+  <link rel="icon" type="image/png" href="{{ asset('./assets/img/logo.png') }}">
   <title>
-    Soft UI Dashboard by Creative Tim
+    Kopi Ngumpul @yield('title')
   </title>
+  
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
   <!-- Nucleo Icons -->
@@ -33,13 +33,25 @@
   <link href="{{ asset('./assets/css/nucleo-svg.css') }}" rel="stylesheet" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('./assets/css/soft-ui-dashboard.css?v=1.0.7') }}" rel="stylesheet" />
-  <!-- Nepcha Analytics (nepcha.com) -->
-  <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
-  <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
 
   {{-- jQuery --}}
   <script src="{{ asset('assets/js/jquery-1.11.1.min.js') }}"
   crossorigin="anonymous"></script>
+  
+  <!-- Select2 CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet">
+
+  <!-- Select2 JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+  <style>
+    .custom-hr {
+      border: 0;
+      height: 1px;
+      background: #333;
+      background-image: linear-gradient(to right, #8a8a8a, #333, #8a8a8a);
+      margin: 10px 0;
+    }
+  </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
@@ -51,7 +63,7 @@
       <x-admin-footer></x-admin-footer>
     </div>
   </main>
-  <div class="fixed-plugin">
+  {{-- <div class="fixed-plugin">
     <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
       <i class="fa fa-cog py-2"> </i>
     </a>
@@ -116,7 +128,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> --}}
   @include('components.admin-script')
   @if (session()->has('alert'))
     <script>
@@ -135,6 +147,18 @@
             icon: "{{ session('alert') }}",
             title: "{{ session('message') }}"
           });
+    </script>
+  @endif
+
+  @if (session()->has('modal_alert'))
+    <script>
+      Swal.fire({
+        text: "{{ session('message') }}",
+        icon: "{{ session('modal_alert') }}",
+        timer: 1500,
+        showConfirmButton: false,
+        timerProgressBar: true
+      })
     </script>
   @endif
   @yield('script')

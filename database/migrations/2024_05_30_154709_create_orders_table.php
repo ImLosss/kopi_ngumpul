@@ -13,10 +13,17 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->integer('no_meja')->nullable();
             $table->bigInteger('total')->nullable();
-            $table->string('status');
+            $table->bigInteger('profit')->nullable();
+            $table->unsignedBigInteger('status_id');
+            $table->boolean('pembayaran')->default(false);
             $table->string('kasir');
+            $table->string('customer_name')->nullable();
+            $table->boolean('partner')->default(false);
+            $table->bigInteger('partner_profit')->nullable();
+            $table->bigInteger('partner_total')->nullable();
             $table->timestamps();
         });
     }

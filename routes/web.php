@@ -3,12 +3,19 @@
 use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\CartController;
 use App\Http\Controllers\admin\CashierController;
+use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\DiscountController;
+use App\Http\Controllers\admin\OrderController;
+use App\Http\Controllers\admin\PartnerProductController;
+use App\Http\Controllers\admin\PaymentController;
 use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
+use App\Http\Controllers\admin\TableController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\auth\LogoutController;
+use App\Services\OrderService;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,16 +41,20 @@ Route::group([
     'namespace'  => 'App\Http\Controllers\admin',
     'prefix'     => '/',
 ], function () {
+
+    // routeDahboard
     Route::get('/', [AdminController::class, 'index'])->name('home');
+    Route::get('/filterRating', [AdminController::class, 'filterRating'])->name('filterRating');
+    //endRoute
 
     // routeUser
-    Route::resource('user', UserController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy'])->names([
+    Route::resource('user', UserController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'index' => 'user',
-        'update'  => 'order.confirm',
-        'show'  => 'order.view',
+        'update'  => 'user.update',
         'edit' => 'user.edit',
-        'store' => 'order.storepayment',
-        'destroy' => 'user.destroy'
+        'store' => 'user.store',
+        'destroy' => 'user.destroy',
+        'create' => 'user.create'
     ]);
 
     Route::get('/getUser', [UserController::class, 'getUser'])->name('admin.dataTable.getUser');
@@ -82,6 +93,7 @@ Route::group([
         'index' => 'discount',
         'destroy' => 'discount.destroy',
         'edit' => 'discount.edit',
+        'update' => 'discount.update',
         'create' => 'discount.create',
         'store' => 'discount.store'
     ]);
@@ -94,4 +106,75 @@ Route::group([
         'destroy' => 'cart.destroy',
     ]);
     //endRoute
+
+    //routeCategory
+    Route::resource('category', CategoryController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'category',
+    ]);
+
+    Route::get('/getCategories', [CategoryController::class, 'getCategories'])->name('admin.dataTable.getCategories');
+    //endRoute
+
+    //routeOrder
+    Route::resource('order', OrderController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'order.index',
+        'update' => 'order.update',
+        'show' => 'order.show'
+    ]);
+
+    Route::get('/getOrder', [OrderController::class, 'getOrder'])->name('admin.dataTable.getOrder');
+    Route::get('/fixStatusOrder', [OrderService::class, 'fixAllStatusOrder'])->name('order.fixStatusOrder');
+    Route::get('/getPesanan/{id}', [OrderController::class, 'getPesanan'])->name('admin.dataTable.getPesanan');
+    Route::post('/pesanan/updateOrDelete', [OrderController::class, 'updateOrDelete'])->name('admin.pesanan.updateOrDelete');
+    Route::delete('/pesanan/delete/{id}', [OrderController::class, 'hapusPesanan'])->name('pesanan.destroy');
+    Route::patch('pesanan/update/{id}', [OrderController::class, 'updateStatus'])->name('pesanan.updateStatus');
+    //endRoute
+
+    // routePayment
+    Route::resource('payment', PaymentController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'payment',
+        'show' => 'payment.show',
+    ]);
+
+    Route::get('/getAllOrder', [PaymentController::class, 'getAllOrder'])->name('admin.dataTable.getAllOrder');
+    Route::get('/getPayment/{id}', [PaymentController::class, 'getPayment'])->name('admin.dataTable.getPayment');
+    Route::post('/payment/billOrUpdate', [PaymentController::class, 'billOrUpdate'])->name('payment.billOrUpdate');
+    Route::patch('payment/update/{id}', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
+    //endRoute
+
+    // routeReport
+    Route::resource('report', ReportController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'report',
+        'show' => 'report.show'
+    ]);
+
+    Route::get('/getAllReport', [ReportController::class, 'getAllReport'])->name('admin.dataTable.getAllReport');
+    Route::get('/reportFilter', [ReportController::class, 'filterReport'])->name('report.filter');
+    Route::get('/getReport/{id}', [ReportController::class, 'getReport'])->name('admin.dataTable.getReport');
+    Route::post('/report/print', [ReportController::class, 'printReport'])->name('report.printReport');
+    //endRoute
+
+    // routeReport
+    Route::resource('partnerProduct', PartnerProductController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'partnerProduct',
+        'create' => 'product.partner.create',
+        'store' => 'product.partner.store',
+        'edit' => 'partnerProduct.edit',
+        'destroy' => 'product.partner.destroy'
+    ]);
+
+    Route::get('/getPartnerProduct', [PartnerProductController::class, 'getPartnerProduct'])->name('admin.dataTable.getPartnerProduct');
+    Route::get('/get-partner-detail/{id}', [PartnerProductController::class, 'getPartnerProductDetail']);
+    //endRoute
+
+    // routeTable
+    Route::resource('table', TableController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'table',
+        'edit' => 'table.edit',
+        'update' => 'table.update',
+        'destroy' => 'table.destroy'
+    ]);
+
+    Route::get('/getTables', [TableController::class, 'getTables'])->name('admin.dataTable.getTables');
+    // endRoute
 });
