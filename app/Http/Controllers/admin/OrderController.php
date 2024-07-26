@@ -139,6 +139,7 @@ class OrderController extends Controller
             return $no_meja;
          })
          ->addColumn('kasir', function($data) {
+            if (!$data->kasir) return 'none';
             return $data->kasir;
          })
          ->addColumn('total', function($data) use($user) {

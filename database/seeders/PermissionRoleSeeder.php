@@ -28,13 +28,13 @@ class PermissionRoleSeeder extends Seeder
         Permission::create(['name' => 'permissionAccess'])
         ->assignRole('admin');
         Permission::create(['name' => 'cashierAccess'])
-        ->assignRole(['admin', 'kasir', 'pelayan']);
+        ->assignRole(['kasir', 'pelayan']);
         Permission::create(['name' => 'cashierPartnerAccess'])
         ->assignRole(['partner']);
         Permission::create(['name' => 'orderAccess'])
-        ->assignRole(['admin', 'kasir', 'dapur', 'partner', 'pelayan']);
+        ->assignRole(['kasir', 'dapur', 'partner', 'pelayan']);
         Permission::create(['name' => 'orderDelete'])
-        ->assignRole(['dapur', 'admin']);
+        ->assignRole(['dapur']);
         Permission::create(['name' => 'productAccess'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'catogoryAccess'])

@@ -74,6 +74,12 @@ class PaymentController extends Controller
         // dd($request);
         $cart = Cart::with('product', 'order')->findOrFail($id);
 
+        $order = Order::findOrFail($cart->order_id);
+
+        $order->update([
+            'kasir' => Auth::user()->name
+        ]);
+
         $cart->update([
             'pembayaran' => true,
             'payment_method' => $request->paymentSingle,
@@ -133,6 +139,12 @@ class PaymentController extends Controller
             // dd($request);
             
             $carts = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
+
+            $order = Order::findOrFail($carts->first()->order_id);
+            
+            $order->update([    
+                'kasir' => Auth::user()->name
+            ]);
 
             if($request->updateMeja == 'true') {
                 $table = Table::where('no_meja', $request->no_meja)->first();
@@ -194,6 +206,17 @@ class PaymentController extends Controller
             ->where('partner', true)
             ->where('pembayaran', false);
         }
+
+        if($user->hasRole('kasir')) {
+            $data = Order::with('status')
+            ->where('status_id', '!=', 1)
+            ->where('pembayaran', false)
+            ->where('partner', false)
+            ->where(function ($query) use($user) {
+                $query->where('kasir', $user->name)
+                      ->orWhere('kasir', null);
+            });
+        }
         // dd($data);
         return DataTables::of($data)
         ->addIndexColumn() 
@@ -211,6 +234,7 @@ class PaymentController extends Controller
             return $no_meja;
          })
          ->addColumn('kasir', function($data) {
+            if (!$data->kasir) return 'none';
             return $data->kasir;
          })
          ->addColumn('total', function($data) {

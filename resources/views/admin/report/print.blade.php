@@ -72,6 +72,13 @@
                             <td width="120px"><b>Total pemasukan</b></td>
                             <td width="20px"><b>:</b></td>
                             <td><b>Rp{{ number_format($total) }}</b></td>
+                            @if (Auth::user()->hasRole('kasir'))
+                                <td>
+                                    <div class="report-date">
+                                        <b>Kasir: {{ Auth::user()->name }}</b>
+                                    </div>
+                                </td>
+                            @endif
                         </tr>
                         <tr>
                             <td><b>Total keuntungan</b></td>
@@ -110,7 +117,7 @@
                 <tbody>
                     @foreach ($order as $item)
                         <tr>
-                            <td colspan="8" class="text-center"><b>{{ $item->created_at }} {{ $item->customer_name != null ? '/ Pelanggan: ' . $item->customer_name : '' }} / kasir: {{ $item->kasir }} @if (!Auth::user()->hasRole('partner') && $item->partner) / partner (Rp{{ number_format($item->partner_profit) }}) @endif </b></td>
+                            <td colspan="8" class="text-center"><b>{{ $item->created_at }} {{ $item->customer_name != null ? '/ Pelanggan: ' . $item->customer_name : '' }} @if (Auth::user()->hasRole('admin')) / kasir: {{ $item->kasir }} @endif @if (!Auth::user()->hasRole('partner') && $item->partner) / partner (Rp{{ number_format($item->partner_profit) }}) @endif </b></td>
                         </tr>
                         @foreach ($item->carts as $no => $cart)
                             <tr>

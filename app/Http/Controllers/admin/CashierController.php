@@ -33,7 +33,6 @@ class CashierController extends Controller
             $order = Order::where('status_id', 1)->where('partner', false)->first();
             if(!$order) {
                 $order = Order::create([
-                    'kasir' => Auth::user()->name,
                     'status_id' => 1,
                 ]);
             }
@@ -50,7 +49,6 @@ class CashierController extends Controller
             $order = Order::where('status_id', 1)->where('partner', true)->first();
             if(!$order) {
                 $order = Order::create([
-                    'kasir' => Auth::user()->name,
                     'status_id' => 1,
                     'partner' => true,
                     'user_id' => Auth::user()->id
@@ -90,7 +88,6 @@ class CashierController extends Controller
 
                     if(!$order) {
                         $order = Order::create([
-                            'kasir' => Auth::user()->name,
                             'status_id' => 1,
                         ]);
                     }
@@ -136,7 +133,6 @@ class CashierController extends Controller
 
                     if(!$order) {
                         $order = Order::create([
-                            'kasir' => Auth::user()->name,
                             'status_id' => 1,
                             'partner' => true,
                             'user_id' => Auth::user()->id
