@@ -68,7 +68,8 @@
                             <div class="form-group">
                                 <label for="email" class="form-control-label">{{ __('Harga') }}</label>
                                 <div class="@error('harga')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="number" placeholder="harga" id="harga" name="harga" value="0" readonly>
+                                    <input class="form-control" type="text" placeholder="harga" id="hargaView" readonly>
+                                    <input class="form-control" type="hidden" placeholder="harga" id="harga" name="harga" value="0">
                                     @error('harga')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -90,7 +91,8 @@
                             <div class="form-group">
                                 <label for="email" class="form-control-label">{{ __('Total') }}</label>
                                 <div class="@error('total')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="number" placeholder="Total" name="total" id="total" value="0" readonly>
+                                    <input class="form-control" type="text" placeholder="Total" id="totalView" readonly>
+                                    <input class="form-control" type="hidden" placeholder="Total" name="total" id="total" value="0">
                                     @error('total')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -243,10 +245,14 @@
                     success: function(data) {
                         stock = data.stock;
                         let jumlah = $('#jumlah').val();
+                        let harga = Number(data.harga);
+                        let total = data.harga*jumlah;
                         if(jumlah > stock) $('#jumlah').val(stock);
-                        $('#harga').val(data.harga);
+                        $('#harga').val(harga);
+                        $('#hargaView').val(harga.toLocaleString('id-ID'));
                         $('#stock').val(data.stock);
-                        $('#total').val(data.harga*jumlah);
+                        $('#total').val(total);
+                        $('#totalView').val(total.toLocaleString('id-ID'));
                         if(data.diskon.length != 0) {
                             $('#diskonFill').remove();
 
@@ -284,7 +290,9 @@
             if(jumlah > stock) $('#jumlah').val(stock);
 
             var jumlah = $('#jumlah').val();
-            $('#total').val(jumlah*harga);
+            let total = jumlah*harga;
+            $('#total').val(total);
+            $('#totalView').val(total.toLocaleString('id-ID'));
         });
     });
 </script>
