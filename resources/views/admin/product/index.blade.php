@@ -34,13 +34,15 @@
                                     </select>
                                 @endif
                             </div>
-                            <div>
-                                @if ($categories->isEmpty())
-                                    <a class="btn bg-gradient-dark mb-0" href="{{ route('category.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Category</a>
-                                @else
-                                    <a class="btn bg-gradient-dark mb-0" href="{{ route('product.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Product</a>
-                                @endif
-                            </div>
+                            @can('productAdd')
+                                <div>
+                                    @if ($categories->isEmpty())
+                                        <a class="btn bg-gradient-dark mb-0" href="{{ route('category.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Category</a>
+                                    @else
+                                        <a class="btn bg-gradient-dark mb-0" href="{{ route('product.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Product</a>
+                                    @endif
+                                </div>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -112,5 +114,21 @@
             $('#dataTable3').DataTable().ajax.reload();
         }
     });
+
+    function modalHapus(id) {
+        Swal.fire({
+            title: "Kamu yakin?",
+            text: "Kamu tidak akan bisa membatalkannya setelah ini!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#a1a1a1",
+            confirmButtonText: "Ya, hapus saja!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submit(id);
+            }
+        });
+    }
 </script>
 @endsection

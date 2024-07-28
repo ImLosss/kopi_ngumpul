@@ -101,5 +101,21 @@
             $('#dataTable3').DataTable().ajax.reload();
         }
     });
+
+    function modalHapus(id) {
+        Swal.fire({
+            title: "Kamu yakin?",
+            text: "Kamu tidak akan bisa membatalkannya setelah ini!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#a1a1a1",
+            confirmButtonText: "Ya, hapus saja!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submit(id);
+            }
+        });
+    }
 </script>
 @endsection

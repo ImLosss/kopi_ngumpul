@@ -94,7 +94,7 @@ class OrderController extends Controller
         // }
 
         $user = Auth::user();
-        $data = Order::with('status')
+        $data = Order::with(['status', 'kasir'])
         ->where('status_id', '!=', 1)
         ->where('partner', false)
         ->where(function ($query) {
@@ -102,16 +102,29 @@ class OrderController extends Controller
                   ->orWhere('pembayaran', false);
         });
         
-        if($user->hasRole(['dapur', 'pelayan'])) {
-            $data = Order::with('status')
+        if($user->hasRole('dapur')) {
+            $data = Order::with(['status', 'kasir'])
             ->where('status_id', '!=', 1)
-            ->where('status_id', 2)
-            ->orWhere('status_id', 3)
-            ->orWhere('status_id', 4);
+            ->where(function ($query) {
+                $query->where('status_id', 2)
+                      ->orWhere('status_id', 3)
+                      ->orWhere('status_id', 4);
+            });
+        }
+
+        if($user->hasRole('pelayan')) {
+            $data = Order::with(['status', 'kasir'])
+            ->where('status_id', '!=', 1)
+            ->where('partner', false)
+            ->where(function ($query) {
+                $query->where('status_id', 2)
+                      ->orWhere('status_id', 3)
+                      ->orWhere('status_id', 4);
+            });
         }
 
         if($user->hasRole('partner')) {
-            $data = Order::with('status')
+            $data = Order::with(['status', 'kasir'])
             ->where('user_id', $user->id)
             ->where('status_id', '!=', 1)
             ->where('partner', true)
@@ -139,8 +152,8 @@ class OrderController extends Controller
             return $no_meja;
          })
          ->addColumn('kasir', function($data) {
-            if (!$data->kasir) return 'none';
-            return $data->kasir;
+            if (!$data->kasir_id) return 'none';
+            return $data->kasir->name;
          })
          ->addColumn('total', function($data) use($user) {
             if($data->partner) return 'Rp' . number_format($data->partner_total);
@@ -166,11 +179,13 @@ class OrderController extends Controller
                 $search = $request->input('search.value');
                 $query->where(function ($query) use ($search) {
                     $query->where('customer_name', 'like', "%{$search}%")
-                    ->orWhere('kasir', 'like', "%{$search}%")
                     ->orWhere('no_meja', 'like', "%{$search}%")
                     ->orWhere('created_at', 'like', "%{$search}%")
                     ->orWhereHas('status', function ($query) use ($search) {
                         $query->where('desc', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('kasir', function ($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%");
                     });
                     
                     if (strtolower($search) === 'lunas') {

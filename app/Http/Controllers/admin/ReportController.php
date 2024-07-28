@@ -44,7 +44,7 @@ class ReportController extends Controller
         $user = Auth::user();
 
         if(!$request->has('id_order')) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada History yang terpilih');
-        $data['order'] = Order::with('carts')->withSum('carts', 'jumlah')->withSum('carts', 'harga')->withSum('carts', 'partner_price')->withSum('carts', 'total_diskon')->whereIn('id', $request->id_order)->get();
+        $data['order'] = Order::with(['carts', 'kasir'])->withSum('carts', 'jumlah')->withSum('carts', 'harga')->withSum('carts', 'partner_price')->withSum('carts', 'total_diskon')->whereIn('id', $request->id_order)->get();
         $data['strDate'] = Carbon::now()->format('Y-m-d');
         $data['total'] = $data['order']->sum('total');
         $data['profit'] = $data['order']->sum('profit');
@@ -71,12 +71,12 @@ class ReportController extends Controller
         $data = Order::with('status')->where('pembayaran', true)->whereDate('created_at', '>=', $oneDayAgo);
 
         if($user->hasRole('partner')) $data = Order::with('status')->where('user_id', $user->id)->where('pembayaran', true)->where('partner', true)->whereDate('created_at', '>=', $oneDayAgo);
-        if($user->hasRole('kasir')) $data = Order::with('status')->where('pembayaran', true)->whereDate('created_at', '>=', $oneDayAgo)->where('kasir', $user->name);
+        if($user->hasRole('kasir')) $data = Order::with('status')->where('pembayaran', true)->whereDate('created_at', '>=', $oneDayAgo)->where('kasir_id', $user->id);
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $data = Order::with('status')->where('pembayaran', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
             if($user->hasRole('partner')) $data = Order::with('status')->where('user_id', $user->id)->where('pembayaran', true)->where('partner', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);
-            if($user->hasRole('kasir')) $data = Order::with('status')->where('pembayaran', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()])->where('kasir', $user->name);
+            if($user->hasRole('kasir')) $data = Order::with('status')->where('pembayaran', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()])->where('kasir_id', $user->id);
         }
 
         $totalPendapatan = $data->sum('total');
@@ -96,7 +96,8 @@ class ReportController extends Controller
             return $data->customer_name;
          })
         ->addColumn('kasir', function($data) {
-            return $data->kasir;
+            if(!$data->kasir_id) return 'None';
+            return $data->kasir->name;
         })
         ->addColumn('total', function($data) use($user) {
             if($user->hasRole('partner')) return 'Rp' . number_format($data->partner_total);

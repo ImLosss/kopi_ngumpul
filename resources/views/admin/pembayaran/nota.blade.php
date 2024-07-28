@@ -85,7 +85,7 @@
                 <tr>
                     <td style="width: 70px; word-break: break-all;">Title: Cashier</td>
                     <td style="width: 70px; word-break: break-all; text-align:center;">OP: {{ Auth::user()->name }}</td>
-                    <td style="width: 70px; word-break: break-all; text-align:end">{{ $kasir }}</td>
+                    <td style="width: 70px; word-break: break-all; text-align:end">{{ Auth::user()->name }}</td>
                 </tr>
             </table>
             <table style="border-bottom: 1px dashed black;">

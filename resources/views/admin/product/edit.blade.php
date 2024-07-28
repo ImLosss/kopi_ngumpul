@@ -29,7 +29,8 @@
                         <div class="form-group has-validation">
                             <label for="user-name" class="form-control-label">{{ __('Nama produk') }}</label>
                             <div class="@error('name')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="text" placeholder="Name" name="name" value="{{ $product->name }}">
+                                <input class="form-control" type="text" placeholder="Name" name="name" value="{{ $product->name }}" @role('dapur') disabled @endrole>
+                                @role('dapur') <input type="hidden" name="name" value="{{ $product->name }}"> @endrole
                                 @error('name')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -40,12 +41,13 @@
                         <div class="form-group">
                             <label for="kategori" class="form-control-label">{{ __('Kategori') }}</label>
                             <div class="@error('kategori')border border-danger rounded-3 @enderror">
-                                <select name="kategori" id="" class="form-control">
+                                <select name="kategori" id="" class="form-control" @role('dapur') disabled @endrole>
                                     <option value="" disabled>Pilih Kategori</option>
                                     @foreach ($categories as $item)
                                         <option value="{{ $item->id }}" {{ $product->category_id == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
                                     @endforeach
                                 </select>
+                                @role('dapur')<input name="kategori" type="hidden" class="form-control" value="{{ $product->category_id }}"> @endrole
                                 @error('kategori')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -56,7 +58,9 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Modal') }}</label>
                             <div class="@error('modal')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="modal" name="modal" value="{{ $product->modal }}">
+                                <input class="form-control" type="text" placeholder="modal" id="modalView" oninput="formatNumberInput()" value="{{ number_format($product->modal, 0, ',', '.') }}" @role('dapur') disabled @endrole>
+                                <input class="form-control" type="hidden" placeholder="modal" id="modal" name="modal" value="{{ $product->modal }}" @role('dapur') disabled @endrole>
+                                @role('dapur') <input type="hidden" name="modal" value="{{ $product->modal }}"> @endrole
                                 @error('modal')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -67,7 +71,9 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Harga') }}</label>
                             <div class="@error('harga')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="harga" name="harga" value="{{ $product->harga }}">
+                                <input class="form-control" type="text" placeholder="harga" id="hargaView" oninput="formatNumberInput()" value="{{ number_format($product->harga, 0, ',', '.') }}" @role('dapur') disabled @endrole>
+                                <input class="form-control" type="hidden" placeholder="harga" id="harga" name="harga" value="{{ $product->harga }}" @role('dapur') disabled @endrole>
+                                @role('dapur') <input type="hidden" name="harga" value="{{ $product->harga }}"> @endrole
                                 @error('harga')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -93,4 +99,19 @@
         </div>
     </div>
 
+@endsection
+
+@section('script')
+    <script>
+        function formatNumberInput() {
+            // Ambil nilai input dan hapus semua karakter non-digit
+            let modalView = Number($('#modalView').val().replace(/\D/g, ''));
+            let hargaView = Number($('#hargaView').val().replace(/\D/g, ''));
+
+            $('#modal').val(modalView)
+            $('#modalView').val(modalView.toLocaleString('id-ID'));
+            $('#harga').val(hargaView)
+            $('#hargaView').val(hargaView.toLocaleString('id-ID'));
+        }
+    </script>
 @endsection

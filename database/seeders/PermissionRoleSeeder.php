@@ -36,8 +36,14 @@ class PermissionRoleSeeder extends Seeder
         Permission::create(['name' => 'orderDelete'])
         ->assignRole(['dapur']);
         Permission::create(['name' => 'productAccess'])
+        ->assignRole(['admin', 'dapur']);
+        Permission::create(['name' => 'productUpdate'])
+        ->assignRole(['admin', 'dapur']);
+        Permission::create(['name' => 'productDelete'])
         ->assignRole(['admin']);
-        Permission::create(['name' => 'catogoryAccess'])
+        Permission::create(['name' => 'productAdd'])
+        ->assignRole(['admin']);
+        Permission::create(['name' => 'categoryAccess'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'discountAccess'])
         ->assignRole(['admin']);
@@ -57,8 +63,6 @@ class PermissionRoleSeeder extends Seeder
         ->assignRole(['admin']);
         Permission::create(['name' => 'partnerProductAcceess'])
         ->assignRole(['partner']);
-        Permission::create(['name' => 'categoryAccess'])
-        ->assignRole(['admin']);
         Permission::create(['name' => 'tableAccess'])
         ->assignRole(['admin', 'kasir', 'partner']);
         Permission::create(['name' => 'updateTable'])

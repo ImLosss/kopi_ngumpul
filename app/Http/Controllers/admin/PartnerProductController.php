@@ -119,7 +119,7 @@ class PartnerProductController extends Controller
             return $data->product->jumlah;
          })
          ->addColumn('modal', function($data) {
-            return $data->modal;
+            return 'Rp' . number_format($data->modal);
          })
          ->addColumn('harga', function($data) {
             return 'Rp' . number_format($data->product->harga + $data->up_price);
@@ -129,7 +129,7 @@ class PartnerProductController extends Controller
             <a href="' . route('partnerProduct.edit', $data->id) . '">
                 <i class="fa-solid fa-pen-to-square text-secondary"></i>
             </a>
-            <button class="cursor-pointer fas fa-trash text-danger" onclick="submit('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>
+            <button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>
             <form id="form_'. $data->id .'" action="' . route('product.partner.destroy', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '

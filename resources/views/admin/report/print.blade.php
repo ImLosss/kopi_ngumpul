@@ -117,7 +117,7 @@
                 <tbody>
                     @foreach ($order as $item)
                         <tr>
-                            <td colspan="8" class="text-center"><b>{{ $item->created_at }} {{ $item->customer_name != null ? '/ Pelanggan: ' . $item->customer_name : '' }} @if (Auth::user()->hasRole('admin')) / kasir: {{ $item->kasir }} @endif @if (!Auth::user()->hasRole('partner') && $item->partner) / partner (Rp{{ number_format($item->partner_profit) }}) @endif </b></td>
+                            <td colspan="8" class="text-center"><b>{{ $item->created_at }} {{ $item->customer_name != null ? '/ Pelanggan: ' . $item->customer_name : '' }} @if (Auth::user()->hasRole('admin')) / kasir: {{ $item->kasir_id ? $item->kasir->name : 'None' }} @endif @if (!Auth::user()->hasRole('partner') && $item->partner) / partner (Rp{{ number_format($item->partner_profit) }}) @endif </b></td>
                         </tr>
                         @foreach ($item->carts as $no => $cart)
                             <tr>

@@ -14,7 +14,7 @@ class Order extends Model
         'profit',
         'total',
         'status',
-        'kasir',
+        'kasir_id',
         'status_id',
         'pembayaran',
         'customer_name',
@@ -31,5 +31,10 @@ class Order extends Model
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id', 'id');
+    }
+
+    public function kasir()
+    {
+        return $this->belongsTo(User::class, 'kasir_id', 'id');
     }
 }

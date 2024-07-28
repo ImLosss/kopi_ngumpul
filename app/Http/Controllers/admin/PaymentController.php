@@ -77,7 +77,7 @@ class PaymentController extends Controller
         $order = Order::findOrFail($cart->order_id);
 
         $order->update([
-            'kasir' => Auth::user()->name
+            'kasir_id' => Auth::user()->id
         ]);
 
         $cart->update([
@@ -143,7 +143,7 @@ class PaymentController extends Controller
             $order = Order::findOrFail($carts->first()->order_id);
             
             $order->update([    
-                'kasir' => Auth::user()->name
+                'kasir_id' => Auth::user()->id
             ]);
 
             if($request->updateMeja == 'true') {
@@ -194,13 +194,13 @@ class PaymentController extends Controller
     public function getAllOrder(Request $request)
     {
         $user = Auth::user();
-        $data = Order::with('status')
+        $data = Order::with(['status', 'kasir'])
         ->where('status_id', '!=', 1)
         ->where('pembayaran', false)
         ->where('partner', false);
 
         if($user->hasRole('partner')) {
-            $data = Order::with('status')
+            $data = Order::with(['status', 'kasir'])
             ->where('user_id', $user->id)
             ->where('status_id', '!=', 1)
             ->where('partner', true)
@@ -208,13 +208,13 @@ class PaymentController extends Controller
         }
 
         if($user->hasRole('kasir')) {
-            $data = Order::with('status')
+            $data = Order::with(['status', 'kasir'])
             ->where('status_id', '!=', 1)
             ->where('pembayaran', false)
             ->where('partner', false)
             ->where(function ($query) use($user) {
-                $query->where('kasir', $user->name)
-                      ->orWhere('kasir', null);
+                $query->where('kasir_id', $user->id)
+                      ->orWhere('kasir_id', null);
             });
         }
         // dd($data);
@@ -234,8 +234,8 @@ class PaymentController extends Controller
             return $no_meja;
          })
          ->addColumn('kasir', function($data) {
-            if (!$data->kasir) return 'none';
-            return $data->kasir;
+            if (!$data->kasir_id) return 'none';
+            return $data->kasir->name;
          })
          ->addColumn('total', function($data) {
             if($data->partner) return 'Rp' . number_format($data->partner_total);
@@ -258,9 +258,11 @@ class PaymentController extends Controller
                 $search = $request->input('search.value');
                 $query->where(function ($query) use ($search) {
                     $query->where('customer_name', 'like', "%{$search}%")
-                    ->orWhere('kasir', 'like', "%{$search}%")
                     ->orWhere('no_meja', 'like', "%{$search}%")
-                    ->orWhere('created_at', 'like', "%{$search}%");
+                    ->orWhere('created_at', 'like', "%{$search}%")
+                    ->orWhereHas('kasir', function ($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%");
+                    });
                     
                     if (strtolower($search) === 'lunas') {
                         $query->orWhere('pembayaran', true);

@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -18,6 +19,9 @@ class ProductController extends Controller
     public function __construct()
     {
         $this->middleware('permission:productAccess');
+        $this->middleware('permission:productAdd')->only(['create', 'store']);
+        $this->middleware('permission:productDelete')->only('destroy');
+        $this->middleware('permission:productUpdate')->only(['edit', 'update']);
     }
 
     /**
@@ -55,7 +59,7 @@ class ProductController extends Controller
             'category_id' => $request->kategori
         ]);
 
-        return redirect()->route('product')->with('alert', 'success')->with('message', 'Data stored Succesfully');
+        return redirect()->route('product')->with('alert', 'success')->with('message', 'Produk berhasil ditambahkan');
     }
 
     /**
@@ -92,9 +96,9 @@ class ProductController extends Controller
                 'category_id' => $request->kategori
             ]);
 
-            return redirect()->route('product')->with('alert', 'success')->with('message', 'Data berhasil diubah');
+            return redirect()->route('product')->with('alert', 'success')->with('message', 'Produk berhasil diubah');
         } catch (\Throwable $e) {
-            return redirect()->route('product')->with('alert', 'error')->with('message', 'Something Error');
+            return redirect()->route('product')->with('alert', 'error')->with('message', 'Terjadi kesalahan');
         }
     }
 
@@ -103,11 +107,20 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $data = Product::findOrFail($id);
+
+            $data->delete();
+
+            return redirect()->route('product')->with('alert', 'success')->with('message', 'Produk berhasil dihapus');
+        } catch (\Throwable $e) {
+            return redirect()->route('product')->with('alert', 'error')->with('message', 'Terjadi kesalahan');
+        }
     }
 
     public function getProduct(Request $request) {
         $data = Product::with('category');
+        $user = Auth::user();
         $productRating = Product::with('category')->get();
         $date = Carbon::now()->subWeek();
         $penjualan = [];
@@ -150,10 +163,10 @@ class ProductController extends Controller
             return $data->jumlah;
         })
         ->addColumn('modal', function($data) {
-            return $data->modal;
+            return 'Rp' . number_format($data->modal);
         })
         ->addColumn('harga', function($data) {
-            return $data->harga;
+            return 'Rp' . number_format($data->harga);
         })
         ->addColumn('rate', function($data) use($maxJual, $date) {
             $totaljual = Cart::where('product_id', $data->id)->where('pembayaran', true)->where('created_at', '>=', $date)->sum('jumlah');
@@ -173,12 +186,12 @@ class ProductController extends Controller
                 </div>
             </div>';
         })
-        ->addColumn('action', function($data) {
-            return '
-            <a href="' . route('product.edit', $data->id) . '">
-                <i class="fa-solid fa-pen-to-square text-secondary"></i>
-            </a>
-            <button class="cursor-pointer fas fa-trash text-danger" onclick="submit('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>
+        ->addColumn('action', function($data) use ($user) {
+            $update = '';
+            $delete = '';
+            if($user->can('productUpdate')) $update = '<a href="' . route('product.edit', $data->id) . '"><i class="fa-solid fa-pen-to-square text-secondary"></i></a>';
+            if($user->can('productDelete')) $delete = '<button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>';
+            return $update . $delete . '
             <form id="form_'. $data->id .'" action="' . route('product.destroy', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
@@ -194,7 +207,7 @@ class ProductController extends Controller
                 });
             }
         })
-         ->rawColumns(['rate', 'action'])
+        ->rawColumns(['rate', 'action'])
         ->toJson();
     }
 

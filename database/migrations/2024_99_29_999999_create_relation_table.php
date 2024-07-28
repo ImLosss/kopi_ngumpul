@@ -26,6 +26,10 @@ return new class extends Migration
         Schema::table('carts', function (Blueprint $table) {
             $table->foreign('status_id')->references('id')->on('statuses')->onDelete('cascade');
         });
+
+        Schema::table('orders', function (Blueprint $table) {
+            $table->foreign('kasir_id')->references('id')->on('users')->onDelete('set null');
+        });
     }
 
     /**

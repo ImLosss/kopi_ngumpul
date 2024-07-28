@@ -60,7 +60,8 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Modal') }}</label>
                             <div class="@error('modal')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="modal" name="modal" value="{{ old('modal') }}">
+                                <input class="form-control" type="text" placeholder="modal" id="modalView" oninput="formatNumberInput()" value="{{ number_format(old('modal'), 0, ',', '.') }}">
+                                <input class="form-control" type="hidden" id="modal" name="modal" value="{{ old('modal') }}">
                                 @error('modal')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -71,7 +72,8 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Harga') }}</label>
                             <div class="@error('harga')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="harga" name="harga" value="{{ old('harga') }}">
+                                <input class="form-control" type="text" placeholder="harga" id="hargaView" oninput="formatNumberInput()" value="{{ number_format(old('harga'), 0, ',', '.') }}">
+                                <input class="form-control" type="hidden" id="harga" name="harga" value="{{ old('harga') }}">
                                 @error('harga')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -98,4 +100,19 @@
         </div>
     </div>
 
+@endsection
+
+@section('script')
+    <script>
+        function formatNumberInput() {
+            // Ambil nilai input dan hapus semua karakter non-digit
+            let modalView = Number($('#modalView').val().replace(/\D/g, ''));
+            let hargaView = Number($('#hargaView').val().replace(/\D/g, ''));
+
+            $('#modal').val(modalView)
+            $('#modalView').val(modalView.toLocaleString('id-ID'));
+            $('#harga').val(hargaView)
+            $('#hargaView').val(hargaView.toLocaleString('id-ID'));
+        }
+    </script>
 @endsection
