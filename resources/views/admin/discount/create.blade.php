@@ -26,24 +26,15 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="kategori" class="form-control-label">{{ __('Menu') }}</label>
+                            <label for="kategori" class="form-control-label">{{ __('Category Menu') }}</label>
                             <div class="@error('menu')border border-danger rounded-3 @enderror">
                                 <select name="menu" id="menuSelect" class="form-control">
+                                    <option value="" selected disabled>-Pilih Category Menu-</option>
                                     @if ($categories->isEmpty())
                                         <option value="" selected disabled>Atur menu terlebih dahulu</option>
                                     @else
                                         @foreach ($categories as $category)
-                                            @if ($category->product->isEmpty())
-                                                <optgroup label="{{ $category->name }}">
-                                                    <option value="" disabled>Belum ada menu {{ $category->name }} yang diatur</option>
-                                                </optgroup>
-                                            @else
-                                                <optgroup label="{{ $category->name }}">
-                                                    @foreach ($category->product as $item)
-                                                        <option value="{{ $item->id }}" {{ old('menu') == $item->id ? 'selected' : '' }} {{ $item->jumlah == 0 ? 'disabled' : '' }}>{{ $item->name }} {{ $item->jumlah == 0 ? '(kosong)' : '' }}</option>
-                                                    @endforeach
-                                                </optgroup>
-                                            @endif
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
                                     @endif
                                 </select>
@@ -90,6 +81,11 @@
                             </div>
                         </div>
                     </div>
+                    
+                </div>
+                <label for="">Pilih Menu</label>
+                <div id="form-menu">
+                    <label for="">.....</label>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Add Discount' }}</button>
@@ -104,11 +100,32 @@
 
 @section('script')
 <script>
-    $('#menuSelect').select2();
     $('#discount').change(function() {
         var jumlah = $('#discount').val();
         if(jumlah <= 0) $('#discount').val(1);
         if(jumlah > 100) $('#discount').val(100);
+    });
+
+    $('#menuSelect').change(function() {
+        var categoryId = $(this).val();
+        $.ajax({
+            url: '/get-menu-by-category/' + categoryId,
+            type: 'GET',
+            success: function(data) {
+                if(!data) $('#form-menu').empty().append('<a href="{{ route('product.create') }}">Menu masih kosong Klik disini untuk menambahkan menu.</a>');
+                let products = data.productList;
+
+                let code = '';
+                products.forEach(item => {
+                    code+=`<div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="selectedProducts[]" id="inlineCheckbox${ item.id }" value="${ item.id }">
+                        <label class="form-check-label" for="inlineCheckbox${ item.id }">${ item.name }</label>
+                    </div>`
+                });
+
+                $('#form-menu').empty().append(code);
+            }
+        });
     });
 </script>
 @endsection

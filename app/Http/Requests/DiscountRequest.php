@@ -22,7 +22,7 @@ class DiscountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'menu' => 'required|exists:products,id',
+            'menu' => 'required|exists:categories,id',
             'disc_name' => 'required|max:50',
             'discount' => 'required|numeric|max:100',
             'status' => 'required'

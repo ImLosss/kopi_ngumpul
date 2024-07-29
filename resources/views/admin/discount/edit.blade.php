@@ -29,11 +29,25 @@
                         <div class="form-group">
                             <label for="kategori" class="form-control-label">{{ __('Menu') }}</label>
                             <div class="@error('menu')border border-danger rounded-3 @enderror">
-                                <select name="menu" id="" class="form-control">
-                                    <option selected disabled>Pilih Menu</option>
-                                    @foreach ($menu as $item)
-                                        <option value="{{ $item->id }}" {{ $item->id == $diskon->product_id ? 'selected' : '' }}>{{ $item->name }}</option>
-                                    @endforeach
+                                <select name="menu" id="menuSelect" class="form-control">
+                                    @if ($categories->isEmpty())
+                                        <option value="" selected disabled>Atur menu terlebih dahulu</option>
+                                    @else
+                                        <option value="" selected disabled>- Pilih Menu -</option>
+                                        @foreach ($categories as $category)
+                                            @if ($category->product->isEmpty())
+                                                <optgroup label="{{ $category->name }}">
+                                                    <option value="" disabled>Belum ada menu {{ $category->name }} yang diatur</option>
+                                                </optgroup>
+                                            @else
+                                                <optgroup label="{{ $category->name }}">
+                                                    @foreach ($category->product as $item)
+                                                        <option value="{{ $item->id }}" {{ $diskon->product_id == $item->id ? 'selected' : '' }} {{ $item->jumlah == 0 ? 'disabled' : '' }}>{{ $item->name }} {{ $item->jumlah == 0 ? '(kosong)' : '' }}</option>
+                                                    @endforeach
+                                                </optgroup>
+                                            @endif
+                                        @endforeach
+                                    @endif
                                 </select>
                                 @error('menu')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
@@ -92,6 +106,7 @@
 
 @section('script')
 <script>
+    $('#menuSelect').select2();
     $('#discount').change(function() {
         var jumlah = $('#discount').val();
         if(jumlah <= 0) $('#discount').val(1);

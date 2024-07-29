@@ -99,6 +99,7 @@ Route::group([
     ]);
 
     Route::get('/getDiscount', [DiscountController::class, 'getDiscount'])->name('admin.dataTable.getDiscount');
+    Route::get('/get-menu-by-category/{id}', [DiscountController::class, 'getMenu']);
     //endRoute
 
     //routeCart

@@ -42,12 +42,16 @@ class DiscountController extends Controller
     public function store(DiscountRequest $request)
     {
         try {
-            Discount::create([
-                'name' => $request->disc_name,
-                'percent' => $request->discount,
-                'product_id' => $request->menu,
-                'status' => $request->status
-            ]);
+            if(empty($request->selectedProducts)) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada menu yang terpilih!');
+
+            foreach ($request->selectedProducts as $id) {
+                Discount::create([
+                    'name' => $request->disc_name,
+                    'percent' => $request->discount,
+                    'product_id' => $id,
+                    'status' => $request->status
+                ]);
+            }
 
             return redirect()->route('discount')->with('alert', 'success')->with('message', 'Data berhasil ditambahkan');
         } catch (\Throwable $e) {
@@ -68,7 +72,7 @@ class DiscountController extends Controller
      */
     public function edit(string $id)
     {
-        $data['menu'] = Product::get();
+        $data['categories'] = Category::with('product')->get();
         $data['diskon'] = Discount::findOrFail($id);
 
         return view('admin.discount.edit', $data);
@@ -145,5 +149,26 @@ class DiscountController extends Controller
         })
         ->rawColumns(['rate', 'action'])
         ->toJson(); 
+    }
+
+    public function getMenu($id) {
+        $data = Product::where('category_id', $id)->get();
+
+        $productList = [];
+        if ($data->isNotEmpty()) {
+            foreach ($data as $product) {
+                $productList[] = [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'harga' => $product->harga,
+                    'modal' => $product->modal,
+                    'stock' => $product->jumlah
+                ];
+            }
+        } else return false;
+        
+        return response()->json([
+            'productList' => $productList
+        ]);
     }
 }
