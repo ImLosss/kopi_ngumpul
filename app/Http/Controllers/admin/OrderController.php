@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Table;
 use App\Services\OrderService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +62,7 @@ class OrderController extends Controller
             $order->update([
                 'no_meja' => $request->no_meja,
                 'customer_name' => $request->name,
+                'created_at' => Carbon::now(),
                 'user_id' => Auth::user()->id
             ]);
 

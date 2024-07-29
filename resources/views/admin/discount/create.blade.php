@@ -40,7 +40,7 @@
                                             @else
                                                 <optgroup label="{{ $category->name }}">
                                                     @foreach ($category->product as $item)
-                                                        <option value="{{ $item->id }}" {{ $item->jumlah == 0 ? 'disabled' : '' }}>{{ $item->name }} {{ $item->jumlah == 0 ? '(kosong)' : '' }}</option>
+                                                        <option value="{{ $item->id }}" {{ old('menu') == $item->id ? 'selected' : '' }} {{ $item->jumlah == 0 ? 'disabled' : '' }}>{{ $item->name }} {{ $item->jumlah == 0 ? '(kosong)' : '' }}</option>
                                                     @endforeach
                                                 </optgroup>
                                             @endif

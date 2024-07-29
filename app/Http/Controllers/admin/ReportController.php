@@ -67,7 +67,7 @@ class ReportController extends Controller
 
         $user = Auth::user();
         $oneMonthAgo = Carbon::now()->subMonth();
-        $oneDayAgo = Carbon::now()->subDay();
+        $oneDayAgo = Carbon::now();
         $data = Order::with('status')->where('pembayaran', true)->whereDate('created_at', '>=', $oneDayAgo);
 
         if($user->hasRole('partner')) $data = Order::with('status')->where('user_id', $user->id)->where('pembayaran', true)->where('partner', true)->whereDate('created_at', '>=', $oneDayAgo);

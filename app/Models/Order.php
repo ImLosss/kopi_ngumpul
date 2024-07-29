@@ -21,7 +21,8 @@ class Order extends Model
         'partner',
         'partner_profit',
         'partner_total',
-        'user_id'
+        'user_id',
+        'created_at'
     ];
 
     public function carts() {

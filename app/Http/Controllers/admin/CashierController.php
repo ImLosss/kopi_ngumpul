@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\PartnerProduct;
 use App\Models\Product;
 use App\Models\Table;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -30,12 +31,9 @@ class CashierController extends Controller
     {
         $user = Auth::user();
         if($user->can('cashierAccess')){
-            $order = Order::where('status_id', 1)->where('partner', false)->first();
-            if(!$order) {
-                $order = Order::create([
-                    'status_id' => 1,
-                ]);
-            }
+            $order = Order::firstOrCreate(
+                ['status_id' => 1, 'partner' => false]
+            );
 
             $data['categories'] = Category::with('product')->get();
             $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status_id', 1)->where('partner', false)->first();
@@ -46,14 +44,10 @@ class CashierController extends Controller
             return view('admin.cashier.index', $data);
         } else {
             // return 'tess';
-            $order = Order::where('status_id', 1)->where('partner', true)->first();
-            if(!$order) {
-                $order = Order::create([
-                    'status_id' => 1,
-                    'partner' => true,
-                    'user_id' => Auth::user()->id
-                ]);
-            }
+            $order = Order::firstOrCreate(
+                ['status_id' => 1, 'partner' => true],
+                ['user_id' => Auth::user()->id ]
+            );
 
             $data['products'] = PartnerProduct::with('product')->where('user_id', $user->id)->get();
             $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status_id', 1)->where('partner', true)->first();
@@ -83,14 +77,11 @@ class CashierController extends Controller
             $user = Auth::user();
             if($user->can('cashierAccess')) {
                 DB::transaction(function () use ($request) {
-                    $order = Order::where('status_id', 1)->where('partner', false)->first();
                     $menu = Product::findOrFail($request->menu);
 
-                    if(!$order) {
-                        $order = Order::create([
-                            'status_id' => 1,
-                        ]);
-                    }
+                    $order = Order::firstOrCreate(
+                        ['status_id' => 1, 'partner' => false]
+                    );
 
                     if($request->has('diskon_id')) {
                         $diskon = Discount::findOrFail($request->diskon_id);
@@ -128,16 +119,12 @@ class CashierController extends Controller
             } else if($user->can('cashierPartnerAccess')) {
                 // dd($request);
                 DB::transaction(function () use ($request) {
-                    $order = Order::where('status_id', 1)->where('partner', true)->first();
                     $menu = Product::findOrFail($request->menu);
 
-                    if(!$order) {
-                        $order = Order::create([
-                            'status_id' => 1,
-                            'partner' => true,
-                            'user_id' => Auth::user()->id
-                        ]);
-                    }
+                    $order = Order::firstOrCreate(
+                        ['status_id' => 1, 'partner' => true],
+                        ['user_id' => Auth::user()->id ]
+                    );
 
                     Cart::create([
                         'menu' => $menu->name,
