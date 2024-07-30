@@ -185,12 +185,12 @@
                 emptyTable: "Semua pesanan telah selesai",
                 loadingRecords: "Memuat..."
             },
-            drawCallback: function(settings) {
-                var api = this.api();
-                setTimeout(function() {
-                    api.ajax.reload(null, false); // user paging is not reset on reload
-                }, 20000); // 10000 milidetik = 10 detik
-            },
+            // drawCallback: function(settings) {
+            //     var api = this.api();
+            //     setTimeout(function() {
+            //         api.ajax.reload(null, false); // user paging is not reset on reload
+            //     }, 20000); // 10000 milidetik = 10 detik
+            // },
             headerCallback: function(thead, data, start, end, display) {
                 $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
             }

@@ -122,6 +122,7 @@ class PaymentController extends Controller
 
     public function billOrUpdate(Request $request) {
         if ($request->action == 'printBill') {
+            if(empty($request->selectPesan)) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada order yang terpilih');
             $user = Auth::user();
             $order_id = Cart::with('order')->distinct('order_id')->whereIn('id', $request->selectPesan)->get(['order_id']);
             $orderIdsArr = $order_id->pluck('order_id')->toArray();
