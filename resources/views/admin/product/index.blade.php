@@ -104,6 +104,9 @@
                 { data: 'rate', name: 'rate' },
                 { data: 'action', name: 'action' }
             ],
+            language: {
+                emptyTable: "Belum mengatur menu"
+            },
             headerCallback: function(thead, data, start, end, display) {
                 $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
             },
