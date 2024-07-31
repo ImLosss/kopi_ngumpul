@@ -150,6 +150,18 @@
     </script>
   @endif
 
+  <script>
+    function alert(icon, message) {
+      return Swal.fire({
+        text: message,
+        icon: icon,
+        timer: 1500,
+        showConfirmButton: false,
+        timerProgressBar: true
+      })
+    }
+  </script>
+
   @if (session()->has('modal_alert'))
     <script>
       Swal.fire({

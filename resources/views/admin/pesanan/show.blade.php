@@ -76,6 +76,8 @@
 
 @section('script')
 <script>
+    let table;
+
     function updateOrDelete() {
         $('#updateOrDelete').submit();
     }
@@ -159,7 +161,6 @@
                     console.log(hapus);
                     
                     if(hapus == false) {
-                        console.log('ini jalan')
                         $('#btnHapus').attr('disabled', 'disabled');
                         return false;
                     }
@@ -171,7 +172,7 @@
             }
         }
 
-        var table = $('#dataTable3').DataTable({
+        table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
             responsive: true,
@@ -300,8 +301,40 @@
             confirmButtonText: "Ya, selesaikan!"
         }).then((result) => {
             if (result.isConfirmed) {
-                $('#action').val('update');
-                updateOrDelete();
+                // $('#action').val('update');
+                // updateOrDelete();
+                var selectedValues = [];
+                $('input[name="selectPesan[]"]:checked').each(function() {
+                    selectedValues.push($(this).val());
+                });
+
+                if (selectedValues.length == 0) return alert('info', 'Tidak ada pesanan yang terpilih');
+
+                $.ajax({
+                    url: '/pesanan/updateOrDelete', // Ganti dengan URL route Anda
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}', // CSRF token untuk keamanan
+                        selectPesan: selectedValues,
+                        action: 'update'
+                    },
+                    success: function(response) {
+                        if(!response.status) return alert('Error', 'Something Error');
+                        if(response.index) { 
+                            alert('success', 'Status berhasil di update')
+                            .then(() => {
+                                return window.location.replace('{{ route('order.index') }}');
+                            })
+                        };
+                        table.ajax.reload()
+                        alert('success', 'Status berhasil di update');
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                        table.ajax.reload();
+                        alert('error', 'Something Error');
+                    }
+                });
             }
         });
     }
@@ -317,7 +350,30 @@
             confirmButtonText: "Ya, selesaikan!"
         }).then((result) => {
             if (result.isConfirmed) {
-                updateStatus(id);
+                // updateStatus(id);
+                $.ajax({
+                    url: '/pesanan/update/' + id,
+                    type: 'PATCH',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function(response) {
+                        if(!response.status) return alert('Error', 'Something Error');
+                        if(response.index) { 
+                            alert('success', 'STatus berhasil di update')
+                            .then(() => {
+                                return window.location.replace('{{ route('order.index') }}');
+                            })
+                        };
+                        table.ajax.reload()
+                        alert('success', 'Status berhasil di update');
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                        table.ajax.reload();
+                        alert('error', 'Something Error');
+                    }
+                });
             }
         });
     }

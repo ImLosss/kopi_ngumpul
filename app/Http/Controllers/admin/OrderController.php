@@ -377,6 +377,7 @@ class OrderController extends Controller
     }
 
     public function updateStatus($id) {
+        // return response()->json(['status' => true]);
         $data = Cart::with('order')->findOrFail($id);
         $user = Auth::user();
 
@@ -404,7 +405,7 @@ class OrderController extends Controller
             ->where('status_id', 4)->first();
         }
         
-        if($cekPesan) return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update status');
+        if($cekPesan) return response()->json(['status' => true]);
 
         $cekTrash = Cart::where('order_id', $data->order_id)->where(function ($query) {
             $query->where('status_id', '!=', 5)
@@ -419,12 +420,13 @@ class OrderController extends Controller
             }
         }
 
-        return redirect()->route('order.index')->with('modal_alert', 'success')->with('message', 'Berhasil update status');
+        // return redirect()->route('order.index')->with('modal_alert', 'success')->with('message', 'Berhasil update status');
+        return response()->json(['status' => true, 'index' => true]);
     }
 
     public function updateOrDelete(Request $request) {
         // dd($request);
-        if(!$request->selectPesan) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada pesanan yang terpilih');
+        // if(!$request->selectPesan) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada pesanan yang terpilih');
         if($request->action == 'update') {
             foreach ($request->selectPesan as $id) {
                 $data = Cart::with('order')->findOrFail($id);
@@ -453,7 +455,7 @@ class OrderController extends Controller
                     ->where('status_id', 4)->first();
                 }
             }
-            if($cekPesan) return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update status');
+            if($cekPesan) return response()->json(['status' => true]);
 
             $cekTrash = Cart::where('order_id', $data->order_id)->where(function ($query) {
                 $query->where('status_id', '!=', 5)
@@ -469,7 +471,7 @@ class OrderController extends Controller
                 }
             }
 
-            return redirect()->route('order.index')->with('modal_alert', 'success')->with('message', 'Berhasil update status');
+            return response()->json(['status' => true, 'index' => true]);
         } else if($request->action == 'hapus') {
             try {
                 if($request->payment) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak bisa menghapus pesanan yang sudah Lunas');
