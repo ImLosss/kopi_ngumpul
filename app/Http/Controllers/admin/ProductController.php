@@ -160,6 +160,7 @@ class ProductController extends Controller
             return $data->category->name;
         })
         ->addColumn('jumlah', function($data) {
+            if($data->jumlah <= 5) return "<div class='text-danger'>" . $data->jumlah . "</div>";
             return $data->jumlah;
         })
         ->addColumn('modal', function($data) {
@@ -207,7 +208,7 @@ class ProductController extends Controller
                 });
             }
         })
-        ->rawColumns(['rate', 'action'])
+        ->rawColumns(['rate', 'action', 'jumlah'])
         ->toJson();
     }
 
