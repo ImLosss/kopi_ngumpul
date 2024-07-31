@@ -343,7 +343,7 @@ class OrderController extends Controller
             $cart = Cart::with('product')->findOrFail($id);
             $order = Order::findOrFail($cart->order_id);
 
-            if($cart->pembayaran) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak bisa menghapus pesanan yang sudah Lunas');
+            if($cart->pembayaran) return response()->json(['status' => false, 'message' => 'payment']);
 
             $message = 'Berhasil menghapus ' . $cart->product->name;
 
@@ -367,12 +367,13 @@ class OrderController extends Controller
 
             if(!$cek) {
                 $order->delete();
-                return redirect()->route('order.index')->with('alert', 'success')->with('message', $message);
+                return response()->json(['status' => true, 'index' => true]);
             }
 
-            return redirect()->back()->with('alert', 'success')->with('message', $message);
+            return response()->json(['status' => true]);
         } catch (\Throwable $e) {
-            return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
+            // return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
+            return response()->json(['status' => false]);
         }
     }
 
@@ -474,12 +475,12 @@ class OrderController extends Controller
             return response()->json(['status' => true, 'index' => true]);
         } else if($request->action == 'hapus') {
             try {
-                if($request->payment) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak bisa menghapus pesanan yang sudah Lunas');
+                // if($request->payment) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak bisa menghapus pesanan yang sudah Lunas');
                 foreach($request->selectPesan as $id) {
                     $cart = Cart::with('product')->findOrFail($id);
                     $order = Order::findOrFail($cart->order_id);
 
-                    if($cart->pembayaran) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak bisa menghapus pesanan yang sudah Lunas');
+                    if($cart->pembayaran) return response()->json(['status' => false, 'message' => 'payment']);
 
                     DB::transaction(function () use ($order, $cart) {
                         $order->update([
@@ -500,15 +501,17 @@ class OrderController extends Controller
 
                     if(!$cek) {
                         $order->delete();
-                        return redirect()->route('order.index')->with('alert', 'success')->with('message', 'Berhasil hapus Order');
+                        return response()->json(['status' => true, 'index' => true]);
                     }
                 }
-                return redirect()->back()->with('alert', 'success')->with('message', 'Berhasil hapus Order');
+                return response()->json(['status' => true]);
             } catch (\Throwable $e) {
-                return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
+                // return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
+                return response()->json(['status' => false]);
             }
         } else {
-            return redirect()->back()->with('alert', 'info')->with('message', 'Invalid action');
+            // return redirect()->back()->with('alert', 'info')->with('message', 'Invalid action');
+            return response()->json(['status' => false]);
         }
     }
 }

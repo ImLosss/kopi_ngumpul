@@ -268,7 +268,33 @@
             confirmButtonText: "Ya, hapus saja!"
         }).then((result) => {
             if (result.isConfirmed) {
-                submit(id);
+                // submit(id);
+                $.ajax({
+                    url: '/pesanan/delete/' + id,
+                    type: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function(response) {
+                        if(!response.status) {
+                            if(response.message == 'payment') return alert('info', 'Tidak bisa menghapus pesanan yang sudah lunas');
+                            return alert('error', 'Something Error');
+                        }
+                        if(response.index) { 
+                            alert('success', 'Order berhasil di hapus')
+                            .then(() => {
+                                return window.location.replace('{{ route('order.index') }}');
+                            })
+                        };
+                        table.ajax.reload()
+                        alert('success', 'Order berhasil di hapus');
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                        table.ajax.reload();
+                        alert('error', 'Something Error');
+                    }
+                });
             }
         });
     }
@@ -284,8 +310,46 @@
             confirmButtonText: "Ya, hapus saja!"
         }).then((result) => {
             if (result.isConfirmed) {
-                $('#action').val('hapus');
-                updateOrDelete();
+                // $('#action').val('hapus');
+                // updateOrDelete();
+                var anyChecked = $('.selectPesan[data-payment="true"]:checked').length > 0;
+
+                if (anyChecked) alert('info', 'Tidak bisa menghapus pesanan yang sudah lunas');
+                var selectedValues = [];
+                $('input[name="selectPesan[]"]:checked').each(function() {
+                    selectedValues.push($(this).val());
+                });
+
+                if (selectedValues.length == 0) return alert('info', 'Tidak ada pesanan yang terpilih');
+
+                $.ajax({
+                    url: '/pesanan/updateOrDelete', // Ganti dengan URL route Anda
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}', // CSRF token untuk keamanan
+                        selectPesan: selectedValues,
+                        action: 'hapus'
+                    },
+                    success: function(response) {
+                        if(!response.status) {
+                            if(response.message == 'payment') return alert('info', 'Tidak bisa menghapus pesanan yang sudah lunas');
+                            return alert('error', 'Something Error');
+                        }
+                        if(response.index) { 
+                            alert('success', 'Status berhasil di update')
+                            .then(() => {
+                                return window.location.replace('{{ route('order.index') }}');
+                            })
+                        };
+                        table.ajax.reload()
+                        alert('success', 'Status berhasil di update');
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                        table.ajax.reload();
+                        alert('error', 'Something Error');
+                    }
+                });
             }
         });
     }
@@ -319,7 +383,7 @@
                         action: 'update'
                     },
                     success: function(response) {
-                        if(!response.status) return alert('Error', 'Something Error');
+                        if(!response.status) return alert('error', 'Something Error');
                         if(response.index) { 
                             alert('success', 'Status berhasil di update')
                             .then(() => {
@@ -358,9 +422,9 @@
                         _token: '{{ csrf_token() }}',
                     },
                     success: function(response) {
-                        if(!response.status) return alert('Error', 'Something Error');
+                        if(!response.status) return alert('error', 'Something Error');
                         if(response.index) { 
-                            alert('success', 'STatus berhasil di update')
+                            alert('success', 'Status berhasil di update')
                             .then(() => {
                                 return window.location.replace('{{ route('order.index') }}');
                             })
