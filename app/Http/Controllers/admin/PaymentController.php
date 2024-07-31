@@ -96,7 +96,7 @@ class PaymentController extends Controller
             }
         }
 
-        $orderIdsArr = $cart->pluck('order_id')->toArray();
+        $orderIdsArr = [$cart->order_id];
 
         foreach ($orderIdsArr as $id) {
             $cekPesan = Cart::where('order_id', $id)->where(function ($query) {
@@ -113,8 +113,7 @@ class PaymentController extends Controller
                 }
             }
         }
-
-        // dd($orderIdsArr);
+        
         OrderService::checkStatusOrderArr($orderIdsArr); 
 
         return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update Pembayaran');
