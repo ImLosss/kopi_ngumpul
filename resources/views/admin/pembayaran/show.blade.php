@@ -45,7 +45,7 @@
                         <input type="hidden" name="action" id="action">
                         <input type="hidden" name="payment" id="payment">
                         <input type="hidden" name="updateMeja" id="updateMeja">
-                        <input type="hidden" name="uangCust" id="uangCust">
+                        <input type="text" name="uangCust" id="uangCust">
                         <input type="hidden" name="no_meja" value="{{ $order->no_meja }}">
                         <table class="table" id="dataTable3">
                             <thead>
@@ -99,6 +99,7 @@
                 '<select class="form-control" id="paymentAlert" onchange="cekPayment()"><option>Tunai</option><option>Non Tunai</option></select><br>' +
                 '<input class="form-control" id="uang_cust" placeholder="Uang Customer" oninput="convert(this.value)" type="text">' +
                 '<label for="total">' +
+                '<input id="totalHidden" type="hidden">' +
                 '<p class="text-s mt-3" id="total">Total: 0</p>' +
                 '<p class="text-danger text-xs mt-3">Anda tidak akan dapat menghapus pesanan ini setelah pembayaran Lunas</p>' +
                 '<label for="updateMeja">' +
@@ -109,9 +110,15 @@
             confirmButtonColor: "#3085d6",  
             preConfirm: () => {
                 let payment = $('#paymentAlert').val();
-                let uang_cust = $('#uang_cust').val();
+                let uang_cust = $('#uangCust').val();
+                let total = $('#totalHidden').val();
 
-                if(payment == 'Tunai' && uang_cust == "") return alert('info', 'Mohon lengkapi form!');
+                if(payment == 'Tunai' && uang_cust == "") return Swal.showValidationMessage('Lengkapi Form');
+                if(total > uang_cust) {
+                    let kurang = total - uang_cust;
+
+                    return Swal.showValidationMessage(`Cash kurang ${ kurang.toLocaleString('id-ID') }`);
+                }
                 let updateTable = false;
                 if ($('#updateMejaAlert').prop('checked')) {
                     updateTable = true;
@@ -132,6 +139,7 @@
         });
 
         $('#total').text(`Total: ${ total.toLocaleString('id-ID') }`);
+        $('#totalHidden').val(total);
     }
 
     function modalUpdateStatus(id, total) {
@@ -143,6 +151,7 @@
                 '<input class="form-control" id="uang_cust" placeholder="Uang Customer" oninput="convert(this.value)" type="text">' +
                 '<label for="total">' +
                 '<p class="text-s mt-3" id="total">Total: 0</p>' +
+                '<input id="totalHidden" type="text">' +
                 '<p class="text-danger text-xs mt-3">Anda tidak akan dapat menghapus pesanan ini setelah pembayaran Lunas</p>' +
                 '<label for="updateMeja">' +
                 '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>',
@@ -153,9 +162,9 @@
             preConfirm: () => {
                 // return alert('info', 'gagal');
                 let payment = $('#paymentAlert').val();
-                let uang_cust = $('#uang_cust').val();
+                let uang_cust = $('#uangCust').val();
 
-                if(payment == 'Tunai' && uang_cust == "") return alert('info', 'Mohon lengkapi form!');
+                if(payment == 'Tunai' && uang_cust == "") return Swal.showValidationMessage('Lengkapi Form');
                 
                 let updateTable = false;
                 if ($('#updateMejaAlert').prop('checked')) {
