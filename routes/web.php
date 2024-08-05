@@ -109,8 +109,11 @@ Route::group([
     //endRoute
 
     //routeCategory
-    Route::resource('category', CategoryController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+    Route::resource('category', CategoryController::class)->names([
         'index' => 'category',
+        'edit' => 'category.edit',
+        'update' => 'category.update',
+        'destroy' => 'category.destroy'
     ]);
 
     Route::get('/getCategories', [CategoryController::class, 'getCategories'])->name('admin.dataTable.getCategories');

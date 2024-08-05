@@ -286,12 +286,14 @@
                                 return window.location.replace('{{ route('order.index') }}');
                             })
                         };
-                        table.ajax.reload()
+                        table.ajax.reload();
+                        $('#selectPesanAll').prop('checked', false);
                         alert('success', 'Order berhasil di hapus');
                     },
                     error: function(xhr, status, error) {
                         console.log(error);
                         table.ajax.reload();
+                        $('#selectPesanAll').prop('checked', false);
                         alert('error', 'Something Error');
                     }
                 });
@@ -341,12 +343,14 @@
                                 return window.location.replace('{{ route('order.index') }}');
                             })
                         };
-                        table.ajax.reload()
+                        table.ajax.reload();
+                        $('#selectPesanAll').prop('checked', false);
                         alert('success', 'Status berhasil di update');
                     },
                     error: function(xhr, status, error) {
                         console.log(error);
                         table.ajax.reload();
+                        $('#selectPesanAll').prop('checked', false);
                         alert('error', 'Something Error');
                     }
                 });
@@ -390,12 +394,14 @@
                                 return window.location.replace('{{ route('order.index') }}');
                             })
                         };
-                        table.ajax.reload()
+                        table.ajax.reload();
+                        $('#selectPesanAll').prop('checked', false);
                         alert('success', 'Status berhasil di update');
                     },
                     error: function(xhr, status, error) {
                         console.log(error);
                         table.ajax.reload();
+                        $('#selectPesanAll').prop('checked', false);
                         alert('error', 'Something Error');
                     }
                 });
@@ -429,12 +435,14 @@
                                 return window.location.replace('{{ route('order.index') }}');
                             })
                         };
-                        table.ajax.reload()
+                        table.ajax.reload();
+                        $('#selectPesanAll').prop('checked', false);
                         alert('success', 'Status berhasil di update');
                     },
                     error: function(xhr, status, error) {
                         console.log(error);
                         table.ajax.reload();
+                        $('#selectPesanAll').prop('checked', false);
                         alert('error', 'Something Error');
                     }
                 });

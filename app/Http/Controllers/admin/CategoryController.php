@@ -33,7 +33,7 @@ class CategoryController extends Controller
     {
         try {
             Category::create([
-                'name' => $request->category
+                'name' => $request->name
             ]);
             return redirect()->route('category')->with('alert', 'success')->with('message', 'Data berhasil ditambahkan');
         } catch(\Throwable $e) {
@@ -64,7 +64,7 @@ class CategoryController extends Controller
             $data = Category::findOrFail($id);
 
             $data->update([
-                'name' => $request->category
+                'name' => $request->name
             ]);
 
             return redirect()->route('category')->with('alert', 'success')->with('message', 'Data berhasil di update');
