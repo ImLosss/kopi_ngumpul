@@ -38,6 +38,21 @@ class ProductRequest extends FormRequest
         ];
     }
 
+     /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($this->harga <= $this->modal) {
+                $validator->errors()->add('harga', 'Harga harus lebih besar dari modal.');
+            }
+        });
+    }
+
     /**
      * Get custom messages for validator errors.
      *

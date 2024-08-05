@@ -103,12 +103,12 @@
                         <tr>
                             <td class="quantity">{{ $item->jumlah }}</td>
                             <td class="description">{{ $item->menu }}</td>
-                            <td class="price">{{ $item->partner_total != 0 ? 'Rp' . number_format($item->partner_total) : 'Rp' . number_format($item->total + $item->total_diskon) }}</td>
+                            <td class="price">{{ $item->partner_total != 0 ? number_format($item->partner_total) : number_format($item->total + $item->total_diskon) }}</td>
                         </tr>
                         @if ($item->diskon_id != null)
                             <td class="quantity"></td>
-                            <td class="description">Disc ({{ $item->discount->percent }}%)</td>
-                            <td class="price">(Rp{{ number_format($item->total_diskon) }})</td>
+                            <td class="description">Disc {{ $item->discount ? '(' . $item->discount->percent . '%)' : '' }}</td>
+                            <td class="price">-{{ number_format($item->total_diskon) }}</td>
                         @endif
                     @endforeach
                 </tbody>
@@ -127,9 +127,34 @@
                         <td class="description"><b>TOTAL</b></td>
                         <td class="price"><b>Rp{{ number_format($total) }}</b></td>
                     </tr>
+                    @if ($payment == "Tunai")
+                        <tr>
+                            <td colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <td class="quantity"></td>
+                            <td class="description">cash</td>
+                            <td class="price">Rp{{ number_format($cash) }}</td>
+                        </tr>
+                        <tr>
+                            <td class="quantity"></td>
+                            <td class="description">change</td>
+                            <td class="price">Rp{{ number_format($change) }}</td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <td class="quantity"></td>
+                            <td class="description">Qris</td>
+                            <td class="price">Rp{{ number_format($total) }}</td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
-            <p class="centered">{{ date('Y-m-d H:i:s') }}
+            <p class="centered">{!! $payment ? '---------------Closed Bill---------------<br><br>' : '' !!}
+                {{ date('Y-m-d H:i:s') }}
                 <br>Thanks for your purchase!
                 <br>kopingumpul.store</p>
         </div>
@@ -143,7 +168,7 @@
                 // Deteksi ketika pencetakan dibatalkan (dalam beberapa kasus)
                 window.onafterprint = function() {
                     // Kembali ke halaman sebelumnya jika pencetakan dibatalkan
-                    window.location.href = document.referrer;
+                    window.location.href = '{{ route('payment') }}';
                 }
             });
         </script>

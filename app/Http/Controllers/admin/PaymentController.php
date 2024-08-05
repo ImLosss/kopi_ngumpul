@@ -71,7 +71,7 @@ class PaymentController extends Controller
 
 
     public function updateStatus(Request $request, string $id) {
-        // dd($request);
+        dd($request);
         $cart = Cart::with('product', 'order')->findOrFail($id);
 
         $order = Order::findOrFail($cart->order_id);
@@ -120,24 +120,16 @@ class PaymentController extends Controller
     }
 
     public function billOrUpdate(Request $request) {
+        if(empty($request->selectPesan)) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada order yang terpilih');
         if ($request->action == 'printBill') {
-            if(empty($request->selectPesan)) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada order yang terpilih');
-            $user = Auth::user();
-            $order_id = Cart::with('order')->distinct('order_id')->whereIn('id', $request->selectPesan)->get(['order_id']);
-            $orderIdsArr = $order_id->pluck('order_id')->toArray();
-
-            $data['cart'] = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
-            $data['order_id'] = $order_id->pluck('order_id')->implode(', ');
-            $data['kasir'] = $data['cart']->pluck('order.kasir')->unique()->implode(', ');
-            $data['order'] = Order::whereIn('id', $orderIdsArr)->get();
-            $data['total'] = $data['cart']->sum('total');
-            if($user->hasRole('partner')) $data['total'] = $data['cart']->sum('partner_total');
-            $data['diskon'] = $data['cart']->sum('total_diskon');
-            
-            return view('admin.pembayaran.nota', $data);
+            $data = $this->getPrintData($request);
+            return view('admin.pembayaran.nota', $data->data);
         } else if ($request->action == 'updatePayment') {
-            // dd($request);
             
+            $data = $this->getPrintData($request);
+
+            if(!$data->status) return redirect()->back()->with('alert', 'info')->with('message', $data->message);
+
             $carts = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
 
             $order = Order::findOrFail($carts->first()->order_id);
@@ -187,8 +179,41 @@ class PaymentController extends Controller
             // dd($orderIdsArr);
             OrderService::checkStatusOrderArr($orderIdsArr);
 
-            return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update Pembayaran');
+            // return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update Pembayaran');
+            return view('admin.pembayaran.nota', $data->data);
         } else return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
+    }
+
+    private function getPrintData($request) {
+        $user = Auth::user();
+        $order_id = Cart::with('order')->distinct('order_id')->whereIn('id', $request->selectPesan)->get(['order_id']);
+        $orderIdsArr = $order_id->pluck('order_id')->toArray();
+
+        $data['cart'] = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
+        if($data['cart']->sum('total') > $request->uangCust && $request->payment == 'Tunai') {
+            return (object) [
+                'status' => false,
+                'message' => 'Cash kurang ' . number_format($data['cart']->sum('total') - $request->uangCust),
+            ];
+        };
+
+        $data['order_id'] = $order_id->pluck('order_id')->implode(', ');
+        $data['kasir'] = $data['cart']->pluck('order.kasir')->unique()->implode(', ');
+        $data['order'] = Order::whereIn('id', $orderIdsArr)->get();
+        $data['total'] = $data['cart']->sum('total');
+        if($user->hasRole('partner')) $data['total'] = $data['cart']->sum('partner_total');
+        $data['diskon'] = $data['cart']->sum('total_diskon');
+        $data['payment'] = $request->payment;
+
+        if($request->payment == "Tunai") {
+            $data['change'] = $request->uangCust - $data['cart']->sum('total');
+            $data['cash'] = $request->uangCust;
+        }
+
+        return (object) [
+            'status' => true,
+            'data' => $data,
+        ];
     }
 
     public function getAllOrder(Request $request)
@@ -297,8 +322,11 @@ class PaymentController extends Controller
         return DataTables::of($data)
         ->addIndexColumn() 
         ->addColumn('#', function($data) {
+            if($data->order->partner) $total = $data->partner_total;
+            $total = $data->total;
+
             return '<div class="form-check">
-            <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]">
+            <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]" data-total="' . $total .'">
             </div>';
         })
         ->addColumn('menu', function($data) {
@@ -317,17 +345,19 @@ class PaymentController extends Controller
             if($data->order->partner) return 'Rp' . number_format($data->partner_total);
             return 'Rp' . number_format($data->total);
         })
-        ->addColumn('action', function($data) use($user) {
-            $hapus = '';
-            $update = '';
+        // ->addColumn('action', function($data) use($user) {
+        //     if($data->order->partner) $total = $data->partner_total;
+        //     $total = $data->total;
+        //     $hapus = '';
+        //     $update = '';
 
-            if($user->can('paymentAccess') && $data->pembayaran == false) $update = $update = '<a href="#" class="fa-solid fa-square-check text-success" onclick="modalUpdateStatus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="updateStatus""></a>';
+        //     if($user->can('paymentAccess') && $data->pembayaran == false) $update = $update = '<a href="#" class="fa-solid fa-square-check text-success" onclick="modalUpdateStatus('. $data->id .', '. $total .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="updateStatus""></a>';
 
-            return '<form id="formUpdate_'. $data->id .'" action="' . route('payment.updateStatus', $data->id) . '" method="POST" class="inline">
-                ' . csrf_field() . '
-                ' . method_field('PATCH') . '
-            </form>' . $update . $hapus;
-        })
+        //     return '<form id="formUpdate_'. $data->id .'" action="' . route('payment.updateStatus', $data->id) . '" method="POST" class="inline">
+        //         ' . csrf_field() . '
+        //         ' . method_field('PATCH') . '
+        //     </form>' . $update . $hapus;
+        // })
         ->filter(function ($query) use ($request) {
             if ($request->has('search') && $request->input('search.value')) {
                 $search = $request->input('search.value');
@@ -342,7 +372,7 @@ class PaymentController extends Controller
                 });
             }
         })
-        ->rawColumns(['#', 'action', 'status_pembayaran'])
+        ->rawColumns(['#', 'status_pembayaran'])
         ->toJson(); 
     }
 }
