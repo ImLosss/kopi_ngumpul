@@ -114,7 +114,7 @@
                 let total = Number($('#totalHidden').val());
 
                 if(payment == 'Tunai' && uang_cust == "") return Swal.showValidationMessage('Lengkapi Form');
-                if(total > uang_cust) {
+                if(total > uang_cust && payment == "Tunai") {
                     let kurang = total - uang_cust;
 
                     return Swal.showValidationMessage(`Cash kurang ${ kurang.toLocaleString('id-ID') }`);
