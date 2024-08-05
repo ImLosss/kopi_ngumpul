@@ -132,12 +132,6 @@ class PaymentController extends Controller
 
             $carts = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
 
-            $order = Order::findOrFail($carts->first()->order_id);
-            
-            $order->update([    
-                'kasir_id' => Auth::user()->id
-            ]);
-
             if($request->updateMeja == 'true') {
                 $table = Table::where('no_meja', $request->no_meja)->first();
 
@@ -174,6 +168,12 @@ class PaymentController extends Controller
                         $trash->forceDelete();
                     }
                 }
+                
+                $order = Order::findOrFail($id);
+                
+                $order->update([    
+                    'kasir_id' => Auth::user()->id
+                ]);
             }
 
             // dd($orderIdsArr);
