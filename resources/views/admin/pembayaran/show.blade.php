@@ -45,7 +45,7 @@
                         <input type="hidden" name="action" id="action">
                         <input type="hidden" name="payment" id="payment">
                         <input type="hidden" name="updateMeja" id="updateMeja">
-                        <input type="text" name="uangCust" id="uangCust">
+                        <input type="hidden" name="uangCust" id="uangCust">
                         <input type="hidden" name="no_meja" value="{{ $order->no_meja }}">
                         <table class="table" id="dataTable3">
                             <thead>
