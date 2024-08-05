@@ -131,7 +131,7 @@
             total+=dataTotal;
         });
 
-        $('#total').text(`Total: ${ total }`);
+        $('#total').text(`Total: ${ total.toLocaleString('id-ID') }`);
     }
 
     function modalUpdateStatus(id, total) {
