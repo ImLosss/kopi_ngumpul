@@ -110,8 +110,8 @@
             confirmButtonColor: "#3085d6",  
             preConfirm: () => {
                 let payment = $('#paymentAlert').val();
-                let uang_cust = $('#uangCust').val();
-                let total = $('#totalHidden').val();
+                let uang_cust = Number($('#uangCust').val());
+                let total = Number($('#totalHidden').val());
 
                 if(payment == 'Tunai' && uang_cust == "") return Swal.showValidationMessage('Lengkapi Form');
                 if(total > uang_cust) {
