@@ -190,10 +190,13 @@ class PaymentController extends Controller
         $orderIdsArr = $order_id->pluck('order_id')->toArray();
 
         $data['cart'] = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
-        if($data['cart']->sum('total') > $request->uangCust && $request->payment == 'Tunai') {
+
+        $total = $data['cart']->sum('total');
+        if($user->hasRole('partner')) $total = $data['cart']->sum('partner_total');
+        if($total > $request->uangCust && $request->payment == 'Tunai') {
             return (object) [
                 'status' => false,
-                'message' => 'Cash kurang ' . number_format($data['cart']->sum('total') - $request->uangCust),
+                'message' => 'Cash kurang ' . number_format($total - $request->uangCust),
             ];
         };
 
@@ -206,7 +209,7 @@ class PaymentController extends Controller
         $data['payment'] = $request->payment;
 
         if($request->payment == "Tunai") {
-            $data['change'] = $request->uangCust - $data['cart']->sum('total');
+            $data['change'] = $request->uangCust - $total;
             $data['cash'] = $request->uangCust;
         }
 
@@ -322,8 +325,8 @@ class PaymentController extends Controller
         return DataTables::of($data)
         ->addIndexColumn() 
         ->addColumn('#', function($data) {
-            if($data->order->partner) $total = $data->partner_total;
             $total = $data->total;
+            if($data->order->partner) $total = $data->partner_total;
 
             return '<div class="form-check">
             <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]" data-total="' . $total .'">

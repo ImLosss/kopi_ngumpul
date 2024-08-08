@@ -81,15 +81,22 @@
             $('#uang_cust').val('');
             $('#uang_cust').removeAttr('disabled');
         }
-        else $('#uang_cust').attr('disabled', 'disabled');
+        else  {
+            $('#uang_cust').attr('disabled', 'disabled');
+            $('#uang_cust').val('');
+            $('#kembalian').text('');
+        }
     }
 
     function convert(input) {
         let data = Number(input.replace(/\D/g, ''));
+        let total = Number($('#totalHidden').val());
+        let kembalian = data - total;
 
         $('#uangCust').val(data);
 
         $('#uang_cust').val(data.toLocaleString('id-ID'));
+        $('#kembalian').text(`Kembalian: ${ kembalian.toLocaleString('id-ID') }`);
     }
 
     function modalUpdateStatusAll() {
@@ -101,6 +108,7 @@
                 '<label for="total">' +
                 '<input id="totalHidden" type="hidden">' +
                 '<p class="text-s mt-3" id="total">Total: 0</p>' +
+                '<p class="text-s mt-3" id="kembalian"></p>' +
                 '<p class="text-danger text-xs mt-3">Anda tidak akan dapat menghapus pesanan ini setelah pembayaran Lunas</p>' +
                 '<label for="updateMeja">' +
                 '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>',

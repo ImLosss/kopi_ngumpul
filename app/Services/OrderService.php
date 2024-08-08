@@ -58,13 +58,13 @@ class OrderService {
                 ]);
             }
 
-            if(!$cart) return;
+            if(!$cart) continue;
 
             if ($antar) {
                 $order->update([
                     'status_id' => $antar->status_id
                 ]);
-                return;
+                continue;
             }
 
             $order->update([
