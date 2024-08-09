@@ -141,7 +141,7 @@
                             <td class="description">change</td>
                             <td class="price">Rp{{ number_format($change) }}</td>
                         </tr>
-                    @else
+                    @elseif($payment == "Non Tunai")
                         <tr>
                             <td colspan="3"></td>
                         </tr>
