@@ -29,6 +29,7 @@ class UserEditRequest extends FormRequest
             'email' => [
                 'required',
                 Rule::unique('users')->ignore($userId),
+                'regex:/^.+@.+$/i'
             ],
             'notelp' => 'required|numeric',
             'role' => 'required|exists:roles,name'

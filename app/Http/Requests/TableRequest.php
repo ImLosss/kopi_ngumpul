@@ -31,7 +31,7 @@ class TableRequest extends FormRequest
                 'numeric',
                 Rule::unique('tables')->ignore($tableId),
             ],
-            'status' => 'required|exists:tables,status'
+            'status' => 'required'
         ];
     }
 

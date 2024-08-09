@@ -23,7 +23,7 @@ class UserRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'email' => 'required|unique:users,email',
+            'email' => 'required|regex:/^.+@.+$/i|unique:users,email',
             'password' => 'required',
             'notelp' => 'required|numeric',
             'role' => 'required|exists:roles,name',

@@ -33,8 +33,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        $data = Role::get();
-        // dd($data);
+
+        $data = Role::whereNotIn('name', ['admin'])->get();
+
         return view('admin.users.create', compact('data'));
     }
 
