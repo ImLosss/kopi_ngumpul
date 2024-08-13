@@ -125,10 +125,6 @@ class PaymentController extends Controller
             $data = $this->getPrintData($request);
             return view('admin.pembayaran.nota', $data->data);
         } else if ($request->action == 'updatePayment') {
-            
-            $data = $this->getPrintData($request);
-
-            if(!$data->status) return redirect()->back()->with('alert', 'info')->with('message', $data->message);
 
             $carts = Cart::with('product', 'order')->whereIn('id', $request->selectPesan)->get();
 
@@ -179,8 +175,14 @@ class PaymentController extends Controller
             // dd($orderIdsArr);
             OrderService::checkStatusOrderArr($orderIdsArr);
 
-            // return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update Pembayaran');
-            return view('admin.pembayaran.nota', $data->data);
+            if($request->printNota == 'true') {
+                $data = $this->getPrintData($request);
+
+                if(!$data->status) return redirect()->back()->with('alert', 'info')->with('message', $data->message);
+                return view('admin.pembayaran.nota', $data->data);
+            } else {
+                return redirect()->back()->with('modal_alert', 'success')->with('message', 'Berhasil update Pembayaran');
+            }
         } else return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
     }
 

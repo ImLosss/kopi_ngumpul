@@ -45,6 +45,7 @@
                         <input type="hidden" name="action" id="action">
                         <input type="hidden" name="payment" id="payment">
                         <input type="hidden" name="updateMeja" id="updateMeja">
+                        <input type="hidden" name="printNota" id="printNota">
                         <input type="hidden" name="uangCust" id="uangCust">
                         <input type="hidden" name="no_meja" value="{{ $order->no_meja }}">
                         <table class="table" id="dataTable3">
@@ -111,7 +112,9 @@
                 '<p class="text-s mt-3" id="kembalian"></p>' +
                 '<p class="text-danger text-xs mt-3">Anda tidak akan dapat menghapus pesanan ini setelah pembayaran Lunas</p>' +
                 '<label for="updateMeja">' +
-                '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>',
+                '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>' +
+                '<label for="printNotaAlert">' +
+                '<input type="checkbox" id="printNotaAlert" checked>&nbsp;Print Nota? </label>',
             focusConfirm: false,
             showCancelButton: true,
             confirmButtonText: "Selesaikan pembayaran!",
@@ -132,9 +135,15 @@
                     updateTable = true;
                 }
 
+                let printNota = false;
+                if ($('#printNotaAlert').prop('checked')) {
+                    printNota = true;
+                }
+
                 $('#action').val('updatePayment');
                 $('#payment').val(payment);
                 $('#updateMeja').val(updateTable);
+                $('#printNota').val(printNota);
 
                 submit_form();
             }
