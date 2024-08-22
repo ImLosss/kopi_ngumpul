@@ -25,20 +25,20 @@
                 @csrf
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group has-validation">
-                            <label for="user-name" class="form-control-label">{{ __('Nama produk') }}</label>
-                            <div class="@error('product_id')border border-danger rounded-3 @enderror">
-                                <select name="product_id" class="form-control" id="name">
-                                    @if (!$products->isEmpty())
-                                        <option value="" disabled selected>Pilih menu</option>
+                        <div class="form-group">
+                            <label for="kategori" class="form-control-label">{{ __('Category Menu') }}</label>
+                            <div class="@error('category_id')border border-danger rounded-3 @enderror">
+                                <select name="category_id" id="menuSelect" class="form-control">
+                                    <option value="" selected disabled>-Pilih Category Menu-</option>
+                                    @if ($categories->isEmpty())
+                                        <option value="" selected disabled>Atur menu terlebih dahulu</option>
+                                    @else
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
                                     @endif
-                                    @forelse ($products as $item)
-                                        <option value="{{ $item->id }}" {{ old('product_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
-                                    @empty
-                                        <option disabled>Semua harga menu sudah diatur</option>
-                                    @endforelse
                                 </select>
-                                @error('product_id')
+                                @error('category_id')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -56,13 +56,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="email" class="form-control-label">{{ __('Total harga setelah up') }}</label>
-                            <input class="form-control" type="text" value="0" placeholder="Total" name="upTotalHargaView" value="" id="upTotalHargaView" readonly>
-                            <input class="form-control" type="hidden" value="0" placeholder="Total" name="upHargaVal" value="" id="upHargaVal">
-                            <input type="number" id="productPrice" value="0" readonly hidden>
-                        </div>
+                    <label for="">Pilih Menu</label>
+                    <div id="form-menu">
+                        <label for="">.....</label>
                     </div>
                 </div>
                 <div class="d-flex justify-content-end">
@@ -90,27 +86,28 @@
             $('#upHarga').val(value);
             $('#upHargaView').val(value.toLocaleString('id-ID'));
         }
+    
+        $('#menuSelect').change(function() {
+        var categoryId = $(this).val();
+        $.ajax({
+            url: '/get-partner-menu-by-category/' + categoryId,
+            type: 'GET',
+            success: function(data) {
+                if(!data) $('#form-menu').empty().append('Semua produk pada category ini telah diatur');
+                let products = data.productList;
 
-        $('#name').select2();
-        $('#name').change(function() {
-            var productId = $(this).val();
-            if (productId) {
-                $.ajax({
-                    url: '/get-partner-detail/' + productId,
-                    type: 'GET',
-                    success: function(data) {
-                        let upHarga = Number($('#upHarga').val());
-                        let hargaData = Number(data.harga);
-                        let totalHarga = upHarga + hargaData
-                        $('#productPrice').val(hargaData);
-                        $('#upTotalHargaView').val(totalHarga.toLocaleString('id-ID'));
-                        if(!upHarga) return $('#upHargaVal').val(hargaData);
-                        $('#upHargaVal').val(totalHarga);
-                    }
+                let code = '';
+                products.forEach(item => {
+                    code+=`<div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="selectedProducts[]" id="inlineCheckbox${ item.id }" value="${ item.id }">
+                        <label class="form-check-label" for="inlineCheckbox${ item.id }">${ item.name }</label>
+                    </div>`
                 });
-            } else {
-                $('#harga').val(0);
+
+                $('#form-menu').empty().append(code);
             }
         });
+    });
+
     </script>
 @endsection

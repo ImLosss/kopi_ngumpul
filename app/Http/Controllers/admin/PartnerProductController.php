@@ -32,7 +32,7 @@ class PartnerProductController extends Controller
         $productIdArr = PartnerProduct::get(['product_id'])->pluck('product_id')->toArray();
         // dd($productIdArr);
         $data['products'] = Product::whereNotIn('id', $productIdArr)->get();
-        $data['category'] = Category::get();
+        $data['categories'] = Category::get();
         // dd($data);
         return view('admin.product.partner.create', $data);
     }
@@ -41,14 +41,17 @@ class PartnerProductController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(ProductPartnerRequest $request)
-    {
+    {   
         // dd($request);
+        if (empty($request->selectedProducts)) return redirect()->back()->with('alert', 'info')->with('message', 'Pilih menu terlebih dahulu');
 
-        PartnerProduct::create([
-            'user_id' => Auth::user()->id,
-            'product_id' => $request->product_id,
-            'up_price' => $request->upHarga
-        ]);
+        foreach ($request->selectedProducts as $productId) {
+            PartnerProduct::create([
+                'user_id' => Auth::user()->id,
+                'product_id' => $productId,
+                'up_price' => $request->upHarga
+            ]);
+        }
 
         return redirect()->route('partnerProduct')->with('alert', 'success')->with('message', 'Berhasil menambahkan produk');
     }
@@ -139,27 +142,27 @@ class PartnerProductController extends Controller
         ->toJson(); 
     }
 
-    public function getPartnerProductDetail($id)
-    {
-        $product = Product::with('discount')->find($id);
+    public function getProductByCategory($id) {
+        
+        $productIds = Product::whereHas('partnerProduct')->where('category_id', $id)->pluck('id');
 
-        $diskon = $product->discount;
+        $data = Product::where('category_id', $id)->whereNotIn('id', $productIds)->get();
 
-        $diskonData = [];
-        if ($product->discount->isNotEmpty()) {
-            foreach ($product->discount as $diskon) {
-                $diskonData[] = [
-                    'id' => $diskon->id,
-                    'name' => $diskon->name,
-                    'percent' => $diskon->percent
+        $productList = [];
+        if ($data->isNotEmpty()) {
+            foreach ($data as $product) {
+                $productList[] = [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'harga' => $product->harga,
+                    'modal' => $product->modal,
+                    'stock' => $product->jumlah
                 ];
             }
-        }
-
+        } else return false;
+        
         return response()->json([
-            'harga' => $product->harga,
-            'stock' => $product->jumlah,
-            'diskon' => $diskonData
+            'productList' => $productList
         ]);
     }
 }
