@@ -148,11 +148,10 @@ class UserController extends Controller
 
         // return view('admin.users.index', compact('users'));
 
-        $data = User::with(['roles' => function($query) {
-            $query->whereNotIn('name', ['admin']);
-        }])->get();
-
-        dd($data);
+        $data = User::whereDoesntHave('roles', function($query) {
+            $query->where('name', 'admin');
+        });
+        
         return DataTables::of($data)
         ->addColumn('role', function($data) {
            return $data->getRoleNames()->implode(', ');
