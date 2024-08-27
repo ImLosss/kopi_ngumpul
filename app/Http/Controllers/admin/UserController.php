@@ -148,7 +148,9 @@ class UserController extends Controller
 
         // return view('admin.users.index', compact('users'));
 
-        $data = User::with('roles')->get();
+        $data = User::with(['roles' => function($query) {
+            $query->whereNotIn('name', ['admin']);
+        }])->get();
 
         foreach ($data as $user) {
             foreach ($user->roles as $role){
