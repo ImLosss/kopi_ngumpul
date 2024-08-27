@@ -150,17 +150,7 @@ class UserController extends Controller
 
         $data = User::with(['roles' => function($query) {
             $query->whereNotIn('name', ['admin']);
-        }])->get();
-
-        foreach ($data as $user) {
-            foreach ($user->roles as $role){
-                if ($role->name == 'admin' ) {
-                    $adminId = $user->id;
-                }
-            }
-        }
-        
-        $data = User::whereNotIn('id', [$adminId]);
+        }]);
 
         return DataTables::of($data)
         ->addColumn('role', function($data) {
