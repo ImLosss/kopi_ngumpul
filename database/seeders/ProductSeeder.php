@@ -82,7 +82,7 @@ class ProductSeeder extends Seeder
             'jumlah' => 25,
             'modal' => 10000,
             'harga' => 15000,
-            'category_id' => 1
+            'category_id' => 2
         ]);
 
         Product::create([
