@@ -64,7 +64,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Espresso',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 7000,
             'harga' => 12000,
             'category_id' => 1
         ]);
@@ -72,32 +72,32 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Black Coffee',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 7000,
             'harga' => 12000,
             'category_id' => 1
         ]);
 
         Product::create([
-            'name' => 'Tubruk',
+            'name' => 'Aren Latte',
             'jumlah' => 25,
-            'modal' => 8000,
-            'harga' => 12000,
+            'modal' => 10000,
+            'harga' => 15000,
             'category_id' => 1
         ]);
 
         Product::create([
             'name' => 'Dark Chocolate Hot',
             'jumlah' => 25,
-            'modal' => 8000,
-            'harga' => 13000,
+            'modal' => 9000,
+            'harga' => 14000,
             'category_id' => 2
         ]);
 
         Product::create([
             'name' => 'Dark Chocolate Ice',
             'jumlah' => 25,
-            'modal' => 8000,
-            'harga' => 15000,
+            'modal' => 12000,
+            'harga' => 17000,
             'category_id' => 2
         ]);
 
@@ -105,14 +105,14 @@ class ProductSeeder extends Seeder
             'name' => 'Red Velvet Hot',
             'jumlah' => 25,
             'modal' => 8000,
-            'harga' => 12000,
+            'harga' => 13000,
             'category_id' => 2
         ]);
 
         Product::create([
             'name' => 'Red Velvet Ice',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 12000,
             'harga' => 17000,
             'category_id' => 2
         ]);
@@ -120,16 +120,16 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Milk Shake Ice',
             'jumlah' => 25,
-            'modal' => 8000,
-            'harga' => 10000,
+            'modal' => 10000,
+            'harga' => 15000,
             'category_id' => 2
         ]);
 
         Product::create([
             'name' => 'Milk Shake Hot',
             'jumlah' => 25,
-            'modal' => 8000,
-            'harga' => 15000,
+            'modal' => 5000,
+            'harga' => 10000,
             'category_id' => 2
         ]);
 
@@ -137,14 +137,14 @@ class ProductSeeder extends Seeder
             'name' => 'Taro Hot',
             'jumlah' => 25,
             'modal' => 8000,
-            'harga' => 12000,
+            'harga' => 13000,
             'category_id' => 2
         ]);
 
         Product::create([
             'name' => 'Taro Ice',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 10000,
             'harga' => 15000,
             'category_id' => 2
         ]);
@@ -152,23 +152,23 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Extrajoss Milk',
             'jumlah' => 25,
-            'modal' => 7000,
+            'modal' => 5000,
             'harga' => 10000,
             'category_id' => 2
         ]);
 
         Product::create([
-            'name' => 'Air Gelas',
+            'name' => 'Strawberry Milk',
             'jumlah' => 25,
-            'modal' => 500,
-            'harga' => 1000,
+            'modal' => 10000,
+            'harga' => 15000,
             'category_id' => 2
         ]);
 
         Product::create([
             'name' => 'Thai Tea',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 10000,
             'harga' => 15000,
             'category_id' => 3
         ]);
@@ -176,7 +176,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Green Tea',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 10000,
             'harga' => 15000,
             'category_id' => 3
         ]);
@@ -184,7 +184,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Lemon Tea Hot',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 7000,
             'harga' => 12000,
             'category_id' => 3
         ]);
@@ -192,7 +192,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Lemon Tea Ice',
             'jumlah' => 25,
-            'modal' => 9000,
+            'modal' => 10000,
             'harga' => 15000,
             'category_id' => 3
         ]);
@@ -200,7 +200,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Strawberry Tea Ice',
             'jumlah' => 25,
-            'modal' => 9000,
+            'modal' => 10000,
             'harga' => 15000,
             'category_id' => 3
         ]);
@@ -208,23 +208,15 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Strawberry Tea Hot',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 7000,
             'harga' => 12000,
-            'category_id' => 3
-        ]);
-
-        Product::create([
-            'name' => 'Strawberry Milk',
-            'jumlah' => 25,
-            'modal' => 8000,
-            'harga' => 15000,
             'category_id' => 3
         ]);
 
         Product::create([
             'name' => 'Strawberry Milk Tea',
             'jumlah' => 25,
-            'modal' => 10000,
+            'modal' => 12000,
             'harga' => 17000,
             'category_id' => 3
         ]);
@@ -232,7 +224,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Strawberry Lemon Tea',
             'jumlah' => 25,
-            'modal' => 10000,
+            'modal' => 12000,
             'harga' => 17000,
             'category_id' => 3
         ]);
@@ -240,15 +232,15 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Original Tea Hot',
             'jumlah' => 25,
-            'modal' => 7000,
-            'harga' => 1000,
+            'modal' => 5000,
+            'harga' => 10000,
             'category_id' => 3
         ]);
 
         Product::create([
             'name' => 'Original Tea Ice',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 7000,
             'harga' => 12000,
             'category_id' => 3
         ]);
@@ -256,7 +248,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Milk Tea Hot',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 7000,
             'harga' => 12000,
             'category_id' => 3
         ]);
@@ -264,7 +256,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Milk Tea Ice',
             'jumlah' => 25,
-            'modal' => 9000,
+            'modal' => 10000,
             'harga' => 15000,
             'category_id' => 3
         ]);
@@ -272,7 +264,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Pitcher Tea',
             'jumlah' => 25,
-            'modal' => 15000,
+            'modal' => 20000,
             'harga' => 25000,
             'category_id' => 3
         ]);
@@ -280,7 +272,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Leci Tea',
             'jumlah' => 25,
-            'modal' => 9000,
+            'modal' => 10000,
             'harga' => 15000,
             'category_id' => 3
         ]);
@@ -288,7 +280,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Vanilla Tea',
             'jumlah' => 25,
-            'modal' => 9000,
+            'modal' => 10000,
             'harga' => 15000,
             'category_id' => 3
         ]);
@@ -296,7 +288,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Roti Panggang',
             'jumlah' => 25,
-            'modal' => 7000,
+            'modal' => 9000,
             'harga' => 14000,
             'category_id' => 4
         ]);
@@ -304,7 +296,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Kentang Goreng',
             'jumlah' => 25,
-            'modal' => 7000,
+            'modal' => 9000,
             'harga' => 14000,
             'category_id' => 4
         ]);
@@ -312,7 +304,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Mie Rebus',
             'jumlah' => 25,
-            'modal' => 4000,
+            'modal' => 5000,
             'harga' => 10000,
             'category_id' => 4
         ]);
@@ -320,7 +312,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Mie Rebus Double',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 10000,
             'harga' => 15000,
             'category_id' => 4
         ]);
@@ -328,7 +320,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Mie Goreng',
             'jumlah' => 25,
-            'modal' => 4000,
+            'modal' => 5000,
             'harga' => 10000,
             'category_id' => 4
         ]);
@@ -336,7 +328,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Mie Goreng Double',
             'jumlah' => 25,
-            'modal' => 8000,
+            'modal' => 10000,
             'harga' => 15000,
             'category_id' => 4
         ]);
