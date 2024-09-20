@@ -426,8 +426,7 @@ class OrderController extends Controller
     }
 
     public function updateOrDelete(Request $request) {
-        // dd($request);
-        // if(!$request->selectPesan) return redirect()->back()->with('alert', 'info')->with('message', 'Tidak ada pesanan yang terpilih');
+        $user = Auth::user();
         if($request->action == 'update') {
             foreach ($request->selectPesan as $id) {
                 $data = Cart::with('order')->findOrFail($id);
@@ -435,7 +434,8 @@ class OrderController extends Controller
 
                 if($data->status_id < 5) {
                     $data->update([
-                        'status_id' => $data->status_id + 1
+                        'status_id' => $data->status_id + 1,
+                        'update_status_by' => $user->name
                     ]);
                 }
 
