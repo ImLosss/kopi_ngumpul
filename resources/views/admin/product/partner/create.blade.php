@@ -100,7 +100,7 @@
                 products.forEach(item => {
                     code+=`<div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" name="selectedProducts[]" id="inlineCheckbox${ item.id }" value="${ item.id }">
-                        <label class="form-check-label" for="inlineCheckbox${ item.id }">${ item.name }</label>
+                        <label class="form-check-label" for="inlineCheckbox${ item.id }">${ item.name } (${ item.harga })</label>
                     </div>`
                 });
 
