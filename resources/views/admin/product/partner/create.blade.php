@@ -48,7 +48,7 @@
                         <div class="form-group">
                             <label for="email" class="form-control-label">{{ __('Up Harga') }}</label>
                             <div class="@error('upHarga')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="text" placeholder="upHarga" oninput="formatNumberInput(this.value)" id="upHargaView" value="{{ old('upHarga') }}">
+                                <input class="form-control" type="text" placeholder="Harga asli + upHarga" oninput="formatNumberInput(this.value)" id="upHargaView" value="{{ old('upHarga') }}">
                                 <input class="form-control" type="hidden" placeholder="Harga asli + upHarga" name="upHarga" id="upHarga">
                                 @error('upHarga')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
