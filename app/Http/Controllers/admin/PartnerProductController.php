@@ -143,8 +143,11 @@ class PartnerProductController extends Controller
     }
 
     public function getProductByCategory($id) {
-        
-        $productIds = Product::whereHas('partnerProduct')->where('category_id', $id)->pluck('id');
+
+        $productIds = PartnerProduct::where('user_id', Auth::user()->id)
+        ->whereHas('product', function ($query) use ($id) {
+            $query->where('category_id', $id);
+        })->pluck('product_id');
 
         $data = Product::where('category_id', $id)->whereNotIn('id', $productIds)->get();
 
