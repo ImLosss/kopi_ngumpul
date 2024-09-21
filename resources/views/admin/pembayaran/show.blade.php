@@ -56,6 +56,7 @@
                                             <input class="form-check-input custom-checkbox" type="checkbox" value="" id="selectPesanAll">
                                         </div>
                                     </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama Pelanggan</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Menu</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jumlah</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
@@ -261,6 +262,10 @@
                 {
                     data: '#',
                     name: '#'
+                },
+                {
+                    data: 'customer_name',
+                    name: 'customer_name'
                 },
                 {
                     data: 'menu',

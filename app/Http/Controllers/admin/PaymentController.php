@@ -334,6 +334,10 @@ class PaymentController extends Controller
             <input class="form-check-input" type="checkbox" value="' . $data->id . '" id="selectPesan[]" name="selectPesan[]" data-total="' . $total .'">
             </div>';
         })
+        ->addColumn('customer_name', function($data) {
+            if (!$data->order->customer_name) return 'none';
+            return $data->order->customer_name;
+         })
         ->addColumn('menu', function($data) {
             return $data->menu;
         })
