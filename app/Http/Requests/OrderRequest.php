@@ -23,7 +23,7 @@ class OrderRequest extends FormRequest
     {
         return [
             'no_meja' => 'required|exists:tables,no_meja',
-            'name' => 'max:12'
+            'name' => 'max:20'
         ];
     }
 }
