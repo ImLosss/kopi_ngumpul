@@ -56,6 +56,13 @@
                     </table>
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <div class="d-flex flex-wrap">
+                        <a class="btn bg-gradient-info mt-2" href="{{ route('product.partner.menu') }}" style="margin-right: 10px"><i class="fa-solid fa-print"></i> Print Menu</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

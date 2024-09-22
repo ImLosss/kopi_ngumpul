@@ -168,6 +168,7 @@ Route::group([
         'destroy' => 'product.partner.destroy'
     ]);
 
+    Route::get('/printMenu', [PartnerProductController::class, 'printMenu'])->name('product.partner.menu');
     Route::get('/getPartnerProduct', [PartnerProductController::class, 'getPartnerProduct'])->name('admin.dataTable.getPartnerProduct');
     Route::get('/get-partner-menu-by-category/{id}', [PartnerProductController::class, 'getProductByCategory']);
     //endRoute

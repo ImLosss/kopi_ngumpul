@@ -34,6 +34,6 @@ class Product extends Model
 
     public function partnerProduct()
     {
-        return $this->hasMany(PartnerProduct::class, 'product_id', 'id');
+        return $this->hasOne(PartnerProduct::class, 'product_id', 'id');
     }
 }

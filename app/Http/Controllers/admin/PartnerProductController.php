@@ -13,6 +13,12 @@ use Yajra\DataTables\Facades\DataTables;
 
 class PartnerProductController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('permission:partnerProductAcceess');
+    }
+    
     /**
      * Display a listing of the resource.
      */
@@ -95,6 +101,20 @@ class PartnerProductController extends Controller
         $data->delete();
 
         return redirect()->back()->with('alert', 'success')->with('message', 'Produk berhasil dihapus');
+    }
+
+    public function printMenu() {
+        $data = Category::whereHas('product.partnerProduct', function ($query) {
+            $query->where('user_id', Auth::user()->id);
+        })->with(['product' => function ($query) {
+            $query->whereHas('partnerProduct', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            })->with('partnerProduct');
+        }])->get();
+
+        // dd($data);
+
+        return view('admin.product.partner.menu', compact('data'));
     }
 
     public function getPartnerProduct(Request $request) {
