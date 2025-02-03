@@ -7,8 +7,8 @@
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" @role('admin')href="{{ route('home') }}@endrole">Home</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Up Harga</li>
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('home') }}">Home</a></li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Products</li>
         </ol>
         <h5 class="font-weight-bolder mb-0">Product</h5>
     </nav>
@@ -24,17 +24,22 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-end flex-wrap">
-                            <div class="mb-2" style="margin-right: 20px">
-                                <select class="form-control" onchange="update(this.value)" id="categorySelect">
-                                    <option value="" selected disabled>Pilih Kategori</option>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </Select>
-                            </div>
-                            <div>
-                                <a class="btn bg-gradient-dark mb-0" href="{{ route('product.partner.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Product</a>
-                            </div>
+                            {{-- <div class="mb-2" style="margin-right: 20px">
+                                @if (!$categories->isEmpty())
+                                    <select class="form-control" onchange="update(this.value)" id="categorySelect">
+                                        
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
+                            </div> --}}
+                            @can('productAdd')
+                                <div>
+                                    <a class="btn bg-gradient-dark mb-0" href="{{ route('product.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Tambah Bahan</a>
+                                    <a class="btn bg-gradient-dark mb-0" href="{{ route('product.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Product</a>
+                                </div>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -46,21 +51,12 @@
                         <tr>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Nama</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Kategori</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Stock</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Harga</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Jumlah Gram/Ml</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
                         </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="d-flex flex-wrap">
-                        <a class="btn bg-gradient-info mt-2" href="{{ route('product.partner.menu') }}" style="margin-right: 10px"><i class="fa-solid fa-print"></i> Print Menu</a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -79,13 +75,14 @@
         var table = $('#dataTable3').DataTable({
             processing: true,
             serverSide: true,
+            ordering: false,
             ajax: {
-                url: "{{ route('admin.dataTable.getPartnerProduct') }}",
+                url: "{{ route('admin.dataTable.getProduct') }}",
                 data: function (d) {
                     d.category_id = $('#categorySelect').val(); // Mengirim category_id ke server
                 },
                 error: function(xhr, error, thrown){
-                    // console.log('An error occurred while fetching data.');
+                    console.log('An error occurred while fetching data.');
                         // Hide the default error message
                         $('#example').DataTable().clear().draw();
                 }
@@ -93,13 +90,11 @@
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },
-                { data: 'category', name: 'category' },
-                { data: 'jumlah', name: 'jumlah' },
-                { data: 'harga', name: 'harga' },
+                { data: 'jumlah_gr', name: 'jumlah_gr' },
                 { data: 'action', name: 'action' }
             ],
             language: {
-                emptyTable: "Belum mengatur menu Partner"
+                emptyTable: "Belum mengatur stock"
             },
             headerCallback: function(thead, data, start, end, display) {
                 $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah

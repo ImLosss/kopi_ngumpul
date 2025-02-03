@@ -8,7 +8,7 @@ use App\Http\Controllers\admin\DiscountController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\PartnerProductController;
 use App\Http\Controllers\admin\PaymentController;
-use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\StockController;
 use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\TableController;
@@ -67,7 +67,7 @@ Route::group([
     //endRoute
 
     //routeProduct
-    Route::resource('product', ProductController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+    Route::resource('product', StockController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'index' => 'product',
         'create' => 'product.create',
         'store' => 'product.store',
@@ -75,8 +75,8 @@ Route::group([
         'show' => 'product.show',
     ]);
 
-    Route::get('/edit', [ProductController::class, 'edit']);
-    Route::get('/getProduct', [ProductController::class, 'getProduct'])->name('admin.dataTable.getProduct');
+    Route::get('/edit', [StockController::class, 'edit']);
+    Route::get('/getProduct', [StockController::class, 'getProduct'])->name('admin.dataTable.getProduct');
     //endRoute
 
     //routeCashier

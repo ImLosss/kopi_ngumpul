@@ -23,12 +23,9 @@ class DatabaseSeeder extends Seeder
             PermissionRoleSeeder::class,
             UserSeeder::class,
             CategorySeeder::class,
-            ProductSeeder::class,
+            StockSeeder::class,
             OrderSeeder::class,
-            CartSeeder::class,
-            DiscountSeeder::class,
-            StatusSeeder::class,
-            TableSeeder::class
+            CartSeeder::class
         ]);
     }
 }
