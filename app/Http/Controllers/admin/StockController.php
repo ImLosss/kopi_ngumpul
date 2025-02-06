@@ -117,7 +117,7 @@ class StockController extends Controller
     }
 
     public function getProduct(Request $request) {
-        $data = Stock::all();
+        $data = Stock::query();
         $user = Auth::user();
 
         // dd($data);
@@ -127,8 +127,8 @@ class StockController extends Controller
             return $data->name;
         })
         ->addColumn('jumlah_gr', function($data) {
-            if($data->jumlah <= 5) return "<div class='text-danger'>" . $data->jumlah_gr . "</div>";
-            return $data->jumlah;
+            if($data->jumlah_gr <= 2000) return "<div class='text-danger'>" . $data->jumlah_gr . "</div>";
+            return $data->jumlah_gr;
         })
         ->addColumn('action', function($data) use ($user) {
             $update = '';
@@ -145,8 +145,8 @@ class StockController extends Controller
             if ($request->has('search') && $request->input('search.value')) {
                 $search = $request->input('search.value');
                 $query->where(function ($query) use ($search) {
-                    $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('jumlah_gr', 'like', "%{$search}%");
+                    $query->where('jumlah_gr', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%");
                 });
             }
         })

@@ -17,5 +17,10 @@ class StockSeeder extends Seeder
             'name' => 'Aren Coffee',
             'jumlah_gr' => 1500
         ]);
+
+        Stock::create([
+            'name' => 'asdasd',
+            'jumlah_gr' => 2555
+        ]);
     }
 }

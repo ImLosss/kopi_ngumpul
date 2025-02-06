@@ -11,9 +11,7 @@ class Stock extends Model
 
     protected $fillable = [
         'name',
-        'jumlah',
-        'modal',
-        'harga',
+        'jumlah_gr'
     ];
 
     public function cart()

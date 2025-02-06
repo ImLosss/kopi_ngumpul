@@ -88,20 +88,6 @@ Route::group([
     Route::get('/get-detail/{id}', [CashierController::class, 'getDetail']);
     //endRoute
 
-    //routeDiscount
-    Route::resource('discount', DiscountController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
-        'index' => 'discount',
-        'destroy' => 'discount.destroy',
-        'edit' => 'discount.edit',
-        'update' => 'discount.update',
-        'create' => 'discount.create',
-        'store' => 'discount.store'
-    ]);
-
-    Route::get('/getDiscount', [DiscountController::class, 'getDiscount'])->name('admin.dataTable.getDiscount');
-    Route::get('/get-menu-by-category/{id}', [DiscountController::class, 'getMenu']);
-    //endRoute
-
     //routeCart
     Route::resource('cart', CartController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'destroy' => 'cart.destroy',
@@ -157,30 +143,4 @@ Route::group([
     Route::get('/getReport/{id}', [ReportController::class, 'getReport'])->name('admin.dataTable.getReport');
     Route::post('/report/print', [ReportController::class, 'printReport'])->name('report.printReport');
     //endRoute
-
-    // routePartnerProduct
-    Route::resource('partnerProduct', PartnerProductController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
-        'index' => 'partnerProduct',
-        'create' => 'product.partner.create',
-        'store' => 'product.partner.store',
-        'edit' => 'partnerProduct.edit',
-        'update' => 'product.partner.update',
-        'destroy' => 'product.partner.destroy'
-    ]);
-
-    Route::get('/printMenu', [PartnerProductController::class, 'printMenu'])->name('product.partner.menu');
-    Route::get('/getPartnerProduct', [PartnerProductController::class, 'getPartnerProduct'])->name('admin.dataTable.getPartnerProduct');
-    Route::get('/get-partner-menu-by-category/{id}', [PartnerProductController::class, 'getProductByCategory']);
-    //endRoute
-
-    // routeTable
-    Route::resource('table', TableController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
-        'index' => 'table',
-        'edit' => 'table.edit',
-        'update' => 'table.update',
-        'destroy' => 'table.destroy'
-    ]);
-
-    Route::get('/getTables', [TableController::class, 'getTables'])->name('admin.dataTable.getTables');
-    // endRoute
 });

@@ -33,7 +33,7 @@
                 </li>
             @endrole
 
-            @canany(['cashierAccess', 'cashierPartnerAccess'])
+            @canany(['cashierAccess'])
                 <li class="nav-item">
                     <a class="nav-link {{ (Request::is('cashier') ? 'active' : '') }}" href="{{ route('cashier') }}">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -86,18 +86,7 @@
                 </li>
             @endcan
 
-            @can('partnerProductAcceess')
-                <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('partnerProduct','partnerProduct/*') ? 'active' : '') }}" href="{{ route('partnerProduct') }}">
-                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-angles-up {{ (Request::is('partnerProduct','partnerProduct/*') ? '' : 'text-dark') }} text-sm"></i>             
-                        </div>
-                        <span class="nav-link-text ms-1">MarkUp harga</span>
-                    </a>
-                </li>
-            @endcan
-
-            @can('productAccess')
+            @can('stockAccess')
                 <li class="nav-item">
                     <a class="nav-link {{ (Request::is('product','product/*') ? 'active' : '') }}" href="{{ route('product') }}">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">

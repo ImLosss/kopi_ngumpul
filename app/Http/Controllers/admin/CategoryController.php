@@ -89,7 +89,7 @@ class CategoryController extends Controller
         }
     }
 
-    public function getCategories() 
+    public function getCategories(Request $request) 
     {
         $data = Category::all();
 

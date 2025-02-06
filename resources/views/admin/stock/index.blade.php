@@ -78,9 +78,6 @@
             ordering: false,
             ajax: {
                 url: "{{ route('admin.dataTable.getProduct') }}",
-                data: function (d) {
-                    d.category_id = $('#categorySelect').val(); // Mengirim category_id ke server
-                },
                 error: function(xhr, error, thrown){
                     console.log('An error occurred while fetching data.');
                         // Hide the default error message
@@ -100,11 +97,6 @@
                 $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
             },
         });
-
-        // Fungsi update untuk memperbarui tabel berdasarkan kategori yang dipilih
-        window.update = function (category_id) {
-            $('#dataTable3').DataTable().ajax.reload();
-        }
     });
 
     function modalHapus(id) {
