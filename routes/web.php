@@ -5,9 +5,11 @@ use App\Http\Controllers\admin\CartController;
 use App\Http\Controllers\admin\CashierController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\DiscountController;
+use App\Http\Controllers\admin\IngredientTransactionController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\PartnerProductController;
 use App\Http\Controllers\admin\PaymentController;
+use App\Http\Controllers\admin\RecipeController;
 use App\Http\Controllers\admin\StockController;
 use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\RoleController;
@@ -66,17 +68,30 @@ Route::group([
     ]);
     //endRoute
 
-    //routeProduct
-    Route::resource('product', StockController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
-        'index' => 'product',
-        'create' => 'product.create',
-        'store' => 'product.store',
-        'edit' => 'product.edit',
-        'show' => 'product.show',
+    //routeStock
+    Route::resource('stock', StockController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'stock'
     ]);
 
     Route::get('/edit', [StockController::class, 'edit']);
-    Route::get('/getProduct', [StockController::class, 'getProduct'])->name('admin.dataTable.getProduct');
+    Route::get('/getStock', [StockController::class, 'getProduct'])->name('admin.dataTable.getStock');
+    //endRoute
+
+    //RouteIngredientTransaction
+    Route::resource('ingredient', IngredientTransactionController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'ingredient'
+    ]);
+
+    Route::get('/getIngredientTransaction', [IngredientTransactionController::class, 'getIngredientTransaction'])->name('admin.dataTable.getIngredientTransaction');
+    //endRoute
+
+    //RouteRecipe
+    Route::resource('recipe', RecipeController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'recipe'
+    ]);
+
+    Route::get('/edit', [RecipeController::class, 'edit']);
+    Route::get('/getRecipe', [RecipeController::class, 'getRecipe'])->name('admin.dataTable.getRecipe');
     //endRoute
 
     //routeCashier

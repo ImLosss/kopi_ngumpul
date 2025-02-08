@@ -38,6 +38,12 @@ class PermissionRoleSeeder extends Seeder
         ->assignRole(['admin']);
         Permission::create(['name' => 'stockAdd'])
         ->assignRole(['admin']);
+        Permission::create(['name' => 'ingredientAccess'])
+        ->assignRole(['admin', 'kasir']);
+        Permission::create(['name' => 'ingredientDelete'])
+        ->assignRole(['admin']);
+        Permission::create(['name' => 'ingredientAdd'])
+        ->assignRole(['admin']);
         Permission::create(['name' => 'categoryAccess'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'paymentAccess'])

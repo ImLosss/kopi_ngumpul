@@ -5,7 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Category;
-use App\Models\Product;
+use App\Models\Stock;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -19,141 +19,7 @@ class AdminController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if($user->hasRole('dapur')) return redirect()->route('order.index');
-        if($user->hasRole(['kasir', 'partner', 'pelayan'])) return redirect()->route('cashier');
-
-        $products = Product::all();
-        $productsRating = Category::with('product')->first();
-        $startDate = Carbon::now()->subWeek();
-        $datesArray = [];
-        $series = [];
-        $penjualan = [];
-        $ratingChart = [];
-        $ratingJual = [];
-
-        if(empty($productsRating)) return redirect()->route('product')->with('alert', 'info')->with('message', 'Tambahkan produk terlebih dahulu');
-        foreach ($productsRating->product as $product) {
-            $totaljual = Cart::where('product_id', $product->id)->where('pembayaran', true)->where('created_at', '>=', $startDate)->sum('jumlah');
-
-            if($totaljual > 0) {
-                $ratingChart[] = ['name' => $product->name, 'penjualan' => $totaljual];
-                $penjualan[] = $totaljual;
-            }
-        }
-
-        foreach ($products as $product) {
-            $salesData = [];
-            $date = $startDate->copy();
-            for ($i = 0; $i < 7; $i++) {
-                $date = $date->addDay();
-                $sales = Cart::where('product_id', $product->id)->where('pembayaran', true)->whereDate('created_at', $date)->sum('jumlah');
-                $salesData[] = $sales? $sales: null;
-            }
-
-            $nonNullValues = array_filter($salesData, function($value) {
-                return !is_null($value);
-            });
-            
-            // Cek apakah array yang difilter kosong
-            if (!empty($nonNullValues)) {
-                $series[] = [
-                    'name' => $product->name,
-                    'data' => $salesData
-                ];
-            }
-        }
-        
-        rsort($penjualan, SORT_NUMERIC);
-
-        try {
-            $maxJual = max($penjualan);
-        } catch(\Throwable $e) {
-
-        }
-
-        foreach ($ratingChart as $key => $item) {
-            $ratingChart[$key]['rating'] = $this->calculateRating($item['penjualan'], $maxJual);
-        }
-
-        usort($ratingChart, function($a, $b) {
-            return $b['rating'] <=> $a['rating'];
-        });
-        
-        foreach ($ratingChart as $item) {
-            $data['ratingChart']['name'][] = $item['name'];
-            $ratingJual[] = $item['rating'];
-        }
-
-        // memvbatasi dan menghapus decimal jika bilangan bulat
-        $ratingJual = array_map(function($num) {
-            $num = $this->formatNumber($num);
-            return $num;
-        }, $ratingJual);
-
-        $data['ratingChart']['series'][] = ['name' => 'Rating', 'data' => $ratingJual];
-        $data['ratingChart']['penjualan'] = $penjualan;
-
-        // return $data['ratingChart']['series'];
-        for ($i = 0; $i < 7; $i++) {
-            $date = $startDate->addDay(); // Tambahkan hari ke tanggal mulai
-            $formattedDate = $date->format('d M'); // Format tanggal menjadi '12 Feb'
-            $datesArray[] = $formattedDate;
-
-            $cekPemasukan = Cart::where('pembayaran', true)->whereDate('created_at', $date)->sum('total');
-            if($cekPemasukan != 0) {
-                $datesPemasukan[] = $formattedDate;
-                $datesProfit[] = $formattedDate;
-                $pemasukan[] = Cart::where('pembayaran', true)->whereDate('created_at', $date)->sum('total');
-                $profit[] = Cart::where('pembayaran', true)->whereDate('created_at', $date)->sum('profit');
-            }
-        }
-
-        if(empty($data['ratingChart']['name'])) {
-            $data['ratingChart']['name'] = [];
-        }
-        
-        if(empty($pemasukan)) {
-            $data['pemasukanChart']['series'][] = [
-                'data' => []
-            ];
-
-            $data['profitChart']['series'][] = [
-                'data' => []
-            ];
-
-            $data['profitChart']['dates'] = [];
-            $data['pemasukanChart']['dates'] = [];
-        } else {
-            $data['pemasukanChart']['series'][] = [
-                'data' => $pemasukan
-            ];
-
-            $data['profitChart']['series'][] = [
-                'data' => $profit
-            ];
-
-            $data['profitChart']['dates'] = $datesProfit;
-            $data['pemasukanChart']['dates'] = $datesPemasukan;
-        }
-        $data['datesArr'] = $datesArray;
-        $data['series'] = $series;
-        $data['cekstok'] = Product::where('jumlah', 0)->get();
-        $data['categories'] = Category::get();
-        $data['habis'] = Product::where('jumlah', '<=', 5)->get();
-        $data['pemasukanHariIni'] = Cart::where('pembayaran', true)->whereDate('created_at', Carbon::now())->sum('total');
-        $data['pemasukan'] = Cart::where('pembayaran', true)->whereDate('created_at', '<=', Carbon::now())->sum('total');
-        $data['profitHariIni'] = Cart::where('pembayaran', true)->whereDate('created_at', Carbon::now())->sum('profit');
-        $data['totalUser'] = User::whereHas('roles', function($query) {
-            $query->whereNotIn('name', ['admin', 'partner']);
-        })->count();
-        $data['totalPartner'] = User::whereHas('roles', function($query) {
-            $query->where('name', 'partner');
-        })->count();
-        $data['profit'] = Cart::where('pembayaran', true)->whereDate('created_at', '<=', Carbon::now())->sum('profit');
-
-        // dd($data);
-        // return($data['pemasukanChart']['series']);
-        return view('admin.dashboard', $data);
+        return view('admin.dashboard');
     }
 
     public function updateRatingChart()

@@ -20,8 +20,8 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Pemasukan</p>
                 <h5 class="font-weight-bolder mb-0">
-                  Rp{{ number_format($pemasukan) }}
-                  <span class="text-success text-sm font-weight-bolder">+Rp{{ number_format($pemasukanHariIni) }}</span>
+                  999
+                  <span class="text-success text-sm font-weight-bolder">+Rp999</span>
                 </h5>
               </div>
             </div>
@@ -45,8 +45,8 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Total keuntungan</p>
                 <h5 class="font-weight-bolder mb-0">
-                  Rp{{ number_format($profit) }}
-                  <span class="text-success text-sm font-weight-bolder">+Rp{{ number_format($profitHariIni) }}</span>
+                  Rp9999
+                  <span class="text-success text-sm font-weight-bolder">+Rp999</span>
                 </h5>
               </div>
             </div>
@@ -71,7 +71,7 @@
                 <div class="numbers">
                   <p class="text-sm mb-0 text-capitalize font-weight-bold">Staff</p>
                   <h5 class="font-weight-bolder mb-0">
-                    {{ $totalUser }}
+                    9
                   </h5>
                 </div>
               </div>
@@ -92,7 +92,7 @@
                 <div class="numbers">
                   <p class="text-sm mb-0 text-capitalize font-weight-bold">Partner</p>
                   <h5 class="font-weight-bolder mb-0">
-                    {{ $totalPartner }}
+                    9
                   </h5>
                 </div>
               </div>
@@ -107,38 +107,38 @@
       </div>
     </div>
   </div>
-  @if ($cekstok->count() > 0)
+  {{-- @if ($cekstok->count() > 0) --}}
     <div class="row mb-3">
       <div class="col-xl-12">
         <div class="card pb-0 p-3">
           <div class="row align-items-center">
             <div class="col-10">
-              <h6>Terdapat {{ $cekstok->count() }} menu yang telah habis. Segera restock!</h6>
+              <h6>Terdapat 2 menu yang telah habis. Segera restock!</h6>
             </div>
             <div class="col-2 d-flex justify-content-end">
-              <a class="btn bg-gradient-secondary" href="{{ route('product') }}">CEK</a>
+              <a class="btn bg-gradient-secondary" href="{{ route('stock') }}">CEK</a>
             </div>
           </div>
         </div>
       </div>
     </div>
-  @endif
-  @if($habis->count() > 0 && $cekstok->count() == 0)
+  {{-- @endif --}}
+  {{-- @if($habis->count() > 0 && $cekstok->count() == 0) --}}
     <div class="row mb-3">
       <div class="col-xl-12">
         <div class="card pb-0 p-3">
           <div class="row align-items-center">
             <div class="col-10">
-              <h6>Terdapat {{ $habis->count() }} menu yang akan habis. Segera restock!</h6>
+              <h6>Terdapat 2 menu yang akan habis. Segera restock!</h6>
             </div>
             <div class="col-2 d-flex justify-content-end">
-              <a class="btn bg-gradient-secondary" href="{{ route('product') }}">CEK</a>
+              <a class="btn bg-gradient-secondary" href="{{ route('stock') }}">CEK</a>
             </div>
           </div>
         </div>
       </div>
     </div>
-  @endif
+  {{-- @endif --}}
   <div class="row mb-3">
     <div class="col-xl-6">
       <div class="card mb-3 p-2">
@@ -155,9 +155,7 @@
                 <div class="d-flex justify-content-end flex-wrap">
                     <div class="mb-2" style="margin-right: 20px">
                       <select class="form-control" id="categorySelect">
-                          @foreach ($categories as $category)
-                              <option value="{{ $category->id }}">{{ $category->name }}</option>
-                          @endforeach
+                              <option value="121">Option 1</option>
                       </Select>
                     </div>
                 </div>
@@ -182,18 +180,6 @@
 
 @section('script')
 <script>
-var labels = @json($datesArr);
-var series = @json($series);
-var ratingName = @json($ratingChart['name']);
-var ratingSeries = @json($ratingChart['series']);
-var ratingPenjualan = @json($ratingChart['penjualan']);
-var pemasukanSeries = @json($pemasukanChart['series']);
-var pemasukanDates = @json($pemasukanChart['dates']);
-var profitSeries = @json($profitChart['series']);
-var profitDates = @json($profitChart['dates']);
-
-pemasukanSeries[0].data = pemasukanSeries[0].data.map(Number);
-profitSeries[0].data = profitSeries[0].data.map(Number);
 
 // Menghitung tinggi chart berdasarkan jumlah data
 var ratingBaseHeight = 180; // Tinggi minimum chart
@@ -203,9 +189,6 @@ var ratingChartHeight = ratingBaseHeight + (ratingSeries[0].data.length * rating
 var lineBaseHeight = 180; 
 var lineHeightPerData = 9; 
 var lineChartHeight = lineBaseHeight + (series.length * lineHeightPerData);
-
-if (ratingSeries[0].data.length == 0) ratingChartHeight = 300;
-if (series.length == 0) lineChartHeight = 360;
 
 var optionsLine = {
   chart: {

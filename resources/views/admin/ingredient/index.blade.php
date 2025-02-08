@@ -8,9 +8,9 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('home') }}">Home</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Stocks</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Products</li>
         </ol>
-        <h5 class="font-weight-bolder mb-0">Stock</h5>
+        <h5 class="font-weight-bolder mb-0">Product</h5>
     </nav>
 @endsection
 @section('content')
@@ -20,7 +20,7 @@
             <div class="card-header pb-3">
                 <div class="row">
                     <div class="col d-flex align-items-center">
-                        <h6>All Stocks</h6>
+                        <h6>All Products</h6>
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-end flex-wrap">
@@ -36,7 +36,7 @@
                             </div> --}}
                             @can('stockAdd')
                                 <div>
-                                    <a class="btn bg-gradient-dark mb-0" href="{{ route('stock.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Tambah Stock</a>
+                                    <a class="btn bg-gradient-dark mb-0" href="{{ route('stock.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Input Bahan</a>
                                 </div>
                             @endcan
                         </div>
@@ -51,6 +51,8 @@
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Nama</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Jumlah Gram/Ml</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Tipe</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Modal</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
                         </tr>
                         </thead>

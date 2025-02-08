@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Http\Requests\StockRequest;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Product;
@@ -38,26 +39,20 @@ class StockController extends Controller
      */
     public function create()
     {
-        $data = Category::get();
-        // dd($data);
-        return view('admin.stock.create', compact('data'));
+        return view('admin.stock.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductRequest $request)
+    public function store(StockRequest $request)
     {
         // dd($request);
-        Product::create([
-            'name' => $request->name,
-            'jumlah' => $request->stock,
-            'modal' => $request->modal,
-            'harga' => $request->harga,
-            'category_id' => $request->kategori
+        Stock::create([
+            'name' => $request->name
         ]);
 
-        return redirect()->route('product')->with('alert', 'success')->with('message', 'Produk berhasil ditambahkan');
+        return redirect()->route('stock')->with('alert', 'success')->with('message', 'Bahan berhasil ditambahkan');
     }
 
     /**
@@ -94,9 +89,9 @@ class StockController extends Controller
                 'category_id' => $request->kategori
             ]);
 
-            return redirect()->route('product')->with('alert', 'success')->with('message', 'Produk berhasil diubah');
+            return redirect()->route('stock')->with('alert', 'success')->with('message', 'Produk berhasil diubah');
         } catch (\Throwable $e) {
-            return redirect()->route('product')->with('alert', 'error')->with('message', 'Terjadi kesalahan');
+            return redirect()->route('stock')->with('alert', 'error')->with('message', 'Terjadi kesalahan');
         }
     }
 
@@ -106,13 +101,13 @@ class StockController extends Controller
     public function destroy(string $id)
     {
         try {
-            $data = Product::findOrFail($id);
+            $data = Stock::findOrFail($id);
 
             $data->delete();
 
-            return redirect()->route('product')->with('alert', 'success')->with('message', 'Produk berhasil dihapus');
+            return redirect()->route('stock')->with('alert', 'success')->with('message', 'Produk berhasil dihapus');
         } catch (\Throwable $e) {
-            return redirect()->route('product')->with('alert', 'error')->with('message', 'Terjadi kesalahan');
+            return redirect()->route('stock')->with('alert', 'error')->with('message', 'Terjadi kesalahan');
         }
     }
 
@@ -133,10 +128,10 @@ class StockController extends Controller
         ->addColumn('action', function($data) use ($user) {
             $update = '';
             $delete = '';
-            if($user->can('stockUpdate')) $update = '<a href="' . route('product.edit', $data->id) . '"><i class="fa-solid fa-pen-to-square text-secondary"></i></a>';
+            if($user->can('stockUpdate')) $update = '<a href="' . route('stock.edit', $data->id) . '"><i class="fa-solid fa-pen-to-square text-secondary"></i></a>';
             if($user->can('stockDelete')) $delete = '<button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>';
             return $update . $delete . '
-            <form id="form_'. $data->id .'" action="' . route('product.destroy', $data->id) . '" method="POST" class="inline">
+            <form id="form_'. $data->id .'" action="' . route('stock.destroy', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
             </form>';

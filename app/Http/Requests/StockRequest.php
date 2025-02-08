@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ProductRequest extends FormRequest
+class StockRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,19 +22,15 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        $productId = $this->route('product'); 
+        $productId = $this->route('stock'); 
 
         // dd($productId);
 
         return [
             'name' => [
                 'required',
-                Rule::unique('products')->ignore($productId),
-            ],
-            'kategori' => 'required|exists:categories,id',
-            'modal' => 'required',
-            'harga' => 'required',
-            'stock' => 'required'
+                Rule::unique('stocks')->ignore($productId),
+            ]
         ];
     }
 
@@ -46,11 +42,11 @@ class ProductRequest extends FormRequest
      */
     public function withValidator($validator)
     {
-        $validator->after(function ($validator) {
-            if ($this->harga <= $this->modal) {
-                $validator->errors()->add('harga', 'Harga harus lebih besar dari modal.');
-            }
-        });
+        // $validator->after(function ($validator) {
+        //     if ($this->harga <= $this->modal) {
+        //         $validator->errors()->add('harga', 'Harga harus lebih besar dari modal.');
+        //     }
+        // });
     }
 
     /**
@@ -62,7 +58,7 @@ class ProductRequest extends FormRequest
     {
         
         return [
-            'name.unique' => 'Menu ini sudah ada.'
+            'name.unique' => 'Bahan ini sudah ada.'
         ];
     }
 }

@@ -14,8 +14,8 @@ class Stock extends Model
         'jumlah_gr'
     ];
 
-    public function cart()
+    public function recipes()
     {
-        return $this->hasMany(Cart::class, 'stock_id', 'id');
+        return $this->belongsToMany(Recipe::class, 'ingredient_recipe');
     }
 }
