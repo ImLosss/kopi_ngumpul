@@ -97,7 +97,7 @@
                 </li>
             @endcan
 
-            @can('ingredientAccess')
+            @can('ingredientTransactionAccess')
                 <li class="nav-item">
                     <a class="nav-link {{ (Request::is('ingredient','ingredient/*') ? 'active' : '') }}" href="{{ route('ingredient') }}">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -108,13 +108,13 @@
                 </li>
             @endcan
 
-            @can('ingredientAccess')
+            @can('productAccess')
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('recipe','recipe/*') ? 'active' : '') }}" href="{{ route('recipe') }}">
+                    <a class="nav-link {{ (Request::is('product','product/*') ? 'active' : '') }}" href="{{ route('product') }}">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="ni ni-cart {{ (Request::is('recipe','recipe/*') ? '' : 'text-dark') }} text-sm"></i>                    
+                            <i class="ni ni-cart {{ (Request::is('product','product/*') ? '' : 'text-dark') }} text-sm"></i>                    
                         </div>
-                        <span class="nav-link-text ms-1">Recipe</span>
+                        <span class="nav-link-text ms-1">Product</span>
                     </a>
                 </li>
             @endcan

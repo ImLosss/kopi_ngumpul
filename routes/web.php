@@ -9,6 +9,7 @@ use App\Http\Controllers\admin\IngredientTransactionController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\PartnerProductController;
 use App\Http\Controllers\admin\PaymentController;
+use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\RecipeController;
 use App\Http\Controllers\admin\StockController;
 use App\Http\Controllers\admin\ReportController;
@@ -74,7 +75,7 @@ Route::group([
     ]);
 
     Route::get('/edit', [StockController::class, 'edit']);
-    Route::get('/getStock', [StockController::class, 'getProduct'])->name('admin.dataTable.getStock');
+    Route::get('/getStock', [StockController::class, 'getStock'])->name('admin.dataTable.getStock');
     //endRoute
 
     //RouteIngredientTransaction
@@ -85,13 +86,13 @@ Route::group([
     Route::get('/getIngredientTransaction', [IngredientTransactionController::class, 'getIngredientTransaction'])->name('admin.dataTable.getIngredientTransaction');
     //endRoute
 
-    //RouteRecipe
-    Route::resource('recipe', RecipeController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
-        'index' => 'recipe'
+    //RouteProduct
+    Route::resource('product', ProductController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
+        'index' => 'product'
     ]);
 
-    Route::get('/edit', [RecipeController::class, 'edit']);
-    Route::get('/getRecipe', [RecipeController::class, 'getRecipe'])->name('admin.dataTable.getRecipe');
+    Route::get('/edit', [ProductController::class, 'edit']);
+    Route::get('/getProduct', [ProductController::class, 'getProduct'])->name('admin.dataTable.getProduct');
     //endRoute
 
     //routeCashier

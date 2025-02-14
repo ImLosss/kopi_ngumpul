@@ -29,7 +29,7 @@
                         <div class="form-group has-validation">
                             <label for="user-name" class="form-control-label">{{ __('Nama Stock') }}</label>
                             <div class="@error('name')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="text" placeholder="Name" name="name" value="{{ old('name') }}">
+                                <input class="form-control" type="text" placeholder="Name" name="name" value="{{ old('name') }}" autofocus>
                                 @error('name')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror

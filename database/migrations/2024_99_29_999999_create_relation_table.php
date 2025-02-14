@@ -19,13 +19,17 @@ return new class extends Migration
             $table->foreign('kasir_id')->references('id')->on('users')->onDelete('set null');
         });
 
-        Schema::table('recipes', function (Blueprint $table) {
+        Schema::table('products', function (Blueprint $table) {
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
 
         Schema::table('ingredient_recipe', function (Blueprint $table) {
             $table->foreign('ingredient_id')->references('id')->on('stocks')->onDelete('cascade');
-            $table->foreign('recipe_id')->references('id')->on('recipes')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+        });
+
+        Schema::table('ingredient_transactions', function (Blueprint $table) {
+            $table->foreign('stock_id')->references('id')->on('stocks')->onDelete('set null');
         });
     }
 

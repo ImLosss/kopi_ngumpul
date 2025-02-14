@@ -68,28 +68,24 @@ class StockController extends Controller
      */
     public function edit(string $id)
     {
-        $data['product'] = Product::findOrFail($id);
-        $data['categories'] = Category::get();
+        $data = Stock::findOrFail($id);
         // dd($data);
-        return view('admin.stock.edit', $data);
+        return view('admin.stock.edit', compact('data'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductRequest $request, string $id)
+    public function update(StockRequest $request, string $id)
     {
         try {
-            $data = Product::findOrFail($id);
+            $data = Stock::findOrFail($id);
             $data->update([
                 'name' => $request->name,
-                'jumlah' => $request->stock,
-                'modal' => $request->modal,
-                'harga' => $request->harga,
-                'category_id' => $request->kategori
+                'jumlah_gr' => $request->jumlah_gr
             ]);
 
-            return redirect()->route('stock')->with('alert', 'success')->with('message', 'Produk berhasil diubah');
+            return redirect()->route('stock')->with('alert', 'success')->with('message', 'Stock berhasil diubah');
         } catch (\Throwable $e) {
             return redirect()->route('stock')->with('alert', 'error')->with('message', 'Terjadi kesalahan');
         }
@@ -111,7 +107,7 @@ class StockController extends Controller
         }
     }
 
-    public function getProduct(Request $request) {
+    public function getStock(Request $request) {
         $data = Stock::query();
         $user = Auth::user();
 
@@ -122,7 +118,7 @@ class StockController extends Controller
             return $data->name;
         })
         ->addColumn('jumlah_gr', function($data) {
-            if($data->jumlah_gr <= 2000) return "<div class='text-danger'>" . $data->jumlah_gr . "</div>";
+            if($data->jumlah_gr < 300) return "<div class='text-danger'>" . $data->jumlah_gr . "</div>";
             return $data->jumlah_gr;
         })
         ->addColumn('action', function($data) use ($user) {

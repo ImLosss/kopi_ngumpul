@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('ingredient_transactions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_stock');
+            $table->unsignedBigInteger('stock_id')->nullable();
+            $table->string('name');
             $table->integer('gram_ml');
             $table->enum('type', ['masuk', 'keluar']);
             $table->integer('modal')->default(0);

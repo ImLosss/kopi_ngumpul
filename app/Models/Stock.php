@@ -16,6 +16,6 @@ class Stock extends Model
 
     public function recipes()
     {
-        return $this->belongsToMany(Recipe::class, 'ingredient_recipe');
+        return $this->belongsToMany(Product::class, 'ingredient_recipe');
     }
 }
