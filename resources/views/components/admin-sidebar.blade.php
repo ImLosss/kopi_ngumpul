@@ -54,14 +54,8 @@
                     </div>
                     <span class="nav-link-text ms-1">Pesanan</span>
                 </a>
-                <div class="collapse {{ (Request::is('order','order/*', 'payment', 'payment/*') ? 'show' : '') }}" id="documentSideMenu" style="">
+                <div class="collapse {{ (Request::is('payment', 'payment/*') ? 'show' : '') }}" id="documentSideMenu" style="">
                     <ul class="nav ms-4 ps-3">
-                        <li class="nav-item ">
-                            <a class="nav-link {{ (Request::is('order', 'order/*') ? 'active' : '') }}" href="{{ route('order.index') }}">
-                                <span class="sidenav-mini-icon"> P </span>
-                                <span class="sidenav-normal"> List Order </span>
-                            </a>
-                        </li>
                         @can('paymentAccess')
                         <li class="nav-item ">
                             <a class="nav-link {{ (Request::is('payment', 'payment/*') ? 'active' : '') }}" href="{{ route('payment') }}">

@@ -121,21 +121,6 @@ Route::group([
     Route::get('/getCategories', [CategoryController::class, 'getCategories'])->name('admin.dataTable.getCategories');
     //endRoute
 
-    //routeOrder
-    Route::resource('order', OrderController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
-        'index' => 'order.index',
-        'update' => 'order.update',
-        'show' => 'order.show'
-    ]);
-
-    Route::get('/getOrder', [OrderController::class, 'getOrder'])->name('admin.dataTable.getOrder');
-    Route::get('/fixStatusOrder', [OrderService::class, 'fixAllStatusOrder'])->name('order.fixStatusOrder');
-    Route::get('/getPesanan/{id}', [OrderController::class, 'getPesanan'])->name('admin.dataTable.getPesanan');
-    Route::post('/pesanan/updateOrDelete', [OrderController::class, 'updateOrDelete'])->name('admin.pesanan.updateOrDelete');
-    Route::delete('/pesanan/delete/{id}', [OrderController::class, 'hapusPesanan'])->name('pesanan.destroy');
-    Route::patch('pesanan/update/{id}', [OrderController::class, 'updateStatus'])->name('pesanan.updateStatus');
-    //endRoute
-
     // routePayment
     Route::resource('payment', PaymentController::class)->only(['index', 'update', 'show', 'edit', 'store', 'destroy', 'create'])->names([
         'index' => 'payment',
@@ -145,7 +130,6 @@ Route::group([
     Route::get('/getAllOrder', [PaymentController::class, 'getAllOrder'])->name('admin.dataTable.getAllOrder');
     Route::get('/getPayment/{id}', [PaymentController::class, 'getPayment'])->name('admin.dataTable.getPayment');
     Route::post('/payment/billOrUpdate', [PaymentController::class, 'billOrUpdate'])->name('payment.billOrUpdate');
-    Route::patch('payment/update/{id}', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
     //endRoute
 
     // routeReport

@@ -45,6 +45,7 @@
                         <input type="hidden" name="action" id="action">
                         <input type="hidden" name="payment" id="payment">
                         <input type="hidden" name="updateMeja" id="updateMeja">
+                        <input type="hidden" name="order_id" value="{{ $order->id }}">
                         <input type="hidden" name="printNota" id="printNota">
                         <input type="hidden" name="uangCust" id="uangCust">
                         <input type="hidden" name="no_meja" value="{{ $order->no_meja }}">
@@ -113,8 +114,6 @@
                 '<p class="text-s mt-3" id="kembalian"></p>' +
                 '<p class="text-danger text-xs mt-3">Anda tidak akan dapat menghapus pesanan ini setelah pembayaran Lunas</p>' +
                 '<label for="updateMeja">' +
-                '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>' +
-                '<label for="printNotaAlert">' +
                 '<input type="checkbox" id="printNotaAlert" checked>&nbsp;Print Nota? </label>',
             focusConfirm: false,
             showCancelButton: true,
@@ -158,45 +157,6 @@
 
         $('#total').text(`Total: ${ total.toLocaleString('id-ID') }`);
         $('#totalHidden').val(total);
-    }
-
-    function modalUpdateStatus(id, total) {
-
-        Swal.fire({
-            title: 'Metode pembayaran',
-            html:
-                '<select class="form-control" id="paymentAlert" onchange="cekPayment()"><option>Tunai</option><option>Non Tunai</option></select><br>' +
-                '<input class="form-control" id="uang_cust" placeholder="Uang Customer" oninput="convert(this.value)" type="text">' +
-                '<label for="total">' +
-                '<p class="text-s mt-3" id="total">Total: 0</p>' +
-                '<input id="totalHidden" type="text">' +
-                '<p class="text-danger text-xs mt-3">Anda tidak akan dapat menghapus pesanan ini setelah pembayaran Lunas</p>' +
-                '<label for="updateMeja">' +
-                '<input type="checkbox" id="updateMejaAlert">&nbsp;Update status meja jadi tidak terpakai?</label>',
-            focusConfirm: false,
-            showCancelButton: true,
-            confirmButtonText: "Selesaikan pembayaran!",
-            confirmButtonColor: "#3085d6",  
-            preConfirm: () => {
-                // return alert('info', 'gagal');
-                let payment = $('#paymentAlert').val();
-                let uang_cust = $('#uangCust').val();
-
-                if(payment == 'Tunai' && uang_cust == "") return Swal.showValidationMessage('Lengkapi Form');
-                
-                let updateTable = false;
-                if ($('#updateMejaAlert').prop('checked')) {
-                    updateTable = true;
-                }
-
-                let code = `<input name="paymentSingle" value="${ payment }" hidden> <input name="updateMejaSingle" value="${ updateTable }" hidden> <input name="no_meja_single" value="{{ $order->no_meja }}" hidden>`;
-                $('#formUpdate_'+id).append(code);
-
-                updateStatus(id);
-            }
-        });
-
-        $('#total').text(`Total: ${ total }`);
     }
 
     function updateStatus(key) {
@@ -251,7 +211,7 @@
             //     { "orderable": false, "targets": 0 }  // Menonaktifkan pengurutan pada kolom pertama (index 0)
             // ],
             ajax: {
-                url: "{{ route('admin.dataTable.getPayment', $order->no_meja) }}",
+                url: "{{ route('admin.dataTable.getPayment', $order->id) }}",
                 error: function(xhr, error, thrown){
                     // console.log('An error occurred while fetching data.');
                     // Hide the default error message

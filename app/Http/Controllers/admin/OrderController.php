@@ -30,7 +30,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        return view('admin.pesanan.index');
+        return view('admin.order.index');
     }
 
     /**
@@ -71,54 +71,11 @@ class OrderController extends Controller
 
     public function getOrder(Request $request) 
     {
-        // $data = Order::with('status')->where('status_id', '!=', 1)->where('status_id', '!=', 4);
-
-        // Untuk melihat semua data dalam request
-        // Log::info('Request Data: ', $request->all());
-        // if ($request->filled('category_id')) {
-        //     $data->with('category')->where('category_id', $request->category_id);
-        // }
 
         $user = Auth::user();
-        $data = Order::with(['status', 'kasir'])
-        ->where('status_id', '!=', 1)
-        ->where('partner', false)
-        ->where(function ($query) {
-            $query->where('status_id', '!=', 5)
-                  ->orWhere('pembayaran', false);
-        });
-        
-        if($user->hasRole('dapur')) {
-            $data = Order::with(['status', 'kasir'])
-            ->where('status_id', '!=', 1)
-            ->where(function ($query) {
-                $query->where('status_id', 2)
-                      ->orWhere('status_id', 3)
-                      ->orWhere('status_id', 4);
-            });
-        }
-
-        if($user->hasRole('pelayan')) {
-            $data = Order::with(['status', 'kasir'])
-            ->where('status_id', '!=', 1)
-            ->where('partner', false)
-            ->where(function ($query) {
-                $query->where('status_id', 2)
-                      ->orWhere('status_id', 3)
-                      ->orWhere('status_id', 4);
-            });
-        }
-
-        if($user->hasRole('partner')) {
-            $data = Order::with(['status', 'kasir'])
-            ->where('user_id', $user->id)
-            ->where('status_id', '!=', 1)
-            ->where('partner', true)
-            ->where(function ($query) {
-                $query->where('status_id', '!=', 5)
-                      ->orWhere('pembayaran', false);
-            });
-        }
+        $data = Order::with(['kasir'])
+        ->where('status', 'selesai')
+        ->where('pembayaran', false);
 
 
         // dd($data);
@@ -131,58 +88,43 @@ class OrderController extends Controller
             if (!$data->customer_name) return 'none';
             return $data->customer_name;
          })
-         ->addColumn('no_meja', function($data) {
-            $no_meja = 'kosong';
-            if($data->no_meja) $no_meja = $data->no_meja;
-
-            return $no_meja;
-         })
          ->addColumn('kasir', function($data) {
             if (!$data->kasir_id) return 'none';
             return $data->kasir->name;
          })
          ->addColumn('total', function($data) use($user) {
-            if($data->partner) return 'Rp' . number_format($data->partner_total);
             return 'Rp' . number_format($data->total);
          })
          ->addColumn('status_pembayaran', function($data) {
             if ($data->pembayaran) return '<span class="badge badge-sm bg-gradient-primary">Lunas</span>';
             else return '<span class="badge badge-sm bg-gradient-warning">Belum Lunas</span>';
          })
-         ->addColumn('status', function($data) {
-            $color = 'secondary';
-
-            if($data->status_id == 4) $color = 'success';
-            if($data->status_id == 5) $color = 'primary';
-
-            return '<span class="badge badge-sm bg-gradient-' . $color . '">'. $data->status->desc .'</span>';
-         })
          ->addColumn('waktu_pesan', function($data) {
             return $data->created_at;
          })
-         ->filter(function ($query) use ($request) {
-            if ($request->has('search') && $request->input('search.value')) {
-                $search = $request->input('search.value');
-                $query->where(function ($query) use ($search) {
-                    $query->where('customer_name', 'like', "%{$search}%")
-                    ->orWhere('no_meja', 'like', "%{$search}%")
-                    ->orWhere('created_at', 'like', "%{$search}%")
-                    ->orWhereHas('status', function ($query) use ($search) {
-                        $query->where('desc', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('kasir', function ($query) use ($search) {
-                        $query->where('name', 'like', "%{$search}%");
-                    });
+        //  ->filter(function ($query) use ($request) {
+        //     if ($request->has('search') && $request->input('search.value')) {
+        //         $search = $request->input('search.value');
+        //         $query->where(function ($query) use ($search) {
+        //             $query->where('customer_name', 'like', "%{$search}%")
+        //             ->orWhere('no_meja', 'like', "%{$search}%")
+        //             ->orWhere('created_at', 'like', "%{$search}%")
+        //             ->orWhereHas('status', function ($query) use ($search) {
+        //                 $query->where('desc', 'like', "%{$search}%");
+        //             })
+        //             ->orWhereHas('kasir', function ($query) use ($search) {
+        //                 $query->where('name', 'like', "%{$search}%");
+        //             });
                     
-                    if (strtolower($search) === 'lunas') {
-                        $query->orWhere('pembayaran', true);
-                    } elseif (strtolower($search) === 'belum lunas') {
-                        $query->orWhere('pembayaran', false);
-                    }
-                });
-            }
-        })
-        ->rawColumns(['#', 'action', 'status', 'status_pembayaran'])
+        //             if (strtolower($search) === 'lunas') {
+        //                 $query->orWhere('pembayaran', true);
+        //             } elseif (strtolower($search) === 'belum lunas') {
+        //                 $query->orWhere('pembayaran', false);
+        //             }
+        //         });
+        //     }
+        // })
+        ->rawColumns(['#', 'status_pembayaran'])
         ->toJson(); 
     }
 

@@ -7,8 +7,8 @@
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" @role('admin')href="{{ route('home') }}"@endrole">Home</a></li>
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('order.index') }}">Payments</a></li>
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" @role('admin')href="{{ route('home') }}"@endrole>Home</a></li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Payments</li>
         </ol>
         <h5 class="font-weight-bolder mb-0">List Pembayaran</h5>
     </nav>
@@ -34,7 +34,6 @@
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama Pelanggan</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No Meja</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kasir</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status Pembayaran</th>
@@ -43,16 +42,6 @@
                         </thead>
                         <tbody></tbody>
                     </table>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <form id="formFixOrder" action="{{ route('order.fixStatusOrder') }}" method="GET">
-                        @csrf
-                    </form>
-                    <div class="d-flex flex-wrap">
-                        <a class="btn bg-gradient-info mt-2" onclick="modalFixStatusOrder()" style="margin-right: 10px"><i class="fa-solid fa-wrench text-md"></i> fix all order status</a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -96,10 +85,6 @@
                 {
                     data: 'customer_name',
                     name: 'customer_name'
-                },
-                {
-                    data: 'no_meja',
-                    name: 'no_meja'
                 },
                 {
                     data: 'kasir',
