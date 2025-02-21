@@ -68,7 +68,7 @@
                             <div class="form-group">
                                 <label for="email" class="form-control-label">{{ __('Harga') }}</label>
                                 <div class="@error('harga')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="text" placeholder="harga" id="hargaView" readonly>
+                                    <input class="form-control" type="text" placeholder="harga" id="hargaView" value="{{ old('harga') }}" readonly>
                                     <input class="form-control" type="hidden" placeholder="harga" id="harga" name="harga" value="{{ old('harga') }}">
                                     @error('harga')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>

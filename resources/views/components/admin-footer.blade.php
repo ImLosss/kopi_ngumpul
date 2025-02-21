@@ -7,7 +7,7 @@
                         document.write(new Date().getFullYear())
                     </script>,
                     made by
-                    <a href="" class="font-weight-bold" target="_blank"> Pahriansyah | Akram</a>
+                    <a href="" class="font-weight-bold" target="_blank"> Taher | Valdy Kadir</a>
                 </div>
             </div>
             <div class="col-lg-6">

@@ -12,7 +12,7 @@
 @endsection
 @section('content')
   <div class="row mb-3">
-    <div class="col-xl-5 col-sm-6 mb-xl-0 mb-4">
+    <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
       <div class="card">
         <div class="card-body p-3">
           <div class="row">
@@ -20,8 +20,8 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Pemasukan</p>
                 <h5 class="font-weight-bolder mb-0">
-                  999
-                  <span class="text-success text-sm font-weight-bolder">+Rp999</span>
+                  Rp{{ number_format($totalPemasukan) }}
+                  <span class="text-success text-sm font-weight-bolder">+Rp{{ number_format($pemasukanHariIni) }}</span>
                 </h5>
               </div>
             </div>
@@ -37,7 +37,7 @@
         </div>
       </div>
     </div>
-    <div class="col-xl-5 col-sm-6 mb-xl-0 mb-4">
+    <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
       <div class="card">
         <div class="card-body p-3">
           <div class="row">
@@ -45,8 +45,8 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Total keuntungan</p>
                 <h5 class="font-weight-bolder mb-0">
-                  Rp9999
-                  <span class="text-success text-sm font-weight-bolder">+Rp999</span>
+                  Rp{{ number_format($keuntungan) }}
+                  <span class="text-success text-sm font-weight-bolder">+Rp{{ number_format($keuntunganHariIni) }}</span>
                 </h5>
               </div>
             </div>
@@ -62,44 +62,21 @@
         </div>
       </div>
     </div>
-    <div class="col-xl-2 col-sm-6">
-      <div class="row mb-3">
-        <div class="card">
-          <div class="card-body p-2 mb-1 mt-1">
-            <div class="row">
-              <div class="col-8">
-                <div class="numbers">
-                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Staff</p>
-                  <h5 class="font-weight-bolder mb-0">
-                    9
-                  </h5>
-                </div>
-              </div>
-              <div class="col-4 text-end">
-                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                  <i class="fa-solid fa-users text-lg opacity-10"></i>
-                </div>
+    <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+      <div class="card">
+        <div class="card-body p-3">
+          <div class="row">
+            <div class="col-8">
+              <div class="numbers">
+                <p class="text-sm mb-0 text-capitalize font-weight-bold">Staff</p>
+                <h5 class="font-weight-bolder mb-0">
+                  9
+                </h5>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="card">
-          <div class="card-body p-2 mb-1 mt-1">
-            <div class="row">
-              <div class="col-8">
-                <div class="numbers">
-                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Partner</p>
-                  <h5 class="font-weight-bolder mb-0">
-                    9
-                  </h5>
-                </div>
-              </div>
-              <div class="col-4 text-end">
-                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                  <i class="fa-solid fa-handshake text-lg opacity-10"></i>
-                </div>
+            <div class="col-4 text-end">
+              <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                <i class="fa-solid fa-users text-lg opacity-10"></i>
               </div>
             </div>
           </div>
@@ -107,13 +84,13 @@
       </div>
     </div>
   </div>
-  {{-- @if ($cekstok->count() > 0) --}}
+  @if ($habis->count() > 0)
     <div class="row mb-3">
       <div class="col-xl-12">
         <div class="card pb-0 p-3">
           <div class="row align-items-center">
             <div class="col-10">
-              <h6>Terdapat 2 menu yang telah habis. Segera restock!</h6>
+              <h6>Terdapat {{ $habis->count() }} Stock yang telah habis. Segera restock!</h6>
             </div>
             <div class="col-2 d-flex justify-content-end">
               <a class="btn bg-gradient-secondary" href="{{ route('stock') }}">CEK</a>
@@ -122,14 +99,14 @@
         </div>
       </div>
     </div>
-  {{-- @endif --}}
-  {{-- @if($habis->count() > 0 && $cekstok->count() == 0) --}}
+  @endif
+  @if($sedikit->count() > 0 && $habis->count() == 0)
     <div class="row mb-3">
       <div class="col-xl-12">
         <div class="card pb-0 p-3">
           <div class="row align-items-center">
             <div class="col-10">
-              <h6>Terdapat 2 menu yang akan habis. Segera restock!</h6>
+              <h6>Terdapat {{ $sedikit->count() }} Stock yang akan habis. Segera restock!</h6>
             </div>
             <div class="col-2 d-flex justify-content-end">
               <a class="btn bg-gradient-secondary" href="{{ route('stock') }}">CEK</a>
@@ -138,8 +115,8 @@
         </div>
       </div>
     </div>
-  {{-- @endif --}}
-  <div class="row mb-3">
+  @endif
+  {{-- <div class="row mb-3">
     <div class="col-xl-6">
       <div class="card mb-3 p-2">
         <div class="card-body px-0 pt-0 pb-0">
@@ -167,7 +144,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> --}}
   
   {{-- <div class="row">
     <div class="d-flex align-items-center justify-content-center vh-100 text-white">

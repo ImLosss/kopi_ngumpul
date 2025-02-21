@@ -56,7 +56,6 @@
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama Pelanggan</th>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Kasir</th>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profit</th>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Waktu pesan</th>
                                     </tr>
                                 </thead>
@@ -65,7 +64,6 @@
                                     <tr>
                                         <th colspan="3">Total</th>
                                         <th id="totalPendapatan"></th>
-                                        <th id="totalProfit"></th>
                                         <th></th>
                                     </tr>
                                 </tfoot>
@@ -128,7 +126,7 @@
                 },
                 dataSrc: function(json) {
                     $('#totalPendapatan').text(formatRupiah(json.totalPendapatan));
-                    $('#totalProfit').text(formatRupiah(json.totalProfit));
+                    // $('#totalProfit').text(formatRupiah(json.totalProfit));
                     return json.data;
                 },
                 error: function(xhr, error, thrown){
@@ -155,10 +153,10 @@
                     name: 'total'
                 }
                 ,
-                {
-                    data: 'profit',
-                    name: 'profit'
-                },
+                // {
+                //     data: 'profit',
+                //     name: 'profit'
+                // },
                 {
                     data: 'waktu_pesan',
                     name: 'waktu_pesan'

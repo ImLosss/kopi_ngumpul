@@ -58,7 +58,7 @@ class OrderController extends Controller
             ]);
         });
 
-        return redirect()->route('order.index')->with('alert', 'success')->with('message', 'Berhasil checkout');
+        return redirect()->route('payment')->with('alert', 'success')->with('message', 'Berhasil checkout');
     }
 
     /**

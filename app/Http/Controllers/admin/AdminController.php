@@ -5,6 +5,8 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Category;
+use App\Models\IngredientTransaction;
+use App\Models\Order;
 use App\Models\Stock;
 use App\Models\User;
 use Carbon\Carbon;
@@ -18,8 +20,18 @@ class AdminController extends Controller
      */
     public function index()
     {
+        $oneMonthAgo = Carbon::now()->subMonth();
+        $oneDayAgo = Carbon::now();
+        $data['pemasukanHariIni'] = Order::where('pembayaran', true)->whereDate('created_at', Carbon::today())->sum('total');
+        $data['totalPemasukan'] = Order::where('pembayaran', true)->sum('total');
+        $data['habis'] = Stock::where('jumlah_gr', '<=', 200)->get();
+        $data['sedikit'] = Stock::where('jumlah_gr', '<=', 500)->get();
+        $data['keuntunganHariIni'] = $data['pemasukanHariIni'] - IngredientTransaction::whereDate('created_at', Carbon::today())->sum('modal');
+        $data['keuntungan'] = $data['totalPemasukan'] - IngredientTransaction::all()->sum('modal');
+
+        // dd($data);
         $user = Auth::user();
-        return view('admin.dashboard');
+        return view('admin.dashboard', $data);
     }
 
     public function updateRatingChart()

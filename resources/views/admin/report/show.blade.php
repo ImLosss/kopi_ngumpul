@@ -53,9 +53,7 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Menu</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jumlah</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Harga</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Diskon</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Profit</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Payment</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Update Payment By</th>
                                 </tr>
@@ -161,16 +159,8 @@
                     name: 'harga'
                 },
                 {
-                    data: 'diskon',
-                    name: 'diskon'
-                },
-                {
                     data: 'total',
                     name: 'total'
-                },
-                {
-                    data: 'profit',
-                    name: 'profit'
                 },
                 {
                     data: 'payment_method',

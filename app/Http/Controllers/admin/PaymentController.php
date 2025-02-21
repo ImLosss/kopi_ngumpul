@@ -84,7 +84,7 @@ class PaymentController extends Controller
             ]);
 
             // dd($orderIdsArr);
-            // OrderService::checkStatusOrderArr($orderIdsArr);
+            OrderService::checkPaymentOrder($request->order_id);
 
             if($request->printNota == 'true') {
                 $data = $this->getPrintData($request);

@@ -28,6 +28,24 @@ class OrderService {
 
         return;
     }
+
+    public static function checkPaymentOrder ($id) 
+    {
+        $order = Order::findOrFail($id);
+        $payment = Cart::where('order_id', $id)->where('pembayaran', false)->first();
+        
+        // dd($payment);
+
+        if($payment)
+            $order->update([
+                'pembayaran' => $payment->pembayaran
+            ]);
+        else {
+            $order->update([
+                'pembayaran' => true
+            ]);
+        }
+    }
 }
 
 ?>
