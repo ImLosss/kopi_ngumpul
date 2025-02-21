@@ -11,7 +11,7 @@ class Product extends Model
 
     protected $guarded = ['id'];
 
-    protected $appends = ['status'];
+    protected $appends = ['status', 'stock'];
     
     public function category()
     {
@@ -43,5 +43,23 @@ class Product extends Model
             }
         }
         return $status;
+    }
+
+    // Accessor untuk attribute status
+    public function getStockAttribute()
+    {
+        // Misal, default status adalah true
+        $stock = 0;
+        // Cek setiap stock, jika kondisi tertentu terpenuhi, ubah status
+        foreach ($this->stocks as $item) {
+            if ($item->pivot->gram_ml < $item->jumlah_gr) {
+                $stockCek = $item->jumlah_gr / $item->pivot->gram_ml;
+                $stockCek = floor($stockCek);
+
+                if($stockCek > $stock) $stock = $stockCek;
+            }
+        }
+
+        return $stock;
     }
 }

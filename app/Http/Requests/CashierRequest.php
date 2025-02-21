@@ -24,8 +24,7 @@ class CashierRequest extends FormRequest
         return [
             'menu' => 'required|exists:products,id',
             'jumlah' => 'required',
-            'harga' => 'required',
-            'diskon_id' => 'exists:discounts,id'
+            'harga' => 'required'
         ];
     }
 }

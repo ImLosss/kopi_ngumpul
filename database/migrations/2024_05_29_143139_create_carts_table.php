@@ -19,7 +19,6 @@ return new class extends Migration
             $table->bigInteger('jumlah');
             $table->bigInteger('harga');
             $table->bigInteger('total');
-            $table->unsignedBigInteger('status_id');
             $table->boolean('pembayaran')->default(false);
             $table->string('payment_method')->nullable();
             $table->longText('note')->nullable();

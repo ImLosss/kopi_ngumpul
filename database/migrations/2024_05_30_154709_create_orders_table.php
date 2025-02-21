@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->bigInteger('total')->nullable();
-            $table->bigInteger('profit')->nullable();
             $table->enum('status', ['cart', 'selesai']);
             $table->boolean('pembayaran')->default(false);
             $table->unsignedBigInteger('kasir_id')->nullable();
             $table->string('customer_name')->nullable();
             $table->timestamps();
+            $table->softDeletes(); 
         });
     }
 

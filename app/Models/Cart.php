@@ -10,26 +10,7 @@ class Cart extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'menu',
-        'product_id',
-        'order_id',
-        'diskon_id',
-        'jumlah',
-        'harga',
-        'total_diskon',
-        'total',
-        'profit',
-        'partner_price',
-        'partner_total',
-        'partner_profit',
-        'status_id',
-        'pembayaran',
-        'payment_method',
-        'note',
-        'update_status_by',
-        'update_payment_by'
-    ];
+    protected $guarded = ['id'];
 
     protected $dates = ['deleted_at'];
 
@@ -39,14 +20,5 @@ class Cart extends Model
 
     public function product() {
         return $this->belongsTo(Product::class, 'product_id', 'id');
-    }
-
-    public function discount() {
-        return $this->belongsTo(Discount::class, 'diskon_id', 'id');
-    }
-
-    public function status()
-    {
-        return $this->belongsTo(Status::class, 'status_id', 'id');
     }
 }

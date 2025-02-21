@@ -59,36 +59,5 @@ class CartController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        try {
-            $cart = Cart::with('product')->findOrFail($id);
-            $order = Order::findOrFail($cart->order_id);
-
-            $message = 'Berhasil menghapus ' . $cart->product->name . ' dari keranjang';
-
-            DB::transaction(function () use ($order, $cart) {
-                $order->update([
-                    'total' => $order->total - $cart->total,
-                    'profit' => $order->profit - $cart->profit,
-                    'partner_total' => $order->partner_total - $cart->partner_total,
-                    'partner_profit' => $order->partner_profit - $cart->partner_profit
-                ]);
-
-                $product = Product::findOrFail($cart->product_id);
-                $product->update([
-                    'jumlah' => $product->jumlah + $cart->jumlah
-                ]);
-
-                $cart->forceDelete();
-            });
-
-            return redirect()->back()->with('alert', 'success')->with('message', $message);
-        } catch (\Throwable $e) {
-            return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
-        }
-    }
+    
 }

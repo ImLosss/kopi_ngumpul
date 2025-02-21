@@ -10,7 +10,7 @@ use App\Models\Discount;
 use App\Models\Order;
 use App\Models\PartnerProduct;
 use App\Models\Product;
-use App\Models\Stock;
+use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +20,7 @@ class CashierController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:cashierAccess|cashierPartnerAccess');
+        $this->middleware('permission:cashierAccess');
     }
 
     /**
@@ -34,10 +34,9 @@ class CashierController extends Controller
         );
 
         $data['categories'] = Category::with('product.stocks')->get();
-        $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status', 'cart')->first();
+        $data['order'] = Order::with(['carts.product'])->where('status', 'cart')->first();
 
         return view('admin.cashier.index', $data);
-        
     }
 
     /**
@@ -56,98 +55,79 @@ class CashierController extends Controller
         // dd($request);
         try {
             $user = Auth::user();
-            if($user->can('cashierAccess')) {
-                DB::transaction(function () use ($request) {
-                    $menu = Product::findOrFail($request->menu);
+            DB::transaction(function () use ($request) {
+                $menu = Product::findOrFail($request->menu);
 
-                    $order = Order::firstOrCreate(
-                        ['status_id' => 1, 'partner' => false]
-                    );
+                $order = Order::firstOrCreate(
+                    ['status' => 'cart']
+                );
 
-                    if($request->has('diskon_id')) {
-                        $diskon = Discount::findOrFail($request->diskon_id);
-                        $diskon = $request->total * ($diskon->percent / 100);
-                    } else $diskon = 0;
+                $cart = Cart::where('product_id', $request->menu)->where('order_id', $order->id)->first();
 
+                if(!$cart) {
                     Cart::create([
                         'menu' => $menu->name,
                         'product_id' => $request->menu,
                         'order_id' => $order->id,
-                        'diskon_id' => $request->diskon_id,
                         'jumlah' => $request->jumlah,
                         'harga' => $request->harga,
-                        'total_diskon' => $diskon,
-                        'total' => $request->total - $diskon,
-                        'profit' => ($menu->harga - $menu->modal) * $request->jumlah - $diskon,
-                        'status_id' => 1,
+                        'total' => $request->total,
                         'note' => $request->note
                     ]);
-
-                    $product = Product::findOrFail($request->menu);
-                    $product->update([
-                        'jumlah' => $product->jumlah - $request->jumlah
-                    ]);
-
-                    $total = Cart::where('order_id', $order->id)->get()->sum('total');
-                    $profit = Cart::where('order_id', $order->id)->get()->sum('profit');
-
-                    $order->update([
-                        'total' => $total,
-                        'profit' => $profit
-                    ]);
-
-                });
-            } else if($user->can('cashierPartnerAccess')) {
-                // dd($request);
-                DB::transaction(function () use ($request) {
-                    $menu = Product::findOrFail($request->menu);
-
-                    $order = Order::firstOrCreate(
-                        ['status_id' => 1, 'partner' => true],
-                        ['user_id' => Auth::user()->id ]
-                    );
-
-                    Cart::create([
-                        'menu' => $menu->name,
-                        'product_id' => $request->menu,
-                        'order_id' => $order->id,
-                        'jumlah' => $request->jumlah,
-                        'harga' => $request->real_price,
-                        'total_diskon' => 0,
-                        'total' => $request->real_price * $request->jumlah,
-                        'profit' => ($menu->harga - $menu->modal) * $request->jumlah,
-                        'partner_price' => $request->harga,
-                        'partner_profit' => ($request->harga - $request->real_price) * $request->jumlah,
-                        'partner_total' => $request->total,
-                        'status_id' => 1,
+                } else {
+                    $cart->update([
+                        'jumlah' => $cart->jumlah + $request->jumlah,
+                        'harga' => $request->harga,
+                        'total' => $cart->total + $request->total,
                         'note' => $request->note
                     ]);
+                }
 
-                    $product = Product::findOrFail($request->menu);
-                    $product->update([
-                        'jumlah' => $product->jumlah - $request->jumlah
-                    ]);
+                OrderService::addCart($request->menu, $request->jumlah);
 
-                    $total = Cart::where('order_id', $order->id)->get()->sum('total');
-                    $profit = Cart::where('order_id', $order->id)->get()->sum('profit');
-                    $partner_profit = Cart::where('order_id', $order->id)->get()->sum('partner_profit');
-                    $partner_price = Cart::where('order_id', $order->id)->get()->sum('partner_price');
-                    $partner_total = Cart::where('order_id', $order->id)->get()->sum('partner_total');
+                $total = Cart::where('order_id', $order->id)->get()->sum('total');
 
-                    $order->update([
-                        'total' => $total,
-                        'profit' => $profit,
-                        'partner_profit' => $partner_profit,
-                        'partner_total' => $partner_total,
-                        'user_id' => Auth::user()->id
-                    ]);
+                $order->update([
+                    'total' => $total
+                ]);
 
-                });
-            }
+            });
             
             return redirect()->back()->with('alert', 'success')->with('message', 'Berhasil menambahkan cart');
         } catch (\Throwable $e) {
-            // dd($e);
+            dd($e);
+            return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        try {
+            $cart = Cart::with('product')->findOrFail($id);
+            $order = Order::findOrFail($cart->order_id);
+
+            $message = 'Berhasil menghapus ' . $cart->product->name . ' dari keranjang';
+
+            DB::transaction(function () use ($order, $cart) {
+                $order->update([
+                    'total' => $order->total - $cart->total,
+                ]);
+
+                $product = Product::findOrFail($cart->product_id);
+                $product->update([
+                    'jumlah' => $product->jumlah + $cart->jumlah
+                ]);
+
+                OrderService::deleteCart($cart->product_id, $cart->jumlah);
+
+                $cart->forceDelete();
+            });
+
+            return redirect()->back()->with('alert', 'success')->with('message', $message);
+        } catch (\Throwable $e) {
             return redirect()->back()->with('alert', 'error')->with('message', 'Something Error!');
         }
     }
@@ -159,7 +139,7 @@ class CashierController extends Controller
 
         return response()->json([
             'harga' => $product->harga,
-            'stock' => $product->jumlah
+            'stock' => $product->stock
         ]);
     }
 }

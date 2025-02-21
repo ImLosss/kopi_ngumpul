@@ -48,30 +48,14 @@ class OrderController extends Controller
     public function update(OrderRequest $request, string $id)
     {
         DB::transaction(function () use ($request, $id) {
-            $order = Order::with(['carts' => function($query) {
-                $query->where('status_id', 1);
-            }])->findOrFail($id);
-
-            foreach($order->carts as $cart) {
-                $cart->update([
-                    'status_id' => 2,
-                    'update_status_by' => Auth::user()->name
-                ]);
-            }
+            $order = Order::findOrFail($id);
 
             $order->update([
-                'no_meja' => $request->no_meja,
+                'status' => 'selesai',
                 'customer_name' => $request->name,
                 'created_at' => Carbon::now(),
                 'user_id' => Auth::user()->id
             ]);
-
-            Table::where('no_meja', $request->no_meja)->first()
-            ->update([
-                'status' => 'terpakai'
-            ]);
-
-            OrderService::checkStatusOrder($id);
         });
 
         return redirect()->route('order.index')->with('alert', 'success')->with('message', 'Berhasil checkout');

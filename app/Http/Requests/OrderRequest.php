@@ -22,7 +22,6 @@ class OrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'no_meja' => 'required|exists:tables,no_meja',
             'name' => 'max:20'
         ];
     }

@@ -40,7 +40,7 @@
                                                 @else
                                                     <optgroup label="{{ $category->name }}">
                                                         @foreach ($category->product as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->status ? '' : 'disabled' }}>{{ $item->name }} {{ $item->status ? '' : '(kosong)' }}</option>
+                                                            <option value="{{ $item->id }}" {{ $item->status ? '' : 'disabled' }} {{ old('menu') == $item->id ? 'selected' : '' }}>{{ $item->name }} {{ $item->status ? '' : '(kosong)' }}</option>
                                                         @endforeach
                                                     </optgroup>
                                                 @endif
@@ -57,7 +57,7 @@
                             <div class="form-group">
                                 <label for="user-name" class="form-control-label">{{ __('Jumlah') }}</label>
                                 <div class="@error('jumlah')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="number" min="1" placeholder="Jumlah" name="jumlah" id="jumlah" value="1">
+                                    <input class="form-control" type="number" min="1" placeholder="Jumlah" name="jumlah" id="jumlah" value="{{ old('jumlah') }}">
                                     @error('jumlah')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -69,19 +69,8 @@
                                 <label for="email" class="form-control-label">{{ __('Harga') }}</label>
                                 <div class="@error('harga')border border-danger rounded-3 @enderror">
                                     <input class="form-control" type="text" placeholder="harga" id="hargaView" readonly>
-                                    <input class="form-control" type="hidden" placeholder="harga" id="harga" name="harga" value="0">
+                                    <input class="form-control" type="hidden" placeholder="harga" id="harga" name="harga" value="{{ old('harga') }}">
                                     @error('harga')
-                                    <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="email" class="form-control-label">{{ __('Stock') }}</label>
-                                <div class="@error('stock')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="number" placeholder="Stock" name="stock" id="stock" readonly>
-                                    @error('stock')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -91,8 +80,8 @@
                             <div class="form-group">
                                 <label for="email" class="form-control-label">{{ __('Total') }}</label>
                                 <div class="@error('total')border border-danger rounded-3 @enderror">
-                                    <input class="form-control" type="text" placeholder="Total" id="totalView" readonly>
-                                    <input class="form-control" type="hidden" placeholder="Total" name="total" id="total" value="0">
+                                    <input class="form-control" type="text" placeholder="Total" id="totalView" value="{{ old('total') }}" readonly>
+                                    <input class="form-control" type="hidden" placeholder="Total" name="total" id="total" value="{{ old('total') }}">
                                     @error('total')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -129,7 +118,7 @@
                             <a type="submit" onclick="submit({{ $item->id }})"><i class="fa-solid fa-circle-minus text-danger"></i></a>
                             
                             {{-- form delete --}}
-                            <form action="{{ route('cart.destroy', $item->id) }}" id="form_{{ $item->id }}" method="POST" class="inline">
+                            <form action="{{ route('cashier.destroy', $item->id) }}" id="form_{{ $item->id }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
                             </form>
@@ -160,18 +149,6 @@
                     @endif
                 @endforeach
                 <hr class="custom-hr">
-                @if ($disc != 0)
-                    <div class="row">
-                        <div class="col font-italic">
-                            Anda hemat:
-                        </div>
-                        <div class="col">
-                            <div class="d-flex justify-content-end flex-wrap font-weight-bold font-italic">
-                                (Rp. {{ number_format($disc) }})
-                            </div>
-                        </div>
-                    </div>
-                @endif
                 <div class="row">
                     <div class="col font-italic">
                         Total:
@@ -188,20 +165,6 @@
                     <div class="row mt-3">
                         <div class="col">
                             <div class="form-group has-validation">
-                                <label for="kategori" class="form-control-label">{{ __('Nomor Meja : ') }}</label>
-                                <div class="@error('no_meja')border border-danger rounded-3 @enderror">
-                                    <select name="no_meja" class="form-control">
-                                        <option value="" selected disabled>Pilih Nomor meja</option>
-                                        @foreach ($tables as $table)
-                                            <option value="{{ $table->no_meja }}">{{ $table->no_meja }} @if ($table->status == 'terpakai')
-                                                ({{ $table->status }})
-                                            @endif</option>
-                                        @endforeach
-                                    </select>
-                                    @error('no_meja')
-                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
                                 <label for="name" class="form-control-label mt-3">{{ __('Nama Pelanggan : ') }}</label>
                                 <div class="@error('name')border border-danger rounded-3 @enderror">
                                     <input type="text" name="name" class="form-control">
