@@ -14,8 +14,10 @@ class Stock extends Model
         'jumlah_gr'
     ];
 
-    public function recipes()
+    public function products()
     {
-        return $this->belongsToMany(Product::class, 'ingredient_recipe');
+        return $this->belongsToMany(Product::class, 'ingredient_recipe')
+                    ->withPivot('gram_ml')
+                    ->withTimestamps();
     }
 }

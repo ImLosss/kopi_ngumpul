@@ -50,6 +50,7 @@
                         <tr>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Nama</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Harga</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Category</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
                         </tr>
@@ -86,6 +87,7 @@
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },
+                { data: 'harga', name: 'harga' },
                 { data: 'category', name: 'category' },
                 { data: 'action', name: 'action' }
             ],

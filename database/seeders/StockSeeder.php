@@ -13,14 +13,9 @@ class StockSeeder extends Seeder
      */
     public function run(): void
     {
-        // Stock::create([
-        //     'name' => 'Aren Coffee',
-        //     'jumlah_gr' => 1500
-        // ]);
-
-        // Stock::create([
-        //     'name' => 'asdasd',
-        //     'jumlah_gr' => 2555
-        // ]);
+        Stock::create([
+            'name' => 'Bubuk Kopi',
+            'jumlah_gr' => 1500
+        ]);
     }
 }

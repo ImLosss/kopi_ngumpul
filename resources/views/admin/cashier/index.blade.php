@@ -40,7 +40,7 @@
                                                 @else
                                                     <optgroup label="{{ $category->name }}">
                                                         @foreach ($category->product as $item)
-                                                            <option value="{{ $item->id }}" {{ $item->jumlah == 0 ? 'disabled' : '' }}>{{ $item->name }} {{ $item->jumlah == 0 ? '(kosong)' : '' }}</option>
+                                                            <option value="{{ $item->id }}" {{ $item->status ? '' : 'disabled' }}>{{ $item->name }} {{ $item->status ? '' : '(kosong)' }}</option>
                                                         @endforeach
                                                     </optgroup>
                                                 @endif
@@ -98,9 +98,6 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6" id="diskon">
-                        
                         </div>
                     </div>
                     <div class="row">
@@ -253,29 +250,6 @@
                         $('#stock').val(data.stock);
                         $('#total').val(total);
                         $('#totalView').val(total.toLocaleString('id-ID'));
-                        if(data.diskon.length != 0) {
-                            $('#diskonFill').remove();
-
-
-                            let code = ''
-
-                            data.diskon.forEach((item) => {
-                                code+=`<option value="${ item.id }">${ item.name } - ${ item.percent }%</option>`
-                            });
-
-                            $('#diskon').append(`<div class="form-group has-validation" id="diskonFill">
-                                <label for="diskon_id" class="form-control-label">{{ __('Diskon') }}</label>
-                                <div class="@error('diskon')border border-danger rounded-3 @enderror">
-                                    <select name="diskon_id" id="diskon" class="form-control">
-                                        <option value="" selected disabled>Tanpa Diskon</option>
-                                        ${ code }
-                                    </select>
-                                    @error('diskon')
-                                    <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>`)
-                        } else $('#diskonFill').remove();
                     }
                 });
             } else {

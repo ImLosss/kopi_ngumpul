@@ -10,8 +10,7 @@ use App\Models\Discount;
 use App\Models\Order;
 use App\Models\PartnerProduct;
 use App\Models\Product;
-use App\Models\Table;
-use Carbon\Carbon;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -30,33 +29,15 @@ class CashierController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if($user->can('cashierAccess')){
-            $order = Order::firstOrCreate(
-                ['status_id' => 1, 'partner' => false]
-            );
+        Order::firstOrCreate(
+            ['status' => 'cart']
+        );
 
-            $data['categories'] = Category::with('product')->get();
-            $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status_id', 1)->where('partner', false)->first();
-            $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
-            $data['tables'] = Table::get();
+        $data['categories'] = Category::with('product.stocks')->get();
+        $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status', 'cart')->first();
 
-            // dd($data);
-            return view('admin.cashier.index', $data);
-        } else {
-            // return 'tess';
-            $order = Order::firstOrCreate(
-                ['status_id' => 1, 'partner' => true],
-                ['user_id' => Auth::user()->id ]
-            );
-
-            $data['products'] = PartnerProduct::with('product')->where('user_id', $user->id)->get();
-            $data['order'] = Order::with(['carts.product', 'carts.discount'])->where('status_id', 1)->where('partner', true)->first();
-            $data['disc'] = Cart::where('order_id', $data['order']->id)->get()->sum('total_diskon');
-            $data['tables'] = Table::get();
-
-            // dd($data);
-            return view('admin.cashier.partner.index', $data);
-        }
+        return view('admin.cashier.index', $data);
+        
     }
 
     /**
@@ -174,40 +155,11 @@ class CashierController extends Controller
     public function getDetail($id)
     {
         $user = Auth::user();
-        if(!$user->hasRole('partner')) {
-            $product = Product::with('discount')->find($id);
+        $product = Product::findOrFail($id);
 
-            $diskon = $product->discount;
-
-            $diskonData = [];
-            if ($product->discount->isNotEmpty()) {
-                foreach ($product->discount as $diskon) {
-                    if($diskon->status == 'Aktif') {
-                        $diskonData[] = [
-                            'id' => $diskon->id,
-                            'name' => $diskon->name,
-                            'percent' => $diskon->percent
-                        ];
-                    }
-                }
-            }
-
-            return response()->json([
-                'harga' => $product->harga,
-                'stock' => $product->jumlah,
-                'diskon' => $diskonData
-            ]);
-        } else {
-            $product = PartnerProduct::with('product')->where('product_id', $id)->where('user_id', Auth::user()->id)->first();
-
-
-            // dd($product);
-            return response()->json([
-                'harga' => $product->up_price + $product->product->harga,
-                'real_price' => $product->product->harga,
-                'stock' => $product->product->jumlah,
-            ]);
-        }
-
+        return response()->json([
+            'harga' => $product->harga,
+            'stock' => $product->jumlah
+        ]);
     }
 }

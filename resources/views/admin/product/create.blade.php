@@ -24,42 +24,108 @@
         <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="row">
-                <div class="col">
+                <div class="col-md-4">
                     <div class="form-group has-validation">
-                        <label for="user-name" class="form-control-label">{{ __('Nama Product') }}</label>
-                        <div class="@error('name')border border-danger rounded-3 @enderror">
-                            <input class="form-control" type="text" placeholder="Name" name="name" value="{{ old('name') }}" autofocus>
-                            @error('name')
-                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <label for="name" class="form-control-label">{{ __('Nama Product') }}</label>
+                        <input class="form-control @error('name') border border-danger rounded-3 @enderror" type="text" placeholder="Name" name="name" value="{{ old('name') }}" autofocus>
+                        @error('name')
+                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group has-validation">
-                        <label for="user-name" class="form-control-label">{{ __('Category') }}</label>
-                        <div class="@error('category_id')border border-danger rounded-3 @enderror">
-                            <select name="category_id" class="form-control" autofocus>
-                                <option value="" selected disabled>- Pilih Kategori -</option>
-                                @forelse ($data as $item)
-                                    <option value="{{ $item->id }}" {{ old('category_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
-                                @empty
-                                    <option>Kategori Belum diatur</option>
-                                @endforelse
-                            </select>
-                            @error('category_id')
-                            <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <label for="harga" class="form-control-label">{{ __('Harga') }}</label>
+                        <input class="form-control @error('harga') border border-danger rounded-3 @enderror" type="number" placeholder="Harga" name="harga" value="{{ old('harga') }}" min="1">
+                        @error('harga')
+                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                        @enderror
                     </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group has-validation">
+                        <label for="category_id" class="form-control-label">{{ __('Category') }}</label>
+                        <select name="category_id" class="form-control @error('category_id') border border-danger rounded-3 @enderror">
+                            <option value="" selected disabled>- Pilih Kategori -</option>
+                            @forelse ($data as $item)
+                                <option value="{{ $item->id }}" {{ old('category_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                            @empty
+                                <option>Kategori Belum diatur</option>
+                            @endforelse
+                        </select>
+                        @error('category_id')
+                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Ingredients Section -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <label class="form-control-label">{{ __('Bahan-bahan') }}</label>
+                    <div id="ingredient-container">
+                        @if(old('ingredients'))
+                            @foreach(old('ingredients') as $key => $value)
+                                <div class="row ingredient-row mb-3">
+                                    <div class="col-md-5">
+                                        <select name="ingredients[]" class="form-control ingredient-select">
+                                            <option value="">- Pilih Bahan -</option>
+                                            @foreach($ingredients as $ingredient)
+                                                <option value="{{ $ingredient->id }}" 
+                                                    {{ $value == $ingredient->id ? 'selected' : '' }}
+                                                    >{{ $ingredient->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('ingredients.'.$key)
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input type="number" name="quantities[]" class="form-control" 
+                                               placeholder="Jumlah (gram/ml)" value="{{ old('quantities.'.$key) }}">
+                                        @error('quantities.'.$key)
+                                        <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-danger remove-ingredient" {{ $loop->first ? 'disabled' : '' }}>
+                                            Hapus
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="row ingredient-row mb-3">
+                                <div class="col-md-5">
+                                    <select name="ingredients[]" class="form-control ingredient-select">
+                                        <option value="">- Pilih Bahan -</option>
+                                        @foreach($ingredients as $ingredient)
+                                            <option value="{{ $ingredient->id }}">{{ $ingredient->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="number" name="quantities[]" class="form-control" min="1" placeholder="Jumlah (gram/ml)">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-danger remove-ingredient" disabled>
+                                        Hapus
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <button type="button" class="btn btn-success mt-2" id="add-ingredient">
+                        Tambah Bahan
+                    </button>
                 </div>
             </div>
             <div class="d-flex justify-content-end">
                 <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Add Product' }}</button>
             </div>
-        </form>
-
-    </div>
 </div>
 
 @endsection
@@ -76,5 +142,75 @@
             $('#harga').val(hargaView)
             $('#hargaView').val(hargaView.toLocaleString('id-ID'));
         }
+    </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('ingredient-container');
+        const addButton = document.getElementById('add-ingredient');
+        let ingredientOptions = {!! json_encode($ingredients->pluck('name', 'id')) !!};
+    
+        // Fungsi untuk update opsi select
+        function updateSelectOptions() {
+            const allSelects = container.querySelectorAll('.ingredient-select');
+            const usedValues = new Set();
+            
+            allSelects.forEach(select => {
+                if(select.value) usedValues.add(select.value);
+            });
+
+            // Update status tombol tambah
+            const totalIngredients = Object.keys(ingredientOptions).length;
+            addButton.disabled = usedValues.size >= totalIngredients || allSelects.length >= totalIngredients;
+    
+            allSelects.forEach(select => {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="" selected disabled>- Pilih Bahan -</option>';
+                
+                Object.entries(ingredientOptions).forEach(([id, name]) => {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = name;
+                    
+                    if(id === currentValue) {
+                        option.selected = true;
+                    } else if(usedValues.has(id) && id !== currentValue) {
+                        option.disabled = true;
+                    }
+                    
+                    select.appendChild(option);
+                });
+            });
+        }
+    
+        // Tambah baris baru
+        addButton.addEventListener('click', function() {
+            const newRow = container.querySelector('.ingredient-row').cloneNode(true);
+            newRow.querySelector('input').value = '';
+            newRow.querySelector('select').selectedIndex = 0;
+            newRow.querySelector('.remove-ingredient').disabled = false;
+            container.appendChild(newRow);
+            updateSelectOptions();
+        });
+    
+        // Hapus baris
+        container.addEventListener('click', function(e) {
+            if(e.target.classList.contains('remove-ingredient')) {
+                if(container.querySelectorAll('.ingredient-row').length > 1) {
+                    e.target.closest('.ingredient-row').remove();
+                    updateSelectOptions();
+                }
+            }
+        });
+    
+        // Update opsi saat ada perubahan select
+        container.addEventListener('change', function(e) {
+            if(e.target.classList.contains('ingredient-select')) {
+                updateSelectOptions();
+            }
+        });
+    
+        // Inisialisasi pertama kali
+        updateSelectOptions();
+    });
     </script>
 @endsection
