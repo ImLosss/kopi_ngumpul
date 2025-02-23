@@ -63,7 +63,7 @@ class ReportController extends Controller
         $user = Auth::user();
         $oneMonthAgo = Carbon::now()->subMonth();
         $oneDayAgo = Carbon::now();
-        $data = Order::where('pembayaran', true)->whereDate('created_at', '>=', $oneDayAgo);
+        $data = Order::where('pembayaran', true);
 
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $data = Order::where('pembayaran', true)->whereBetween('created_at', [$request->startDate, Carbon::parse($request->endDate)->addDay()]);

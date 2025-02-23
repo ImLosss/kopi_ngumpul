@@ -48,18 +48,20 @@ class Product extends Model
     // Accessor untuk attribute status
     public function getStockAttribute()
     {
-        // Misal, default status adalah true
-        $stock = 0;
-        // Cek setiap stock, jika kondisi tertentu terpenuhi, ubah status
+        // Inisialisasi dengan null agar kita bisa membandingkan nilai pertama yang valid
+        $minStock = null;
+
         foreach ($this->stocks as $item) {
             if ($item->pivot->gram_ml < $item->jumlah_gr) {
-                $stockCek = $item->jumlah_gr / $item->pivot->gram_ml;
-                $stockCek = floor($stockCek);
-
-                if($stockCek > $stock) $stock = $stockCek;
+                $stockCek = floor($item->jumlah_gr / $item->pivot->gram_ml);
+                // Jika belum ada nilai atau nilai saat ini lebih kecil daripada yang sebelumnya
+                if ($minStock === null || $stockCek < $minStock) {
+                    $minStock = $stockCek;
+                }
             }
         }
 
-        return $stock;
+        // Jika tidak ada stock yang memenuhi kondisi, kembalikan 0
+        return $minStock !== null ? $minStock : 0;
     }
 }

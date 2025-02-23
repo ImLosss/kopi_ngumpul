@@ -70,7 +70,7 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Staff</p>
                 <h5 class="font-weight-bolder mb-0">
-                  9
+                  {{ $totalUser }}
                 </h5>
               </div>
             </div>
@@ -116,315 +116,68 @@
       </div>
     </div>
   @endif
-  {{-- <div class="row mb-3">
-    <div class="col-xl-6">
-      <div class="card mb-3 p-2">
-        <div class="card-body px-0 pt-0 pb-0">
-          <div id="chartPenjualan"></div>
-        </div>
-      </div>
-    </div>
-    <div class="col-xl-6">
-      <div class="card">
-        <div class="card-header pb-0">
-          <div class="row">
-            <div class="col">
-                <div class="d-flex justify-content-end flex-wrap">
-                    <div class="mb-2" style="margin-right: 20px">
-                      <select class="form-control" id="categorySelect">
-                              <option value="121">Option 1</option>
-                      </Select>
+  <div class="row mt-3">
+    <div class="col-12">
+        <div class="card mb-1 p-3">
+            <div class="card-header pb-3">
+                <div class="row">
+                    <div class="col d-flex align-items-center">
+                        <h6>Prediction Next Month</h6>
+                    </div>
+                    <div class="col">
+                        <div class="d-flex justify-content-end flex-wrap">
+                        </div>
                     </div>
                 </div>
             </div>
-          </div>
-        </div> 
-        <div class="card-body px-0 pt-0 pb-0">
-          <div id="chartRating"></div>
+            <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table" id="prediksi">
+                        <thead>
+                        <tr>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Nama</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Prediksi Penjualan</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Bahan</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div> --}}
-  
-  {{-- <div class="row">
-    <div class="d-flex align-items-center justify-content-center vh-100 text-white">
-        @auth
-        <h3>Welcome {{ Auth::user()->name }}</h3>
-        @endauth
-    </div>
-  </div> --}}
+</div>
 @endsection
 
 @section('script')
 <script>
-
-// Menghitung tinggi chart berdasarkan jumlah data
-var ratingBaseHeight = 180; // Tinggi minimum chart
-var ratingHeightPerData = 30; // Tinggi tambahan per data
-var ratingChartHeight = ratingBaseHeight + (ratingSeries[0].data.length * ratingHeightPerData);
-
-var lineBaseHeight = 180; 
-var lineHeightPerData = 9; 
-var lineChartHeight = lineBaseHeight + (series.length * lineHeightPerData);
-
-var optionsLine = {
-  chart: {
-    type: 'line',
-    zoom: {
-      enabled: false
-    },
-    height: lineChartHeight
-  },
-  stroke: {
-    curve: 'smooth',
-    width: 2
-  },
-  //colors: ["#3F51B5", '#2196F3'],
-  series: series,
-  title: {
-    text: 'Penjualan',
-    align: 'left',
-    offsetY: 25,
-    offsetX: 20
-  },
-  subtitle: {
-    text: 'Weakly',
-    offsetY: 45,
-    offsetX: 20
-  },
-  markers: {
-    size: 6,
-    strokeWidth: 0,
-    hover: {
-      size: 9
-    }
-  },
-  grid: {
-    show: true,
-    padding: {
-      bottom: 0
-    }
-  },
-  labels: labels,
-  xaxis: {
-    tooltip: {
-      enabled: false
-    }
-  },
-  // legend: {
-  //   position: 'top',
-  //   horizontalAlign: 'right',
-  //   offsetY: -20
-  // }
-}
-
-var optionsRating = {
-  chart: {
-    type: 'bar',
-    height: ratingChartHeight // Mengatur tinggi chart dinamis
-  },
-  title: {
-    text: 'Rating',
-    align: 'left',
-    offsetX: 20
-  },
-  subtitle: {
-    text: 'Weakly',
-    offsetY: 20,
-    offsetX: 20
-  },
-  plotOptions: {
-    bar: {
-      horizontal: true,
-      borderRadius: 4,
-      borderRadiusApplication: 'end',
-    }
-  },
-  colors: ['#00E396'],
-  series: ratingSeries,
-  xaxis: {
-    categories: ratingName,
-  },
-  yaxis: {
-    labels: {
-      formatter: function(value) {
-        var maxLength = 10; // Panjang maksimum teks
-        if (value.length > maxLength) {
-            return value.substring(0, maxLength) + '...';
-        } else {
-            return value;
-        }
-      },
-      rotate: -45,
-      offsetY: -10
-    }
-  },
-  tooltip: {
-      y: {
-        formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-            let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-
-            if (ratingVal > 79) return 'Sangat Direkomendasikan';
-            else if(ratingVal > 49) return 'Direkomendasikan';
-            else if(ratingVal > 29) return 'Dipertimbangkan Kembali';
-            else if(ratingVal > 0) return 'Tidak direkomendasikan';
-        }
-      },
-      x: {
-        formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-            return ratingName[dataPointIndex] + '(' + ratingPenjualan[dataPointIndex] + ')'; // Menampilkan nama kategori penuh
-        }
-      }
-  }
-};
-
-var optionsPemasukan = {
-  chart: {
-    id: 'spark1',
-    group: 'sparks',
-    type: 'line',
-    height: 80,
-    sparkline: {
-      enabled: true
-    },
-    dropShadow: {
-      enabled: true,
-      top: 1,
-      left: 1,
-      blur: 1,
-      opacity: 1,
-    }
-  },
-  series: pemasukanSeries,
-  xaxis: {
-    categories: pemasukanDates,
-  },
-  stroke: {
-    curve: 'smooth'
-  },
-  colors: ['#00E396'],
-  tooltip: {
-    x: {
-      show: true,
-    },
-    y: {
-      title: {
-        formatter: function formatter(val) {
-          return '';
-        }
-      },
-      formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-        let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-
-        let formattedNumber = ratingVal.toLocaleString('id-ID');
-        return 'Rp' + formattedNumber
-      }
-    }
-  }
-}
-
-var optionsProfit = {
-  chart: {
-    id: 'spark2',
-    group: 'sparks',
-    type: 'line',
-    height: 80,
-    sparkline: {
-      enabled: true
-    },
-    dropShadow: {
-      enabled: true,
-      top: 1,
-      left: 1,
-      blur: 1,
-      opacity: 1,
-    }
-  },
-  series: profitSeries,
-  xaxis: {
-    categories: profitDates,
-  },
-  stroke: {
-    curve: 'smooth'
-  },
-  colors: ['#00E396'],
-  tooltip: {
-    x: {
-      show: true,
-    },
-    y: {
-      title: {
-        formatter: function formatter(val) {
-          return '';
-        }
-      },
-      formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-        let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-
-        let formattedNumber = ratingVal.toLocaleString('id-ID');
-        return 'Rp' + formattedNumber
-      }
-    }
-  }
-}
-
-var chartRating = new ApexCharts(document.querySelector("#chartRating"), optionsRating);
-var chartPemasukan = new ApexCharts(document.querySelector("#chartPemasukan"), optionsPemasukan);
-var chartProfit = new ApexCharts(document.querySelector("#chartProfit"), optionsProfit);
-var chartLine = new ApexCharts(document.querySelector('#chartPenjualan'), optionsLine);
-chartLine.render();
-chartRating.render();
-chartPemasukan.render();
-chartProfit.render();
-
-
 $(document).ready(function() {
-    $('#categorySelect').on('change', function() {
-        // Get the selected value
-        var selectedValue = $(this).val();
-        // console.log(selectedValue);
-
-        // Perform an AJAX GET request
-        $.ajax({
-            url: '{{ route("filterRating") }}',  // Replace with your endpoint
-            type: 'GET',
-            data: { option: selectedValue },
-            success: function(data) {
-              // Menghitung tinggi chart berdasarkan jumlah data
-              ratingChartHeight = ratingBaseHeight + (data.series[0].data.length * ratingHeightPerData);
-
-              chartRating.updateSeries(data.series);
-              chartRating.updateOptions({
-                chart: {
-                  height: ratingChartHeight
-                },
-                xaxis: {categories: data.name},
-                tooltip: {
-                  x: {
-                    formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-                        return data.name[dataPointIndex] + '(' + data.penjualan[dataPointIndex] + ')';
-                    },
-                  },
-                  y: {
-                    formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
-                      // return w.globals.labels[dataPointIndex] + ' : ' + w.globals.initialSeries[seriesIndex].data[dataPointIndex] + '%';
-                      let ratingVal = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-
-                      if (ratingVal > 79) return 'Sangat Direkomendasikan';
-                      else if(ratingVal > 49) return 'Direkomendasikan';
-                      else if(ratingVal > 29) return 'Dipertimbangkan Kembali';
-                      else if(ratingVal > 0) return 'Tidak direkomendasikan';
-                    },
-                  },
-                }
-              });
-            },
-            error: function(xhr, status, error) {
-                // Handle errors
-                $('#result').html('Error occurred: ' + error);
-            }
-        });
-    });
+  var table = $('#prediksi').DataTable({
+    processing: true,
+    serverSide: true,
+    ordering: false,
+    ajax: {
+        url: "{{ route('admin.dataTable.getPrediction') }}",
+        error: function(xhr, error, thrown){
+            console.log('An error occurred while fetching data.');
+                // Hide the default error message
+                $('#example').DataTable().clear().draw();
+        }
+    },
+    columns: [
+        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+        { data: 'name', name: 'name' },
+        { data: 'prediction', name: 'prediction' },
+        { data: 'bahan', name: 'bahan' }
+    ],
+    language: {
+        emptyTable: "Not Available"
+    },
+    headerCallback: function(thead, data, start, end, display) {
+        $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
+    },
+  });
 });
 </script>
 @endsection

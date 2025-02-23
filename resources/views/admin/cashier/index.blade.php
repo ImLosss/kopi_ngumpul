@@ -204,6 +204,7 @@
                     type: 'GET',
                     success: function(data) {
                         stock = data.stock;
+                        console.log(stock);
                         let jumlah = $('#jumlah').val();
                         let harga = Number(data.harga);
                         let total = data.harga*jumlah;

@@ -48,6 +48,7 @@ Route::group([
     // routeDahboard
     Route::get('/', [AdminController::class, 'index'])->name('home');
     Route::get('/filterRating', [AdminController::class, 'filterRating'])->name('filterRating');
+    Route::get('/getPrediction', [AdminController::class, 'getPrediction'])->name('admin.dataTable.getPrediction');
     //endRoute
 
     // routeUser

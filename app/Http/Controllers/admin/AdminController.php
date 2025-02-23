@@ -7,11 +7,13 @@ use App\Models\Cart;
 use App\Models\Category;
 use App\Models\IngredientTransaction;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Stock;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Yajra\DataTables\Facades\DataTables;
 
 class AdminController extends Controller
 {
@@ -19,7 +21,7 @@ class AdminController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
+    { 
         $oneMonthAgo = Carbon::now()->subMonth();
         $oneDayAgo = Carbon::now();
         $data['pemasukanHariIni'] = Order::where('pembayaran', true)->whereDate('created_at', Carbon::today())->sum('total');
@@ -28,26 +30,93 @@ class AdminController extends Controller
         $data['sedikit'] = Stock::where('jumlah_gr', '<=', 500)->get();
         $data['keuntunganHariIni'] = $data['pemasukanHariIni'] - IngredientTransaction::whereDate('created_at', Carbon::today())->sum('modal');
         $data['keuntungan'] = $data['totalPemasukan'] - IngredientTransaction::all()->sum('modal');
+        $data['totalUser'] = User::whereHas('roles', function($query) {
+            $query->whereNotIn('name', ['admin']);
+        })->count();
 
         // dd($data);
         $user = Auth::user();
         return view('admin.dashboard', $data);
     }
 
+    private function getSalesData($product_id, $range_month)
+    {
+        for ($i = 0; $i < $range_month; $i++) {
+            // Ambil tanggal  bulan ke-i dari sekarang
+            $date = Carbon::now()->subMonths($i);
+            
+            // Query untuk menghitung total penjualan di bulan tersebut
+            $totalSales = Cart::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->where('product_id', $product_id)
+                ->where('pembayaran', true)
+                ->count();
+
+            // Masukkan data ke array, misalnya dengan format nama bulan dan total penjualan
+            $data['penjualanInMonth'][] = [
+                'month' => $date->format('F Y'),
+                'total' => $totalSales
+            ];
+
+            // $data['penjualanInMonth'][] = $totalSales;
+        }
+
+        $data['totalPenjualan'] = array_sum(array_column($data['penjualanInMonth'], 'total'));
+
+        return $data;
+    }
+
+    public function getPrediction(Request $request) 
+    {
+        $data = Product::with('stocks')->get();
+        $user = Auth::user();
+
+        $products = Product::all();
+        foreach ($products as $i => $product) {
+            $prediction[] = $this->generatePredict(4, $product->id);
+        }
+
+        // dd($prediction);
+        return DataTables::of($data)
+        ->addIndexColumn() 
+        ->addColumn('name', function($data) {
+            return $data->name;
+        })
+        ->addColumn('prediction', function($data) use ($prediction) {
+            foreach ($prediction as $p) {
+                if ($p['product_id'] == $data->id) {
+                    return $p['prediction'];
+                }
+            }
+            return null; // atau nilai default jika tidak ada yang cocok
+        })
+        ->addColumn('bahan', function($data) use ($prediction) {
+            foreach ($prediction as $p) {
+                if ($p['product_id'] == $data->id) {
+                    $strBahan = '';
+                    foreach ($data->stocks as $stock) {
+                        $strBahan .= '- ' . $stock->name . ' : ' . number_format(($stock->pivot->gram_ml * $p['prediction'])) . ' - ' . number_format($stock->jumlah_gr) . ' (gudang)' . '<br>';
+                    }
+                    return $strBahan;
+                }
+            }
+        })
+        // ->filter(function ($query) use ($request) {
+        //     if ($request->has('search') && $request->input('search.value')) {
+        //         $search = $request->input('search.value');
+        //         $query->where(function ($query) use ($search) {
+        //             $query->where('jumlah_gr', 'like', "%{$search}%")
+        //             ->orWhere('name', 'like', "%{$search}%");
+        //         });
+        //     }
+        // })
+        ->rawColumns(['bahan'])
+        ->toJson();
+    }
+
     public function updateRatingChart()
     {
         //
-    }
-
-    private function calculateRating($total_penjualan, $maxPenjualan)
-    {
-        // Jika maxPenjualan adalah 0, atur rating ke 0 untuk menghindari pembagian oleh nol
-        if ($maxPenjualan == 0) {
-            return 0;
-        }
-        
-        // Hitung persentase
-        return ($total_penjualan / $maxPenjualan) * 100;
     }
     
     private function formatNumber($num) {
@@ -56,66 +125,47 @@ class AdminController extends Controller
         return ($rounded == intval($rounded)) ? intval($rounded) : $rounded;
     }
 
-    public function filterRating(Request $request) 
-    {
-
-        $products = Product::where('category_id', $request->option)->get();
-        $startDate = Carbon::now()->subWeek();
-        $penjualan = [];
-        $ratingChart = [];
-        $ratingJual = [];
-
-        foreach ($products as $product) {
-            $totaljual = Cart::where('product_id', $product->id)->where('pembayaran', true)->where('created_at', '>=', $startDate)->sum('jumlah');
-
-            if($totaljual > 0) {
-                $ratingChart[] = ['name' => $product->name, 'penjualan' => $totaljual];
-                $penjualan[] = $totaljual;
+    private function generatePredict($n, $product_id) {
+        $result['dataSales'] = $this->getSalesData($product_id, $n);
+        if ($n % 2 === 0) {
+            // Jika genap, misalnya 6:
+            // Kita ambil setengah bagian untuk nilai negatif dan setengah untuk nilai positif
+            $half = $n / 2;
+            for ($i = -$half; $i < 0; $i++) {
+                $result['x'][] = $i;
+                $result['x2'][] = $i * $i;
+            }
+            for ($i = 1; $i <= $half; $i++) {
+                $result['x'][] = $i;
+                $result['x2'][] = $i * $i;
+            }
+        } else {
+            // Jika ganjil, misalnya 7:
+            // Hitung setengah dari (n-1) dan sertakan 0 di tengah
+            $half = ($n - 1) / 2;
+            for ($i = -$half; $i <= $half; $i++) {
+                $result['x'][] = $i;
+                $result['x2'][] = $i * $i;
             }
         }
+
+        foreach ($result['x'] as $index => $value) {
+            $result['xy'][] = $value * $result['dataSales']['penjualanInMonth'][$index]['total'];
+        }
+
+        $result['sumXY'] = array_sum($result['xy']);
+        $result['sumX2'] = array_sum($result['x2']);
+
+        $result['a'] = $result['dataSales']['totalPenjualan'] / $n;
+
+        $result['b'] = array_sum($result['xy']) / array_sum($result['x2']);
+
+        $result['y'] = $result['a'] + ($result['b'] * ($n+1)); 
         
-        rsort($penjualan, SORT_NUMERIC);
-
-        try {
-            $maxJual = max($penjualan);
-        } catch(\Throwable $e) {
-
-        }
-
-        foreach ($ratingChart as $key => $item) {
-            $ratingChart[$key]['rating'] = $this->calculateRating($item['penjualan'], $maxJual);
-        }
-
-        usort($ratingChart, function($a, $b) {
-            return $b['rating'] <=> $a['rating'];
-        });
-        
-        foreach ($ratingChart as $item) {
-            $data['ratingChart']['name'][] = $item['name'];
-            $ratingJual[] = $item['rating'];
-        }
-
-        // memvbatasi dan menghapus decimal jika bilangan bulat
-        $ratingJual = array_map(function($num) {
-            $num = $this->formatNumber($num);
-            return $num;
-        }, $ratingJual);
-
-        $data['ratingChart']['series'][] = ['name' => 'Rating', 'data' => $ratingJual];
-        $data['ratingChart']['penjualan'] = $penjualan;
-
-        if(empty($data['ratingChart']['name'])) {
-            $data['ratingChart']['name'] = [];
-        }
-
-
-        // dd($data);
         return [
-            'series' => $data['ratingChart']['series'],
-            'penjualan' => $penjualan,
-            'name' => $data['ratingChart']['name']
+            'totalPenjualan' => $result['dataSales']['totalPenjualan'],
+            'prediction' => floor($result['y']),
+            'product_id' => $product_id
         ];
-        // return($series);
-        return view('admin.dashboard', $data);
     }
 }
