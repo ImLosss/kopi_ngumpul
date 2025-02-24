@@ -76,7 +76,7 @@ class AdminController extends Controller
             $prediction[] = $this->generatePredict(5, $product->id);
         }
 
-        dd($prediction);
+        // dd($prediction);
 
         // dd($prediction);
         return DataTables::of($data)
