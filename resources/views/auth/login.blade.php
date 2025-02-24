@@ -34,11 +34,11 @@
                         <div class="card card-plain mt-4 mb-2">
                             <div class="card-header pb-0 text-left bg-transparent">
                                 <div class="row mb-3">
-                                    <div class="col-3">
+                                    {{-- <div class="col-3">
                                         <img src="{{ asset('./assets/img/logo.png') }}" style="width: 75px" alt="">
-                                    </div>
+                                    </div> --}}
                                     <div class="col d-flex align-items-center">
-                                        <h3 class="font-weight-bolder gradient-text">Kopi Ngumpul</h3>
+                                        <h3 class="font-weight-bolder gradient-text">Kedai Sarjana</h3>
                                     </div>
                                 </div>
                                 <p class="mb-0" style="font-size: 15px">Enter your email and password to sign in</p>
@@ -75,14 +75,14 @@
                         <p class="text-secondary text-center">
                             Copyright © <script>
                                 document.write(new Date().getFullYear())
-                            </script> Pahriansyah | Akram
+                            </script> Valdy kadir | Taher
                         </p>
                     </div>
-                    <div class="col-md-6">
+                    {{-- <div class="col-md-6">
                         <div class="oblique position-absolute top-0 h-100 d-md-block d-none me-n8">
                             <div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n10" style="background-image:url('{{ asset('assets/img/bgLogin.jpeg') }}')"></div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
