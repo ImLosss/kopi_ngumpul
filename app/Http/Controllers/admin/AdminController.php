@@ -73,8 +73,10 @@ class AdminController extends Controller
 
         $products = Product::all();
         foreach ($products as $i => $product) {
-            $prediction[] = $this->generatePredict(4, $product->id);
+            $prediction[] = $this->generatePredict(5, $product->id);
         }
+
+        dd($prediction);
 
         // dd($prediction);
         return DataTables::of($data)
@@ -160,12 +162,14 @@ class AdminController extends Controller
 
         $result['b'] = array_sum($result['xy']) / array_sum($result['x2']);
 
-        $result['y'] = $result['a'] + ($result['b'] * ($n+1)); 
+        $result['y'] = $result['a'] + ($result['b'] * 3); 
         
         return [
             'totalPenjualan' => $result['dataSales']['totalPenjualan'],
             'prediction' => floor($result['y']),
             'product_id' => $product_id
         ];
+
+        // return $result;
     }
 }
