@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\admin;
 
+use App\Events\UserUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
@@ -9,6 +10,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
@@ -52,6 +54,8 @@ class UserController extends Controller
                 'phone' => $request->notelp,
                 'status' => $request->status
             ])->assignRole($request->role);
+
+            Cache::put('user_updated_at', now()->timestamp);
 
             return redirect()->route('user')->with('alert', 'success')->with('message', 'User berhasil ditambahkan');
         } catch (\Throwable $e) {
@@ -110,6 +114,8 @@ class UserController extends Controller
 
             $user->syncRoles([$role]);
 
+            Cache::put('user_updated_at', now()->timestamp);
+
             return redirect()->route('user')->with('alert', 'success')->with('message', 'User berhasil diubah');
         } catch (\Throwable $e) {
             return $e;
@@ -126,6 +132,8 @@ class UserController extends Controller
             $user = User::findOrFail($id);
             
             $user->delete();
+
+            Cache::put('user_updated_at', now()->timestamp);
 
             return redirect()->route('user')->with('alert', 'success')->with('message', 'User berhasil dihapus');
         } catch (\Throwable $e) {

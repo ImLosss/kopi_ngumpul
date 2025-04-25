@@ -122,6 +122,26 @@
             },
         });
 
+        var lastUpdate = {{ Cache::get('user_updated_at') ? Cache::get('user_updated_at') : null }};
+
+        function checkUpdates() {
+            $.ajax({
+                url: '/users/updates',
+                method: 'GET',
+                success: function(response) {
+                    if (lastUpdate && lastUpdate !== response.timestamp) {
+                        table.ajax.reload(); // Reload DataTables jika ada perubahan
+                    }
+                    lastUpdate = response.timestamp;
+                },
+                complete: function() {
+                    setTimeout(checkUpdates, 5000); // Polling setiap 5 detik
+                }
+            });
+        }
+
+        checkUpdates(); // Mulai polling saat halaman dimuat
+
         // function reloadTable() {
         //     table.ajax.reload(null, false); // Reload data without resetting pagination
         // }

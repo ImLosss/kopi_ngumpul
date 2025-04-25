@@ -58,6 +58,8 @@ class AdminController extends Controller
                 'total' => $totalSales
             ];
 
+            // dd($data);
+
             // $data['penjualanInMonth'][] = $totalSales;
         }
 
@@ -87,6 +89,7 @@ class AdminController extends Controller
         ->addColumn('prediction', function($data) use ($prediction) {
             foreach ($prediction as $p) {
                 if ($p['product_id'] == $data->id) {
+                    if($p['prediction'] < 1) return false;
                     return $p['prediction'];
                 }
             }

@@ -177,6 +177,18 @@ $(document).ready(function() {
     headerCallback: function(thead, data, start, end, display) {
         $(thead).find('th').css('text-align', 'left'); // pastikan align header tetap di tengah
     },
+    rowCallback: function(row, data, index) {
+      // Periksa nilai colspan dari data
+      if (!data.prediction) {
+          // Tambahkan colspan ke kolom menu dan kosongkan kolom lainnya
+          $('td:eq(1)', row).attr('colspan', 3);
+          $('td:eq(1)', row).text(`Data Kurang (${ data.name })`);
+          $('td:eq(1)', row).addClass('text-center');
+          for (let i = 1; i < 7; i++) {
+              $(`td:eq(2)`, row).remove();
+          }
+      }
+    },
   });
 });
 </script>

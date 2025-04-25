@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\UserUpdated;
 use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\CartController;
 use App\Http\Controllers\admin\CashierController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\auth\LogoutController;
 use App\Services\OrderService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -153,4 +155,12 @@ Route::group([
     Route::get('/getReport/{id}', [ReportController::class, 'getReport'])->name('admin.dataTable.getReport');
     Route::post('/report/print', [ReportController::class, 'printReport'])->name('report.printReport');
     //endRoute
+
+    Route::get('/users/updates', function () {
+        // Simpan timestamp terakhir kali event dipanggil
+        if (!Cache::has('user_updated_at')) {
+            return response()->json(['timestamp' => null]);
+        }
+        return response()->json(['timestamp' => Cache::get('user_updated_at')]);
+    });
 });
