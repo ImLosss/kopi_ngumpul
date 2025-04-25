@@ -97,7 +97,7 @@
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="ni ni-cart {{ (Request::is('ingredient','ingredient/*') ? '' : 'text-dark') }} text-sm"></i>                    
                         </div>
-                        <span class="nav-link-text ms-1">Ingredient Transaction</span>
+                        <span class="nav-link-text ms-1">Kelola Stock</span>
                     </a>
                 </li>
             @endcan
