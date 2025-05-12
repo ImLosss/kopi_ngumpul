@@ -45,12 +45,12 @@ class OrderSeeder extends Seeder
             ]);
 
             // Buat 1 sampai 3 data cart untuk order ini
-            $cartCount = rand(5, 10);
+            $cartCount = rand(5, 30);
             $orderTotal = 0; // untuk menghitung total order dari cart
 
             for ($j = 1; $j <= $cartCount; $j++) {
                 $jumlah = rand(1, 5);
-                $product = Product::findOrFail(rand(1, 4));
+                $product = Product::findOrFail(rand(1, 22));
                 $harga = $product->harga;
                 $total = $jumlah * $harga;
                 $orderTotal += $total;
