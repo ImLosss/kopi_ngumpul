@@ -14,26 +14,26 @@ class StockSeeder extends Seeder
     public function run(): void
     {
         $bahanBaku = [
-            'Maxcreamer',
-            'Gula pasir',
-            'Susu UHT',
-            'Gula merah',
-            'Susu kental manis',
-            'Bubuk kopi',
-            'Bubuk Green Tea',
-            'Bubuk Thai Tea',
-            'Bubuk Vanila late',
-            'Bubuk Taro',
-            'Bubuk Red Velvet',
-            'Bubuk Avocado',
-            'Bubuk Chocolate',
-            'Bubuk Buble Gum',
-            'Bubuk Vanila late',
-            'Bubuk Jeruk', // Added missing stock
-            'Bubuk Strowberry', // Added missing stock
-            'Bubuk Melon', // Added missing stock
-            'Bubuk Mangga', // Added missing stock
-            'Extra joss' // Added missing stock
+            'Maxcreamer', // 1
+            'Gula pasir', // 2
+            'Susu UHT', // 3
+            'Gula merah', // 4
+            'Susu kental manis', // 5
+            'Bubuk kopi', // 6
+            'Bubuk Green Tea', // 7
+            'Bubuk Thai Tea', // 8
+            'Bubuk Vanila late', // 9
+            'Bubuk Taro', // 10
+            'Bubuk Red Velvet', // 11
+            'Bubuk Avocado', // 12
+            'Bubuk Chocolate', // 13
+            'Bubuk Buble Gum', // 14
+            'Bubuk Vanila', // 15
+            'Bubuk Jeruk', // 16
+            'Bubuk Strowberry', // 17
+            'Bubuk Mangga', // 18
+            'Extra joss', // 19
+            'Bubuk Cappucino' // 20
         ];
 
         foreach ($bahanBaku as $item) {

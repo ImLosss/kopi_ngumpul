@@ -50,7 +50,7 @@ class AdminController extends Controller
                 ->whereMonth('created_at', $date->month)
                 ->where('product_id', $product_id)
                 ->where('pembayaran', true)
-                ->count();
+                ->sum('jumlah');
 
             // Masukkan data ke array, misalnya dengan format nama bulan dan total penjualan
             $data['penjualanInMonth'][] = [
@@ -132,6 +132,12 @@ class AdminController extends Controller
 
     private function generatePredict($n, $product_id) {
         $result['dataSales'] = $this->getSalesData($product_id, $n);
+
+        // Membalikkan urutan array
+        $result['dataSales']['penjualanInMonth'] = array_reverse($result['dataSales']['penjualanInMonth']);
+
+        // dd($result['dataSales']);
+
         if ($n % 2 === 0) {
             // Jika genap, misalnya 6:
             // Kita ambil setengah bagian untuk nilai negatif dan setengah untuk nilai positif

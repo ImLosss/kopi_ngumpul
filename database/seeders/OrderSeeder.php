@@ -55,6 +55,8 @@ class OrderSeeder extends Seeder
                 $total = $jumlah * $harga;
                 $orderTotal += $total;
 
+                if($product->id == 3) continue;
+
                 Cart::create([
                     'menu'              => $product->name,
                     'product_id'        => $product->id,

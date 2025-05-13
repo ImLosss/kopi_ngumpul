@@ -25,17 +25,15 @@ class ProductSeeder extends Seeder
             ['name' => 'Buble Gum', 'harga' => 10000, 'category_id' => 1],
             ['name' => 'Ice kopi', 'harga' => 10000, 'category_id' => 1],
             ['name' => 'Kopi susu', 'harga' => 10000, 'category_id' => 1],
+            ['name' => 'Vanila', 'harga' => 10000, 'category_id' => 1],
 
             // Ice Bland
             ['name' => 'Cappucino', 'harga' => 5000, 'category_id' => 2],
             ['name' => 'Chocolate', 'harga' => 5000, 'category_id' => 2],
-            ['name' => 'Green Tea', 'harga' => 5000, 'category_id' => 2],
-            ['name' => 'Thai Tea', 'harga' => 5000, 'category_id' => 2],
             ['name' => 'Taro', 'harga' => 5000, 'category_id' => 2],
             ['name' => 'Avocado', 'harga' => 5000, 'category_id' => 2],
             ['name' => 'Jeruk', 'harga' => 5000, 'category_id' => 2],
             ['name' => 'Strowberry', 'harga' => 5000, 'category_id' => 2],
-            ['name' => 'Melon', 'harga' => 5000, 'category_id' => 2],
             ['name' => 'Mangga', 'harga' => 5000, 'category_id' => 2],
             ['name' => 'Extra joss', 'harga' => 5000, 'category_id' => 2],
             
