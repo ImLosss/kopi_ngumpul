@@ -164,7 +164,7 @@ class AdminController extends Controller
         
         return [
             'totalPenjualan' => $result['dataSales']['totalPenjualan'],
-            'prediction' => floor($result['y']),
+            'prediction' => ceil($result['y']),
             'product_id' => $product_id
         ];
     }
@@ -179,8 +179,6 @@ class AdminController extends Controller
         foreach ($products as $i => $product) {
             $prediction[] = $this->generatePredict(5, $product->id);
         }
-
-        // dd($prediction);
 
         return view('admin.printPrediction', compact('data', 'prediction', 'user', 'nextMonth'));
     }
