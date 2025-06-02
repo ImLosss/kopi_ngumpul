@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="{{ asset('./assets/img/logo.png') }}">
-    <title>Kopi Ngumpul - Print Laporan</title>
+    <title>Kedai Sarjana - Print Laporan</title>
     <!--     Fonts and icons     -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
     <!-- Nucleo Icons -->
@@ -40,7 +40,7 @@
     <div class="container mt-4">
         <div class="row">
             <div class="col text-center">
-                <h2>Laporan Kopingumpul</h2>
+                <h2>Laporan Kedai Sarjana</h2>
             </div>
         </div>
         <div class="row">
