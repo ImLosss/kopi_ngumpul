@@ -51,6 +51,7 @@ Route::group([
     Route::get('/', [AdminController::class, 'index'])->name('home');
     Route::get('/filterRating', [AdminController::class, 'filterRating'])->name('filterRating');
     Route::get('/getPrediction', [AdminController::class, 'getPrediction'])->name('admin.dataTable.getPrediction');
+    Route::get('/printPrediction', [AdminController::class, 'printPrediction'])->name('admin.printPrediction');
     //endRoute
 
     // routeUser
@@ -87,6 +88,7 @@ Route::group([
     ]);
 
     Route::get('/getIngredientTransaction', [IngredientTransactionController::class, 'getIngredientTransaction'])->name('admin.dataTable.getIngredientTransaction');
+    Route::post('/printIngredientTransaction', [IngredientTransactionController::class, 'printIngredientTransaction'])->name('admin.printIngredientTransaction');
     //endRoute
 
     //RouteProduct

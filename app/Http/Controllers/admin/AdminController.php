@@ -119,17 +119,6 @@ class AdminController extends Controller
         ->toJson();
     }
 
-    public function updateRatingChart()
-    {
-        //
-    }
-    
-    private function formatNumber($num) {
-        $rounded = round($num, 1);
-        // Jika hasil pembulatan adalah bilangan bulat, kembalikan sebagai integer
-        return ($rounded == intval($rounded)) ? intval($rounded) : $rounded;
-    }
-
     private function generatePredict($n, $product_id) {
         $result['dataSales'] = $this->getSalesData($product_id, $n);
 
@@ -178,7 +167,21 @@ class AdminController extends Controller
             'prediction' => floor($result['y']),
             'product_id' => $product_id
         ];
+    }
 
-        // return $result;
+    public function printPrediction(Request $request)
+    {
+        $data = Product::with('stocks')->get();
+        $user = Auth::user();
+        $nextMonth = Carbon::now()->addMonth()->format('F Y');
+
+        $products = Product::all();
+        foreach ($products as $i => $product) {
+            $prediction[] = $this->generatePredict(5, $product->id);
+        }
+
+        // dd($prediction);
+
+        return view('admin.printPrediction', compact('data', 'prediction', 'user', 'nextMonth'));
     }
 }

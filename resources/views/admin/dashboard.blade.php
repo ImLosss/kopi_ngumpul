@@ -126,6 +126,9 @@
                     </div>
                     <div class="col">
                         <div class="d-flex justify-content-end flex-wrap">
+                          <div class="mb-2" style="margin-right: 20px">
+                            <a class="btn bg-gradient-secondary mt-2" href="{{ route('admin.printPrediction') }}" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
+                          </div>
                         </div>
                     </div>
                 </div>

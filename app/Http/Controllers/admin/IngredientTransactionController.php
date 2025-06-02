@@ -7,6 +7,7 @@ use App\Models\IngredientTransaction;
 use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Yajra\DataTables\Facades\DataTables;
 
 class IngredientTransactionController extends Controller
@@ -37,8 +38,8 @@ class IngredientTransactionController extends Controller
             // dd($request);
             $data = $request->validate([
                 'stock_id' => 'required|exists:stocks,id',
-                'gram_ml' => 'required|numeric',
-                'modal' => 'required|numeric'
+                'gram_ml' => 'required|numeric|min:1',
+                'modal' => 'required|numeric|min:1',
             ]);
 
             $stock = Stock::findOrFail($data['stock_id']);
@@ -53,33 +54,11 @@ class IngredientTransactionController extends Controller
             IngredientTransaction::create($data);
 
             return redirect()->route('ingredient')->with('alert', 'success')->with('message', 'Bahan berhasil ditambahkan');
+        } catch (ValidationException $e) {
+            throw $e; 
         } catch (\Throwable $e) {
-            return redirect()->route('ingredient')->with('alert', 'error')->with('message', 'Terjadi kesalahan');
+            return redirect()->route('ingredient')->with('alert', 'error')->with('message', $e->getMessage());
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
     }
 
     /**
@@ -125,9 +104,10 @@ class IngredientTransactionController extends Controller
             return $data->created_at;
         })
         ->addColumn('action', function($data) use ($user) {
+            $hiddenInput = '<input type="hidden" name="ids[]" value="' . $data->id . '">';
             $delete = '';
             if($user->can('ingredientTransactionDelete')) $delete = '<button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>';
-            return $delete . '
+            return $hiddenInput . $delete . '
             <form id="form_'. $data->id .'" action="' . route('ingredient.destroy', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
@@ -146,5 +126,11 @@ class IngredientTransactionController extends Controller
         })
         ->rawColumns(['action'])
         ->toJson();
+    }
+
+    public function printIngredientTransaction(Request $request) {
+        $data = IngredientTransaction::with('stock')->whereIn('id', $request->ids)->get();
+        
+        return view('admin.ingredient.print', compact('data'));
     }
 }

@@ -45,20 +45,30 @@
             </div>
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">
-                    <table class="table" id="dataTable3">
-                        <thead>
-                        <tr>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Nama</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Jumlah Gram/Ml</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Modal</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Tipe</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Tanggal</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <form action="{{ route('admin.printIngredientTransaction') }}" id="form_report" method="POST">
+                        @csrf
+                        <table class="table" id="dataTable3">
+                            <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Nama</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Jumlah Gram/Ml</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Modal</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Tipe</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Tanggal</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </form>
+                </div>
+                 <div class="row">
+                    <div class="col">
+                        <div class="d-flex flex-wrap">
+                            <a class="btn bg-gradient-secondary mt-2" onclick="$('#form_report').submit()" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
