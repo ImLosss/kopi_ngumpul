@@ -60,7 +60,7 @@ class StockController extends Controller
      */
     public function show(string $id)
     {
-        
+
     }
 
     /**
@@ -113,7 +113,7 @@ class StockController extends Controller
 
         // dd($data);
         return DataTables::of($data)
-        ->addIndexColumn() 
+        ->addIndexColumn()
         ->addColumn('name', function($data) {
             return $data->name;
         })
@@ -122,11 +122,12 @@ class StockController extends Controller
             return $data->jumlah_gr;
         })
         ->addColumn('action', function($data) use ($user) {
+            $hiddenInput = '<input type="hidden" name="ids[]" value="' . $data->id . '">';
             $update = '';
             $delete = '';
             if($user->can('stockUpdate')) $update = '<a href="' . route('stock.edit', $data->id) . '"><i class="fa-solid fa-pen-to-square text-secondary"></i></a>';
             if($user->can('stockDelete')) $delete = '<button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>';
-            return $update . $delete . '
+            return  $hiddenInput . $update . $delete . '
             <form id="form_'. $data->id .'" action="' . route('stock.destroy', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
@@ -143,5 +144,11 @@ class StockController extends Controller
         })
         ->rawColumns(['action', 'jumlah_gr'])
         ->toJson();
+    }
+
+    public function printStock(Request $request) {
+        $data = Stock::whereIn('id', $request->ids)->get();
+
+        return view('admin.stock.print', compact('data'));
     }
 }

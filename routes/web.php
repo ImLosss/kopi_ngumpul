@@ -80,6 +80,7 @@ Route::group([
 
     Route::get('/edit', [StockController::class, 'edit']);
     Route::get('/getStock', [StockController::class, 'getStock'])->name('admin.dataTable.getStock');
+    Route::post('/printStock', [StockController::class, 'printStock'])->name('admin.printStock');
     //endRoute
 
     //RouteIngredientTransaction
