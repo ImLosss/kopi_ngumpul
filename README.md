@@ -26,7 +26,6 @@ Follow these steps to set up and run the project locally:
      DB_USERNAME=your_db_username
      DB_PASSWORD=your_db_password
      ```
-   - Configure other environment-specific settings as needed
 
 3. **Install dependencies**:
    ```bash
@@ -49,8 +48,3 @@ Follow these steps to set up and run the project locally:
    ```
 
 The application will be available at: [http://localhost:8000](http://localhost:8000)
-
-### Optional Development Commands
-- Run tests: `php artisan test`
-- Clear cache: `php artisan optimize:clear`
-- Watch assets (if using Vite): `npm run dev`
