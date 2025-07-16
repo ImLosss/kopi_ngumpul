@@ -4,7 +4,7 @@
 
 Follow these steps to set up and run the project locally:
 
-### Prerequisites
+### Requirements
 - PHP 8.1 or higher
 - Composer installed
 - Database server (MySQL/PostgreSQL/SQLite)
