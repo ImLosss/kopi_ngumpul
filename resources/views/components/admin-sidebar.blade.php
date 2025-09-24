@@ -35,9 +35,9 @@
 
             @canany(['cashierAccess'])
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('cashier') ? 'active' : '') }}" href="{{ route('cashier') }}">
+                    <a class="nav-link {{ (Request::is('cashier') ? 'active' : '') }}" href="#">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-cash-register {{ (Request::is('cashier') ? '' : 'text-dark') }} text-sm"></i>                    
+                            <i class="fa-solid fa-cash-register {{ (Request::is('cashier') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
                         <span class="nav-link-text ms-1">Cashier</span>
                     </a>
@@ -58,7 +58,7 @@
                     <ul class="nav ms-4 ps-3">
                         @can('paymentAccess')
                         <li class="nav-item ">
-                            <a class="nav-link {{ (Request::is('payment', 'payment/*') ? 'active' : '') }}" href="{{ route('payment') }}">
+                            <a class="nav-link {{ (Request::is('payment', 'payment/*') ? 'active' : '') }}" href="#">
                                 <span class="sidenav-mini-icon"> P </span>
                                 <span class="sidenav-normal"> Pembayaran </span>
                             </a>
@@ -71,9 +71,9 @@
 
             @can('dailyReportAccess')
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('report','report/*') ? 'active' : '') }}" href="{{ route('report') }}">
+                    <a class="nav-link {{ (Request::is('report','report/*') ? 'active' : '') }}" href="#">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="ni ni-money-coins {{ (Request::is('report','report/*') ? '' : 'text-dark') }} text-sm"></i>             
+                            <i class="ni ni-money-coins {{ (Request::is('report','report/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
                         <span class="nav-link-text ms-1">Laporan</span>
                     </a>
@@ -82,9 +82,9 @@
 
             @can('stockAccess')
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('stock','stock/*') ? 'active' : '') }}" href="{{ route('stock') }}">
+                    <a class="nav-link {{ (Request::is('stock','stock/*') ? 'active' : '') }}" href="#">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="ni ni-cart {{ (Request::is('stock','stock/*') ? '' : 'text-dark') }} text-sm"></i>                    
+                            <i class="ni ni-cart {{ (Request::is('stock','stock/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
                         <span class="nav-link-text ms-1">Stock</span>
                     </a>
@@ -93,9 +93,9 @@
 
             @can('ingredientTransactionAccess')
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('ingredient','ingredient/*') ? 'active' : '') }}" href="{{ route('ingredient') }}">
+                    <a class="nav-link {{ (Request::is('ingredient','ingredient/*') ? 'active' : '') }}" href="#">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="ni ni-cart {{ (Request::is('ingredient','ingredient/*') ? '' : 'text-dark') }} text-sm"></i>                    
+                            <i class="ni ni-cart {{ (Request::is('ingredient','ingredient/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
                         <span class="nav-link-text ms-1">Kelola Stock</span>
                     </a>
@@ -104,9 +104,9 @@
 
             @can('productAccess')
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('product','product/*') ? 'active' : '') }}" href="{{ route('product') }}">
+                    <a class="nav-link {{ (Request::is('product','product/*') ? 'active' : '') }}" href="#">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="ni ni-cart {{ (Request::is('product','product/*') ? '' : 'text-dark') }} text-sm"></i>                    
+                            <i class="ni ni-cart {{ (Request::is('product','product/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
                         <span class="nav-link-text ms-1">Product</span>
                     </a>
@@ -115,20 +115,20 @@
 
             @can('categoryAccess')
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('category','category/*') ? 'active' : '') }}" href="{{ route('category') }}">
+                    <a class="nav-link {{ (Request::is('category','category/*') ? 'active' : '') }}" href="#">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-list {{ (Request::is('category','category/*') ? '' : 'text-dark') }} text-sm"></i>                    
+                            <i class="fa-solid fa-list {{ (Request::is('category','category/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
                         <span class="nav-link-text ms-1">Category</span>
                     </a>
                 </li>
             @endcan
-            
+
             @can('discountAccess')
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('discount','discount/*') ? 'active' : '') }}" href="{{ route('discount') }}">
+                    <a class="nav-link {{ (Request::is('discount','discount/*') ? 'active' : '') }}" href="#">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-tags {{ (Request::is('discount','discount/*') ? '' : 'text-dark') }} text-sm"></i>                
+                            <i class="fa-solid fa-tags {{ (Request::is('discount','discount/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
                         <span class="nav-link-text ms-1">Discount</span>
                     </a>
@@ -137,31 +137,31 @@
 
             @can('tableAccess')
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('table','table/*') ? 'active' : '') }}" href="{{ route('table') }}">
+                    <a class="nav-link {{ (Request::is('table','table/*') ? 'active' : '') }}" href="#">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-caret-down {{ (Request::is('table','table/*') ? '' : 'text-dark') }} text-sm"></i>                
+                            <i class="fa-solid fa-caret-down {{ (Request::is('table','table/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
                         <span class="nav-link-text ms-1">Table</span>
                     </a>
                 </li>
             @endcan
-            
+
             @role('admin')
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">SETTINGS</h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('user','user/*') ? 'active' : '') }}" href="{{ route('user') }}">
+                    <a class="nav-link {{ (Request::is('user','user/*') ? 'active' : '') }}" href="#">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-user-group {{ (Request::is('user','user/*') ? '' : 'text-dark') }} text-sm"></i>  
+                            <i class="fa-solid fa-user-group {{ (Request::is('user','user/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
                         <span class="nav-link-text ms-1">Users</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('role','role/*') ? 'active' : '') }}" href="{{ route('role') }}">
+                    <a class="nav-link {{ (Request::is('role','role/*') ? 'active' : '') }}" href="#">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-screwdriver-wrench {{ (Request::is('role','role/*') ? '' : 'text-dark') }} text-sm"></i>                
+                            <i class="fa-solid fa-screwdriver-wrench {{ (Request::is('role','role/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
                         <span class="nav-link-text ms-1">Roles</span>
                     </a>

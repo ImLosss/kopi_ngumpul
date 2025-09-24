@@ -38,7 +38,7 @@
                                         <img src="{{ asset('./assets/img/logo.png') }}" style="width: 75px" alt="">
                                     </div> --}}
                                     <div class="col d-flex align-items-center">
-                                        <h3 class="font-weight-bolder gradient-text">Kedai Sarjana</h3>
+                                        <h3 class="font-weight-bolder gradient-text">Aplikasi Inventory</h3>
                                     </div>
                                 </div>
                                 <p class="mb-0" style="font-size: 15px">Enter your email and password to sign in</p>
@@ -63,7 +63,7 @@
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
-                                        
+
                                     </div>
                                     <div class="text-center">
                                         <button type="submit" class="btn gradient-button w-100 mt-4 mb-0">Sign in</button>
@@ -75,7 +75,7 @@
                         <p class="text-secondary text-center">
                             Copyright © <script>
                                 document.write(new Date().getFullYear())
-                            </script> Valdy kadir | Taher
+                            </script> Pahriansyah
                         </p>
                     </div>
                     {{-- <div class="col-md-6">

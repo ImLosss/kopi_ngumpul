@@ -20,8 +20,8 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Pemasukan</p>
                 <h5 class="font-weight-bolder mb-0">
-                  Rp{{ number_format($totalPemasukan) }}
-                  <span class="text-success text-sm font-weight-bolder">+Rp{{ number_format($pemasukanHariIni) }}</span>
+                  Rp1000000
+                  <span class="text-success text-sm font-weight-bolder">+Rp50000</span>
                 </h5>
               </div>
             </div>
@@ -45,8 +45,8 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Total keuntungan</p>
                 <h5 class="font-weight-bolder mb-0">
-                  Rp{{ number_format($keuntungan) }}
-                  <span class="text-success text-sm font-weight-bolder">+Rp{{ number_format($keuntunganHariIni) }}</span>
+                  Rp1000000
+                  <span class="text-success text-sm font-weight-bolder">+Rp50000</span>
                 </h5>
               </div>
             </div>
@@ -70,7 +70,7 @@
               <div class="numbers">
                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Staff</p>
                 <h5 class="font-weight-bolder mb-0">
-                  {{ $totalUser }}
+                  5
                 </h5>
               </div>
             </div>
@@ -84,32 +84,32 @@
       </div>
     </div>
   </div>
-  @if ($habis->count() > 0)
+  @if (0 > 0)
     <div class="row mb-3">
       <div class="col-xl-12">
         <div class="card pb-0 p-3">
           <div class="row align-items-center">
             <div class="col-10">
-              <h6>Terdapat {{ $habis->count() }} Stock yang telah habis. Segera restock!</h6>
+              <h6>Terdapat 5 Stock yang telah habis. Segera restock!</h6>
             </div>
             <div class="col-2 d-flex justify-content-end">
-              <a class="btn bg-gradient-secondary" href="{{ route('stock') }}">CEK</a>
+              <a class="btn bg-gradient-secondary" href="#">CEK</a>
             </div>
           </div>
         </div>
       </div>
     </div>
   @endif
-  @if($sedikit->count() > 0 && $habis->count() == 0)
+  @if(0 > 0 && $habis->count() == 0)
     <div class="row mb-3">
       <div class="col-xl-12">
         <div class="card pb-0 p-3">
           <div class="row align-items-center">
             <div class="col-10">
-              <h6>Terdapat {{ $sedikit->count() }} Stock yang akan habis. Segera restock!</h6>
+              <h6>Terdapat 5 Stock yang akan habis. Segera restock!</h6>
             </div>
             <div class="col-2 d-flex justify-content-end">
-              <a class="btn bg-gradient-secondary" href="{{ route('stock') }}">CEK</a>
+              <a class="btn bg-gradient-secondary" href="#">CEK</a>
             </div>
           </div>
         </div>
@@ -127,7 +127,7 @@
                     <div class="col">
                         <div class="d-flex justify-content-end flex-wrap">
                           <div class="mb-2" style="margin-right: 20px">
-                            <a class="btn bg-gradient-secondary mt-2" href="{{ route('admin.printPrediction') }}" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
+                            <a class="btn bg-gradient-secondary mt-2" href="#" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
                           </div>
                         </div>
                     </div>
@@ -161,7 +161,7 @@ $(document).ready(function() {
     serverSide: true,
     ordering: false,
     ajax: {
-        url: "{{ route('admin.dataTable.getPrediction') }}",
+        url: "#",
         error: function(xhr, error, thrown){
             console.log('An error occurred while fetching data.');
                 // Hide the default error message

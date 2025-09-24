@@ -20,9 +20,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="icon" type="image/png" href="{{ asset('./assets/img/logo.png') }}">
   <title>
-    Kedai Sarjana @yield('title')
+    Inventory @yield('title')
   </title>
-  
+
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
   <!-- Nucleo Icons -->
@@ -37,7 +37,7 @@
   {{-- jQuery --}}
   <script src="{{ asset('assets/js/jquery-1.11.1.min.js') }}"
   crossorigin="anonymous"></script>
-  
+
   <!-- Select2 CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet">
 
