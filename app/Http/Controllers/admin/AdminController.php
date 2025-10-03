@@ -21,12 +21,11 @@ class AdminController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    { 
+    {
         $oneMonthAgo = Carbon::now()->subMonth();
         $oneDayAgo = Carbon::now();
         $data['pemasukanHariIni'] = Order::where('pembayaran', true)->whereDate('created_at', Carbon::today())->sum('total');
         $data['totalPemasukan'] = Order::where('pembayaran', true)->sum('total');
-        $data['habis'] = Stock::where('jumlah_gr', '<=', 200)->get();
         $data['sedikit'] = Stock::where('jumlah_gr', '<=', 500)->get();
         $data['keuntunganHariIni'] = $data['pemasukanHariIni'] - IngredientTransaction::whereDate('created_at', Carbon::today())->sum('modal');
         $data['keuntungan'] = $data['totalPemasukan'] - IngredientTransaction::all()->sum('modal');
@@ -34,7 +33,23 @@ class AdminController extends Controller
             $query->whereNotIn('name', ['admin']);
         })->count();
 
-        // dd($data);
+        $products = Product::all();
+        foreach ($products as $i => $product) {
+            $prediction[] = $this->generatePredict(5, $product->id);
+        }
+
+        foreach ($prediction as $p) {
+            $product = Product::with('stocks')->find($p['product_id']);
+            $strBahan = '';
+            foreach ($product->stocks as $stock) {
+                $strBahan .= '- ' . $stock->name . ' : ' . number_format(($stock->pivot->gram_ml * $p['prediction'])) . ' - ' . number_format($stock->jumlah_gr) . ' (gudang)' . '<br>';
+                $totalBahan[$stock->name]['needed'] = ($totalBahan[$stock->name]['needed'] ?? 0) + $stock->pivot->gram_ml * $p['prediction'];
+                $totalBahan[$stock->name]['warehouse'] = $stock->jumlah_gr;
+            }
+        }
+
+        $data['totalBahan'] = $totalBahan;
+
         $user = Auth::user();
         return view('admin.dashboard', $data);
     }
@@ -44,7 +59,7 @@ class AdminController extends Controller
         for ($i = 0; $i < $range_month; $i++) {
             // Ambil tanggal  bulan ke-i dari sekarang
             $date = Carbon::now()->subMonths($i);
-            
+
             // Query untuk menghitung total penjualan di bulan tersebut
             $totalSales = Cart::whereYear('created_at', $date->year)
                 ->whereMonth('created_at', $date->month)
@@ -68,7 +83,7 @@ class AdminController extends Controller
         return $data;
     }
 
-    public function getPrediction(Request $request) 
+    public function getPrediction(Request $request)
     {
         $data = Product::with('stocks')->get();
         $user = Auth::user();
@@ -79,10 +94,8 @@ class AdminController extends Controller
         }
 
         // dd($prediction);
-
-        // dd($prediction);
         return DataTables::of($data)
-        ->addIndexColumn() 
+        ->addIndexColumn()
         ->addColumn('name', function($data) {
             return $data->name;
         })
@@ -100,7 +113,7 @@ class AdminController extends Controller
                 if ($p['product_id'] == $data->id) {
                     $strBahan = '';
                     foreach ($data->stocks as $stock) {
-                        $strBahan .= '- ' . $stock->name . ' : ' . number_format(($stock->pivot->gram_ml * $p['prediction'])) . ' - ' . number_format($stock->jumlah_gr) . ' (gudang)' . '<br>';
+                        $strBahan .= '- ' . $stock->name . ' : ' . number_format(($stock->pivot->gram_ml * $p['prediction'])) . '<br>';
                     }
                     return $strBahan;
                 }
@@ -160,8 +173,8 @@ class AdminController extends Controller
 
         $result['b'] = array_sum($result['xy']) / array_sum($result['x2']);
 
-        $result['y'] = $result['a'] + ($result['b'] * 3); 
-        
+        $result['y'] = $result['a'] + ($result['b'] * 3);
+
         return [
             'totalPenjualan' => $result['dataSales']['totalPenjualan'],
             'prediction' => ceil($result['y']),

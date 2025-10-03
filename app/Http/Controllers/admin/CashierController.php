@@ -92,7 +92,7 @@ class CashierController extends Controller
                 ]);
 
             });
-            
+
             return redirect()->back()->with('alert', 'success')->with('message', 'Berhasil menambahkan cart');
         } catch (\Throwable $e) {
             dd($e);

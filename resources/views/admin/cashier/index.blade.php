@@ -116,7 +116,7 @@
                     <div class="row">
                         <div class="col-1">
                             <a type="submit" onclick="submit({{ $item->id }})"><i class="fa-solid fa-circle-minus text-danger"></i></a>
-                            
+
                             {{-- form delete --}}
                             <form action="{{ route('cashier.destroy', $item->id) }}" id="form_{{ $item->id }}" method="POST" class="inline">
                                 @csrf
@@ -131,11 +131,11 @@
                                 Rp. {{number_format($item->total + $item->total_diskon )}}
                             </div>
                         </div>
-                    </div> 
+                    </div>
                     @if ($item->diskon_id != null)
                         <div class="row">
                             <div class="col-1">
-            
+
                             </div>
                             <div class="col">
                                 Disc ({{ $item->discount->percent }}%)
@@ -178,7 +178,7 @@
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn bg-gradient-dark btn-md mt-1">{{ 'Order' }}</button>
                     </div>
-                </form> 
+                </form>
             </div>
         </div>
     @endif

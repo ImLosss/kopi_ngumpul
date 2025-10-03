@@ -118,7 +118,7 @@ class StockController extends Controller
             return $data->name;
         })
         ->addColumn('jumlah_gr', function($data) {
-            if($data->jumlah_gr < 300) return "<div class='text-danger'>" . $data->jumlah_gr . "</div>";
+            if($data->jumlah_gr < 500) return "<div class='text-danger'>" . $data->jumlah_gr . "</div>";
             return $data->jumlah_gr;
         })
         ->addColumn('action', function($data) use ($user) {

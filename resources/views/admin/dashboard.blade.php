@@ -84,23 +84,7 @@
       </div>
     </div>
   </div>
-  @if ($habis->count() > 0)
-    <div class="row mb-3">
-      <div class="col-xl-12">
-        <div class="card pb-0 p-3">
-          <div class="row align-items-center">
-            <div class="col-10">
-              <h6>Terdapat {{ $habis->count() }} Stock yang telah habis. Segera restock!</h6>
-            </div>
-            <div class="col-2 d-flex justify-content-end">
-              <a class="btn bg-gradient-secondary" href="{{ route('stock') }}">CEK</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  @endif
-  @if($sedikit->count() > 0 && $habis->count() == 0)
+  @if($sedikit->count() > 0)
     <div class="row mb-3">
       <div class="col-xl-12">
         <div class="card pb-0 p-3">
@@ -134,6 +118,21 @@
                 </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="border-0 text-sm" role="alert">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <strong>Total Bahan yag dibutuhkan:</strong>
+                                    <br>
+                                    @foreach ($totalBahan as $name => $item)
+                                        <span class="badge {{ $item['needed'] > $item['warehouse'] ? 'bg-gradient-warning' : 'bg-gradient-success' }}">{{ $name }}: {{ number_format($item['needed']) }}g | {{ number_format($item['warehouse']) }}g</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-responsive p-0">
                     <table class="table" id="prediksi">
                         <thead>
