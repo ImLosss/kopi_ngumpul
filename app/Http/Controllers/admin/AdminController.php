@@ -48,6 +48,12 @@ class AdminController extends Controller
             }
         }
 
+        foreach ($totalBahan as $key => $value) {
+            if ($value['needed'] < 1) {
+                unset($totalBahan[$key]);
+            }
+        }
+
         $data['totalBahan'] = $totalBahan;
 
         $user = Auth::user();
