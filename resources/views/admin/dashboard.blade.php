@@ -125,12 +125,13 @@
                                 <div class="col">
                                     <strong>Total Bahan yag dibutuhkan:</strong>
                                     <br>
-                                    @if ($totalBahan->count() == 0)
+                                    @if ($totalBahan->isEmpty())
                                         <span class="badge bg-gradient-secondary">-</span>
+                                    @else
+                                        @foreach ($totalBahan as $name => $item)
+                                            <span class="badge {{ $item['needed'] > $item['warehouse'] ? 'bg-gradient-warning' : 'bg-gradient-success' }}">{{ $name }}: {{ number_format($item['needed']) }}g | {{ number_format($item['warehouse']) }}g</span>
+                                        @endforeach
                                     @endif
-                                    @foreach ($totalBahan as $name => $item)
-                                        <span class="badge {{ $item['needed'] > $item['warehouse'] ? 'bg-gradient-warning' : 'bg-gradient-success' }}">{{ $name }}: {{ number_format($item['needed']) }}g | {{ number_format($item['warehouse']) }}g</span>
-                                    @endforeach
                                 </div>
                             </div>
                         </div>
