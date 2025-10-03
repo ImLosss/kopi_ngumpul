@@ -125,7 +125,7 @@
                                 <div class="col">
                                     <strong>Total Bahan yag dibutuhkan:</strong>
                                     <br>
-                                    @if ($totalBahan->isEmpty())
+                                    @if (empty($totalBahan))
                                         <span class="badge bg-gradient-secondary">-</span>
                                     @else
                                         @foreach ($totalBahan as $name => $item)
