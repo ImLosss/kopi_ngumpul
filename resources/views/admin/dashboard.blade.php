@@ -141,7 +141,6 @@
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Nama</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Prediksi Penjualan</th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Bahan</th>
                         </tr>
                         </thead>
                         <tbody></tbody>
@@ -161,7 +160,7 @@ $(document).ready(function() {
     serverSide: true,
     ordering: false,
     ajax: {
-        url: "#",
+        url: "{{ route('admin.dataTable.getPrediction') }}",
         error: function(xhr, error, thrown){
             console.log('An error occurred while fetching data.');
                 // Hide the default error message
@@ -171,8 +170,7 @@ $(document).ready(function() {
     columns: [
         { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
         { data: 'name', name: 'name' },
-        { data: 'prediction', name: 'prediction' },
-        { data: 'bahan', name: 'bahan' }
+        { data: 'prediction', name: 'prediction' }
     ],
     language: {
         emptyTable: "Not Available"

@@ -2,25 +2,11 @@
 
 use App\Events\UserUpdated;
 use App\Http\Controllers\admin\AdminController;
-use App\Http\Controllers\admin\CartController;
-use App\Http\Controllers\admin\CashierController;
 use App\Http\Controllers\admin\CategoryController;
-use App\Http\Controllers\admin\DiscountController;
-use App\Http\Controllers\admin\IngredientTransactionController;
-use App\Http\Controllers\admin\OrderController;
-use App\Http\Controllers\admin\PartnerProductController;
-use App\Http\Controllers\admin\PaymentController;
-use App\Http\Controllers\admin\ProductController;
-use App\Http\Controllers\admin\RecipeController;
+use App\Http\Controllers\admin\SalesRecordController;
 use App\Http\Controllers\admin\StockController;
-use App\Http\Controllers\admin\ReportController;
-use App\Http\Controllers\admin\RoleController;
-use App\Http\Controllers\admin\TableController;
-use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\auth\LogoutController;
-use App\Services\OrderService;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,4 +35,22 @@ Route::group([
 
     // routeDahboard
     Route::get('/', [AdminController::class, 'index'])->name('home');
+    Route::get('/getPrediction', [AdminController::class, 'getPrediction'])->name('admin.dataTable.getPrediction');
+    // endRoute
+
+    // routeStock
+    Route::resource('stock', StockController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('/getStock', [StockController::class, 'getStock'])->name('admin.dataTable.getStock');
+    //endRoute
+
+    // routeCategory
+    Route::resource('category', CategoryController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('/getCategories', [CategoryController::class, 'getCategories'])->name('admin.dataTable.getCategories');
+    //endCategory
+
+    //routeSalesRecord
+    Route::resource('sales-record', SalesRecordController::class)->only(['index', 'create', 'store', 'edit', 'update', 'store', 'destroy']);
+    Route::get('/getSalesRecord', [SalesRecordController::class, 'getSalesRecord'])->name('admin.dataTable.getSalesRecord');
+    //endRoute
+
 });

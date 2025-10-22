@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ingredient_transactions', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('stock_id')->nullable();
-            $table->string('name');
-            $table->integer('gram_ml');
-            $table->enum('type', ['masuk', 'keluar']);
-            $table->integer('modal')->default(0);
+            $table->string('name')->unique();
             $table->timestamps();
         });
     }
@@ -27,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ingredient_transactions');
+        Schema::dropIfExists('categories');
     }
 };
