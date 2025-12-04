@@ -10,7 +10,7 @@
     <hr class="horizontal dark mt-0">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
         <ul class="navbar-nav">
-            @role('admin')
+            @can('dashboardAccess')
                 <li class="nav-item">
                     <a class="nav-link {{ (Request::is('/') ? 'active' : '') }}" href="{{ route('home') }}">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -31,45 +31,9 @@
                         <span class="nav-link-text ms-1">Dashboard</span>
                     </a>
                 </li>
-            @endrole
-
-            @canany(['cashierAccess'])
-                <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('cashier') ? 'active' : '') }}" href="#">
-                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-cash-register {{ (Request::is('cashier') ? '' : 'text-dark') }} text-sm"></i>
-                        </div>
-                        <span class="nav-link-text ms-1">Cashier</span>
-                    </a>
-                </li>
-            @endcanany
-
-            @can('orderAccess')
-            <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#documentSideMenu" class="nav-link {{ (Request::is('order','order/*', 'payment', 'payment/*') ? 'active' : 'collapsed') }}" aria-controls="documentSideMenu"
-                    role="button" aria-expanded="{{ (Request::is('order','order/*', 'payment', 'payment/*') ? 'true' : 'false') }}">
-                    <div
-                        class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa-solid fa-clipboard-list {{ (Request::is('order','order/*', 'payment', 'payment/*') ? '' : 'text-dark') }} text-sm"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Pesanan</span>
-                </a>
-                <div class="collapse {{ (Request::is('payment', 'payment/*') ? 'show' : '') }}" id="documentSideMenu" style="">
-                    <ul class="nav ms-4 ps-3">
-                        @can('paymentAccess')
-                        <li class="nav-item ">
-                            <a class="nav-link {{ (Request::is('payment', 'payment/*') ? 'active' : '') }}" href="#">
-                                <span class="sidenav-mini-icon"> P </span>
-                                <span class="sidenav-normal"> Pembayaran </span>
-                            </a>
-                        </li>
-                        @endcan
-                    </ul>
-                </div>
-            </li>
             @endcan
 
-            @can('dailyReportAccess')
+            @can('salesRecordAccess')
                 <li class="nav-item">
                     <a class="nav-link {{ (Request::is('sales-record','sales-record/*') ? 'active' : '') }}" href="{{ route('sales-record.index') }}">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -91,6 +55,17 @@
                 </li>
             @endcan
 
+            @can('stockInAccess')
+                <li class="nav-item">
+                    <a class="nav-link {{ (Request::is('stock-in','stock-in/*') ? 'active' : '') }}" href="{{ route('stock-in.index') }}">
+                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-box-open {{ (Request::is('stock-in','stock-in/*') ? '' : 'text-dark') }} text-sm"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Stock In</span>
+                    </a>
+                </li>
+            @endcan
+
             @can('categoryAccess')
                 <li class="nav-item">
                     <a class="nav-link {{ (Request::is('category','category/*') ? 'active' : '') }}" href="{{ route('category.index') }}">
@@ -102,34 +77,12 @@
                 </li>
             @endcan
 
-            @can('discountAccess')
-                <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('discount','discount/*') ? 'active' : '') }}" href="#">
-                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-tags {{ (Request::is('discount','discount/*') ? '' : 'text-dark') }} text-sm"></i>
-                        </div>
-                        <span class="nav-link-text ms-1">Discount</span>
-                    </a>
-                </li>
-            @endcan
-
-            @can('tableAccess')
-                <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('table','table/*') ? 'active' : '') }}" href="#">
-                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fa-solid fa-caret-down {{ (Request::is('table','table/*') ? '' : 'text-dark') }} text-sm"></i>
-                        </div>
-                        <span class="nav-link-text ms-1">Table</span>
-                    </a>
-                </li>
-            @endcan
-
-            @role('admin')
+            @can('roleAccess')
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">SETTINGS</h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('user','user/*') ? 'active' : '') }}" href="#">
+                    <a class="nav-link {{ (Request::is('user','user/*') ? 'active' : '') }}" href="{{ route('user.index') }}">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-user-group {{ (Request::is('user','user/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
@@ -137,7 +90,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ (Request::is('role','role/*') ? 'active' : '') }}" href="#">
+                    <a class="nav-link {{ (Request::is('role','role/*') ? 'active' : '') }}" href="{{ route('role.index') }}">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="fa-solid fa-screwdriver-wrench {{ (Request::is('role','role/*') ? '' : 'text-dark') }} text-sm"></i>
                         </div>
@@ -152,7 +105,7 @@
                         <span class="nav-link-text ms-1">Permissions</span>
                     </a>
                 </li> --}}
-            @endrole
+            @endcan
         </ul>
     </div>
 </aside>

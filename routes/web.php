@@ -3,8 +3,11 @@
 use App\Events\UserUpdated;
 use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SalesRecordController;
 use App\Http\Controllers\admin\StockController;
+use App\Http\Controllers\admin\StockInController;
+use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\auth\LogoutController;
 use Illuminate\Support\Facades\Route;
@@ -46,11 +49,25 @@ Route::group([
     // routeCategory
     Route::resource('category', CategoryController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::get('/getCategories', [CategoryController::class, 'getCategories'])->name('admin.dataTable.getCategories');
-    //endCategory
+    // endCategory
 
-    //routeSalesRecord
+    // routeSalesRecord
     Route::resource('sales-record', SalesRecordController::class)->only(['index', 'create', 'store', 'edit', 'update', 'store', 'destroy']);
     Route::get('/getSalesRecord', [SalesRecordController::class, 'getSalesRecord'])->name('admin.dataTable.getSalesRecord');
-    //endRoute
+    // endRoute
+
+    // routeUser
+    Route::resource('user', UserController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('/getUsers', [UserController::class, 'getUsers'])->name('admin.dataTable.getUsers');
+    // endRoute
+
+    // routeStock-in
+    Route::resource('stock-in', StockInController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('/getStockIn', [StockInController::class, 'getStockIn'])->name('admin.dataTable.getStockIn');
+    // endRoute
+
+    // routeRole
+    Route::resource('role', RoleController::class)->only(['index']);
+    // endRoute
 
 });

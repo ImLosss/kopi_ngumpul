@@ -1,17 +1,17 @@
 @extends('layouts.admin-layout')
 
 @section('title')
-    - Edit Stock
+    - Add Product
 @endsection
 
 @section('breadcrumb')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('home') }}">Home</a></li>
-            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('stock.index') }}">Stocks</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Edit Stock</li>
+            <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('stock-in.index') }}">Stock In</a></li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Edit</li>
         </ol>
-        <h5 class="font-weight-bolder mb-0">Stock</h5>
+        <h5 class="font-weight-bolder mb-0">Stock In</h5>
     </nav>
 @stop
 
@@ -19,29 +19,34 @@
 <div class="col-lg mb-lg-0 mb-4">
     <div class="card">
         <div class="card-header pb-0 px-3">
-            <h5 class="mb-0">{{ __('Edit Stock') }}</h5>
+            <h5 class="mb-0">{{ __('Edit Stock In') }}</h5>
         </div>
         <div class="card-body pt-4 p-3">
-            <form action="{{ route('stock.update', $data->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('stock-in.update', $record->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                @method('PATCH')
+                @method('PUT')
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col">
                         <div class="form-group has-validation">
-                            <label for="user-name" class="form-control-label">{{ __('Name') }}</label>
+                            <label for="user-name" class="form-control-label">{{ __('Product Name') }}</label>
                             <div class="@error('name')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="text" placeholder="Name" name="name" value="{{ $data->name }}" autofocus>
+                                <select class="form-control" name="name" autofocus>
+                                    <option value="" disabled selected>= Select Product =</option>
+                                    @foreach($products as $product)
+                                        <option value="{{ $product->id }}" {{ $record->stock_id == $product->id ? 'selected' : '' }}>{{ $product->name }}</option>
+                                    @endforeach
+                                </select>
                                 @error('name')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col">
                         <div class="form-group has-validation">
-                            <label for="user-name" class="form-control-label">{{ __('qty') }}</label>
+                            <label for="user-name" class="form-control-label">{{ __('Qty') }}</label>
                             <div class="@error('qty')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="qty" name="qty" min="0" value="{{ $data->qty }}">
+                                <input class="form-control" type="text" placeholder="Qty" name="qty" value="{{ $record->qty }}" autofocus>
                                 @error('qty')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -52,10 +57,10 @@
                 <div class="row">
                     <div class="col-6">
                         <div class="form-group has-validation">
-                            <label for="user-name" class="form-control-label">{{ __('Price') }}</label>
-                            <div class="@error('price')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="Price" name="price" value="{{ $data->price }}" autofocus>
-                                @error('price')
+                            <label for="user-name" class="form-control-label">{{ __('Date') }}</label>
+                            <div class="@error('date')border border-danger rounded-3 @enderror">
+                                <input class="form-control" type="date" placeholder="Date" name="date" value="{{ $record->created_at->format('Y-m-d') }}" autofocus>
+                                @error('date')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -63,7 +68,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Edit Stock' }}</button>
+                    <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Edit Stock In' }}</button>
                 </div>
             </form>
 

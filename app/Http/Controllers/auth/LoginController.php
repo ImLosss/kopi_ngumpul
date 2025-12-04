@@ -31,6 +31,7 @@ class LoginController extends Controller
             $message = 'Welcome ' . $user->name;
 
             if($user->hasRole('admin')) return redirect()->route('home')->with('alert', 'success')->with('message', $message);
+            else return redirect()->route('sales-record.index')->with('alert', 'success')->with('message', $message);
         } else {
             return back()->withInput()->withErrors([
                 'email' => 'Email/password salah!',

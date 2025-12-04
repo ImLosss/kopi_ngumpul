@@ -61,6 +61,7 @@ class StockSeeder extends Seeder
                     'name' => $productName,
                     'category_id' => 1,
                     'qty' => $totalQty,
+                    'price' => 10000
                 ]);
                 $createdStocks[$productName] = $stock;
                 $this->command->info("Created new stock untuk: {$productName}");
@@ -74,6 +75,7 @@ class StockSeeder extends Seeder
             StockOut::create([
                 'stock_id' => $stock->id,
                 'qty' => $stockOut['qty'],
+                'total_price' => $stock->price * $stockOut['qty'],
                 'created_at' => $stockOut['created_at'],
                 'updated_at' => now(),
             ]);
@@ -89,21 +91,38 @@ class StockSeeder extends Seeder
     {
         $csvFiles = [];
 
-        // Mapping: May->Oktober, April->September, March->Agustus, February->Juli, January->Juni
-        $csvToCurrentMonthMapping = [
-            'May' => 0,      // Bulan sekarang (Oktober)
-            'April' => 1,    // 1 bulan yang lalu (September)
-            'March' => 2,    // 2 bulan yang lalu (Agustus)
-            'February' => 3, // 3 bulan yang lalu (Juli)
-            'January' => 4,  // 4 bulan yang lalu (Juni)
+        // 12 file CSV yang tersedia (lengkap dari Januari sampai Desember 2019)
+        $availableFiles = [
+            'December',  // i=0  -> Oktober 2025
+            'November',  // i=1  -> September 2025
+            'October',   // i=2  -> Agustus 2025
+            'September', // i=3  -> Juli 2025
+            'August',    // i=4  -> Juni 2025
+            'July',      // i=5  -> Mei 2025
+            'June',      // i=6  -> April 2025
+            'May',       // i=7  -> Maret 2025
+            'April',     // i=8  -> Februari 2025
+            'March',     // i=9  -> Januari 2025
+            'February',  // i=10 -> Desember 2024
+            'January'    // i=11 -> November 2024
         ];
 
-        foreach ($csvToCurrentMonthMapping as $csvMonth => $monthsBack) {
+        // Mapping untuk 12 bulan
+        for ($i = 0; $i < 12; $i++) {
+            // PERBAIKAN: Langsung akses array dengan index $i (bukan $i % 5)
+            $csvMonth = $availableFiles[$i];
+
             $fileName = "Sales_{$csvMonth}_2019.csv";
             $filePath = database_path("seeders/{$fileName}");
 
-            // Hitung tanggal target (bulan sekarang mundur sesuai mapping)
-            $targetDate = Carbon::now()->subMonths($monthsBack);
+            // Skip jika file tidak ada
+            if (!file_exists($filePath)) {
+                $this->command->warn("File tidak ditemukan, skip: {$fileName}");
+                continue;
+            }
+
+            // Gunakan startOfMonth untuk menghindari masalah hari invalid
+            $targetDate = Carbon::now()->startOfMonth()->subMonths($i);
 
             $csvFiles[] = [
                 'file' => $filePath,
@@ -111,6 +130,8 @@ class StockSeeder extends Seeder
                 'target_month' => $targetDate->format('F Y'),
                 'csv_month' => $csvMonth
             ];
+
+            $this->command->info("Mapping: Sales_{$csvMonth}_2019.csv -> {$targetDate->format('F Y')}");
         }
 
         return $csvFiles;

@@ -8,9 +8,9 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" @role('admin')href="{{ route('home') }}"@endrole>Home</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Records</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Stock In</li>
         </ol>
-        <h5 class="font-weight-bolder mb-0">Records</h5>
+        <h5 class="font-weight-bolder mb-0">Stock In</h5>
     </nav>
 @endsection
 
@@ -21,22 +21,22 @@
             <div class="card-header pb-3">
                 <div class="row">
                     <div class="col d-flex align-items-center">
-                        <h6>All Reports</h6>
+                        <h6>All Stock In</h6>
                     </div>
                     <div class="col">
 
                         <div class="d-flex justify-content-end flex-wrap">
-                            <div class="mb-2" style="margin-right: 20px">
+                            {{-- <div class="mb-2" style="margin-right: 20px">
                                 <input type="text"
                                        class="form-control form-control-sm"
                                        name="dateRange"
                                        id="dateRange"
                                        placeholder="Select date range"
-                                       {{-- onchange="submitFilter()" --}}
+                                       onchange="submitFilter()"
                                        readonly>
-                            </div>
+                            </div> --}}
                             <div>
-                                <a class="btn bg-gradient-dark mb-0" href="{{ route('sales-record.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Tambah Record</a>
+                                <a class="btn bg-gradient-dark mb-0" href="{{ route('stock-in.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Tambah Stock</a>
                             </div>
 
                         </div>
@@ -55,7 +55,6 @@
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Qty</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total Price</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                                 </tr>
@@ -121,7 +120,7 @@
             responsive: true,
             ordering: false,
             ajax: {
-                url: "{{ route('admin.dataTable.getSalesRecord') }}",
+                url: "{{ route('admin.dataTable.getStockIn') }}",
                 data: function (d) {
                     d.dateRange = $('#dateRange').val();
                 },
@@ -137,10 +136,6 @@
                 {
                     data: 'qty',
                     name: 'qty'
-                },
-                {
-                    data: 'total_price',
-                    name: 'total_price'
                 },
                 {
                     data: 'date',

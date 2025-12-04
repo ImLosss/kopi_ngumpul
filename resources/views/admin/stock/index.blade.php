@@ -34,7 +34,7 @@
                                     </select>
                                 @endif
                             </div> --}}
-                            @can('stockAdd')
+                            @can('stockCreate')
                                 <div>
                                     <a class="btn bg-gradient-dark mb-0" href="{{ route('stock.create') }}"><i class="fas fa-plus"></i>&nbsp;&nbsp;Add Stock</a>
                                 </div>
@@ -53,6 +53,7 @@
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Name</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Category</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Qty</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Price</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
                         </tr>
                         </thead>
@@ -90,6 +91,7 @@
                 { data: 'name', name: 'name' },
                 { data: 'category', name: 'category' },
                 { data: 'qty', name: 'qty' },
+                { data: 'price', name: 'price' },
                 { data: 'action', name: 'action' }
             ],
             language: {

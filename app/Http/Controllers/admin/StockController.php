@@ -33,9 +33,15 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|unique:stocks,name',
+            'category_id' => 'required|exists:categories,id',
+            'price' => 'required|integer|min:1000',
+        ]);
         Stock::create([
             'name' => $request->name,
-            'category_id' => $request->category_id
+            'category_id' => $request->category_id,
+            'price' => $request->price
         ]);
 
         return redirect()->route('stock.index')->with('alert', 'success')->with('message', 'Stock added Succesfully');
@@ -64,17 +70,19 @@ class StockController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        try {
-            $data = Stock::findOrFail($id);
-            $data->update([
-                'name' => $request->name,
-                'qty' => $request->qty
-            ]);
+        $request->validate([
+            'name' => 'required|string|unique:stocks,name,'.$id,
+            'qty' => 'required|integer|min:0',
+            'price' => 'required|integer|min:1000',
+        ]);
+        $data = Stock::findOrFail($id);
+        $data->update([
+            'name' => $request->name,
+            'qty' => $request->qty,
+            'price' => $request->price
+        ]);
 
-            return redirect()->route('stock.index')->with('alert', 'success')->with('message', 'Stock updated Successfully');
-        } catch (\Throwable $e) {
-            return redirect()->route('stock.index')->with('alert', 'error')->with('message', 'Somthing went wrong!');
-        }
+        return redirect()->route('stock.index')->with('alert', 'success')->with('message', 'Stock updated Successfully');
     }
 
     /**
@@ -117,6 +125,9 @@ class StockController extends Controller
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
             </form>';
+        })
+        ->addColumn('price', function($data) {
+            return 'Rp' . number_format($data->price, 0, ',', '.');
         })
         ->filter(function ($query) use ($request) {
             if ($request->has('search') && $request->input('search.value')) {

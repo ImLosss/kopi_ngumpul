@@ -15,52 +15,38 @@ class PermissionRoleSeeder extends Seeder
     public function run(): void
     {
         Role::create(['name' => 'admin']);
-        Role::create(['name' => 'kasir']);
+        Role::create(['name' => 'staff']);
+        Permission::create(['name' => 'dashboardAccess'])
+        ->assignRole(['admin']);
         Permission::create(['name' => 'userAccess'])
         ->assignRole(['admin']);
-        Permission::create(['name' => 'dailyReportAccess'])
-        ->assignRole(['admin', 'kasir']);
         Permission::create(['name' => 'roleAccess'])
-        ->assignRole('admin');
-        Permission::create(['name' => 'permissionAccess'])
-        ->assignRole('admin');
-        Permission::create(['name' => 'cashierAccess'])
-        ->assignRole(['kasir']);
-        Permission::create(['name' => 'orderAccess'])
-        ->assignRole(['kasir']);
-        Permission::create(['name' => 'orderDelete'])
-        ->assignRole(['kasir']);
+        ->assignRole(['admin']);
         Permission::create(['name' => 'stockAccess'])
-        ->assignRole(['admin', 'kasir']);
+        ->assignRole(['admin', 'staff']);
+        Permission::create(['name' => 'stockCreate'])
+        ->assignRole(['admin']);
         Permission::create(['name' => 'stockUpdate'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'stockDelete'])
         ->assignRole(['admin']);
-        Permission::create(['name' => 'stockAdd'])
-        ->assignRole(['admin']);
-        Permission::create(['name' => 'ingredientTransactionAccess'])
-        ->assignRole(['admin', 'kasir']);
-        Permission::create(['name' => 'ingredientTransactionDelete'])
-        ->assignRole(['admin']);
-        Permission::create(['name' => 'ingredientTransactionAdd'])
-        ->assignRole(['admin']);
-        Permission::create(['name' => 'ingredientAccess'])
-        ->assignRole(['admin', 'kasir']);
-        Permission::create(['name' => 'ingredientDelete'])
-        ->assignRole(['admin']);
-        Permission::create(['name' => 'ingredientAdd'])
-        ->assignRole(['admin']);
-        Permission::create(['name' => 'productAccess'])
-        ->assignRole(['admin', 'kasir']);
-        Permission::create(['name' => 'productDelete'])
-        ->assignRole(['admin']);
-        Permission::create(['name' => 'productAdd'])
-        ->assignRole(['admin']);
-        Permission::create(['name' => 'productUpdate'])
-        ->assignRole(['admin']);
         Permission::create(['name' => 'categoryAccess'])
         ->assignRole(['admin']);
-        Permission::create(['name' => 'paymentAccess'])
-        ->assignRole(['kasir']);
+        Permission::create(['name' => 'salesRecordAccess'])
+        ->assignRole(['admin', 'staff']);
+        Permission::create(['name' => 'salesRecordCreate'])
+        ->assignRole(['admin', 'staff']);
+        Permission::create(['name' => 'salesRecordUpdate'])
+        ->assignRole(['admin', 'staff']);
+        Permission::create(['name' => 'salesRecordDelete'])
+        ->assignRole(['admin', 'staff']);
+        Permission::create(['name' => 'stockInAccess'])
+        ->assignRole(['admin', 'staff']);
+        Permission::create(['name' => 'stockInCreate'])
+        ->assignRole(['admin', 'staff']);
+        Permission::create(['name' => 'stockInUpdate'])
+        ->assignRole(['admin', 'staff']);
+        Permission::create(['name' => 'stockInDelete'])
+        ->assignRole(['admin', 'staff']);
     }
 }

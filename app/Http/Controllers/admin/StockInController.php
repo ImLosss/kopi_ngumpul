@@ -4,20 +4,20 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Stock;
-use App\Models\StockOut;
+use App\Models\StockIn;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
-class SalesRecordController extends Controller
+class StockInController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('admin.record.index');
+        return view('admin.stockIn.index');
     }
 
     /**
@@ -26,7 +26,7 @@ class SalesRecordController extends Controller
     public function create()
     {
         $products = Stock::all();
-        return view('admin.record.create', compact('products'));
+        return view('admin.stockIn.create', compact('products'));
     }
 
     /**
@@ -43,16 +43,16 @@ class SalesRecordController extends Controller
         $stock = Stock::findOrFail($request->name);
         if($request->qty > $stock->qty) return redirect()->back()->with('alert', 'info')->with('message', 'Stok tidak mencukupi untuk penjualan ini.');
 
-        $stock->decrement('qty', $request->qty);
+        $stock->increment('qty', $request->qty);
 
         // Simpan record penjualan
-        StockOut::create([
+        StockIn::create([
             'stock_id' => $request->name,
             'qty' => $request->qty,
-            'total_price' => $stock->price * $request->qty,
+            'created_at' => $request->date,
         ]);
 
-        return redirect()->route('sales-record.index')->with('alert', 'success')->with('message', 'Sales record added successfully.');
+        return redirect()->route('stock-in.index')->with('alert', 'success')->with('message', 'Stock In added successfully.');
     }
 
     /**
@@ -68,9 +68,9 @@ class SalesRecordController extends Controller
      */
     public function edit(string $id)
     {
-        $record = StockOut::with('stock')->findOrFail($id);
+        $record = StockIn::with('stock')->findOrFail($id);
         $products = Stock::all();
-        return view('admin.record.edit', compact('record', 'products'));
+        return view('admin.stockIn.edit', compact('record', 'products'));
     }
 
     /**
@@ -85,22 +85,22 @@ class SalesRecordController extends Controller
         ]);
 
         $stock = Stock::findOrFail($request->name);
-        $record = StockOut::findOrFail($id);
+        $stockIn = StockIn::findOrFail($id);
 
-        if($request->qty > ($stock->qty + $record->qty)) {
-            return redirect()->back()->with('alert', 'info')->with('message', 'Stok tidak mencukupi untuk penjualan ini.');
+        if(($stock->qty + $request->qty) < $stockIn->qty) {
+            return redirect()->back()->with('alert', 'info')->with('message', 'Stok tidak mencukupi untuk penyesuaian penambahan stock ini.');
         }
-        $stock->increment('qty', $record->qty);
-        $stock->decrement('qty', $request->qty);
+        $stock->decrement('qty', $stockIn->qty);
+        $stock->increment('qty', $request->qty);
 
-        $record->update([
+        $stockIn->update([
             'stock_id' => $request->name,
             'qty' => $request->qty,
             'date' => $request->date,
-            'total_price' => $stock->price * $request->qty,
         ]);
 
-        return redirect()->route('sales-record.index')->with('alert', 'success')->with('message', 'Sales record updated successfully.');
+        return redirect()->route('stock-in.index')->with('alert', 'success')->with('message', 'Stock In updated successfully.');
+
     }
 
     /**
@@ -108,41 +108,45 @@ class SalesRecordController extends Controller
      */
     public function destroy(string $id)
     {
-        $record = StockOut::findOrFail($id);
+        $record = StockIn::findOrFail($id);
         $record->delete();
         $stock = Stock::findOrFail($record->stock_id);
-        $stock->increment('qty', $record->qty);
 
-        return redirect()->route('sales-record.index')->with('alert', 'success')->with('message', 'Sales record deleted successfully.');
+        if($stock->qty < $record->qty) return redirect()->route('stock-in.index')->with('alert', 'info')->with('message', 'Stok tidak mencukupi untuk penyesuaian stock ini.');
+        $stock->decrement('qty', $record->qty);
+
+        return redirect()->route('stock-in.index')->with('alert', 'success')->with('message', 'Stock In deleted successfully.');
+
     }
 
-    public function getSalesRecord(Request $request)
+    public function getStockIn(Request $request)
     {
         Log::info('Request Data: ', $request->all());
 
         $user = auth()->user();
 
-        if ($request->filled('dateRange')) {
-            $dateRange = $request->dateRange;
+        // if ($request->filled('dateRange')) {
+        //     $dateRange = $request->dateRange;
 
-            // Split berdasarkan separator " - "
-            $dates = explode(' - ', $dateRange);
+        //     // Split berdasarkan separator " - "
+        //     $dates = explode(' - ', $dateRange);
 
-            if (count($dates) === 2) {
-                try {
-                    // Parse tanggal dari format DD/MM/YYYY
-                    $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
-                    $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
-                } catch (\Exception $e) {
-                    Log::error('Error parsing date range: ' . $e->getMessage());
-                    // Fallback ke default (hari ini)
-                    $startDate = Carbon::today();
-                    $endDate = Carbon::today()->endOfDay();
-                }
-            }
-        }
+        //     if (count($dates) === 2) {
+        //         try {
+        //             // Parse tanggal dari format DD/MM/YYYY
+        //             $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
+        //             $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
+        //         } catch (\Exception $e) {
+        //             Log::error('Error parsing date range: ' . $e->getMessage());
+        //             // Fallback ke default (hari ini)
+        //             $startDate = Carbon::today();
+        //             $endDate = Carbon::today()->endOfDay();
+        //         }
+        //     }
+        // }
 
-        $data = StockOut::with('stock')->whereBetween('created_at', [$startDate, $endDate])->orderBy('created_at', 'desc');
+        // $data = StockIn::with('stock')->whereBetween('created_at', [$startDate, $endDate])->orderBy('created_at', 'desc');
+        $data = StockIn::with('stock')->orderBy('created_at', 'desc');
 
         return DataTables::of($data)
         ->addColumn('product', function($data) {
@@ -151,9 +155,6 @@ class SalesRecordController extends Controller
         ->addColumn('qty', function($data) {
             return $data->qty;
         })
-        ->addColumn('total_price', function($data) {
-            return 'Rp ' . number_format($data->total_price, 0, ',', '.');
-        })
         ->addColumn('date', function($data) {
             return $data->created_at;
         })
@@ -161,10 +162,10 @@ class SalesRecordController extends Controller
             $hiddenInput = '<input type="hidden" name="ids[]" value="' . $data->id . '">';
             $update = '';
             $delete = '';
-            if($user->can('salesRecordUpdate')) $update = '<a href="' . route('sales-record.edit', $data->id) . '"><i class="fa-solid fa-pen-to-square text-secondary"></i></a>';
-            if($user->can('salesRecordDelete')) $delete = '<button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>';
+            if($user->can('stockInUpdate')) $update = '<a href="' . route('stock-in.edit', $data->id) . '"><i class="fa-solid fa-pen-to-square text-secondary"></i></a>';
+            if($user->can('stockInDelete')) $delete = '<button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>';
             return  $hiddenInput . $update . $delete . '
-            <form id="form_'. $data->id .'" action="' . route('sales-record.destroy', $data->id) . '" method="POST" class="inline">
+            <form id="form_'. $data->id .'" action="' . route('stock-in.destroy', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
             </form>';
@@ -174,7 +175,7 @@ class SalesRecordController extends Controller
                 $search = $request->input('search.value');
                 $query->where(function ($query) use ($search) {
                     $query->where('qty', 'like', "%{$search}%")
-                    // ->orWhere('created_at', 'like', "%{$search}%")
+                    ->orWhere('created_at', 'like', "%{$search}%")
                     ->orWhereHas('stock', function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%");
                     });
