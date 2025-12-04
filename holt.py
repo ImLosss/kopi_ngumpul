@@ -14,40 +14,40 @@ def predict():
     try:
         # Ambil data dari request
         data = request.json
-        
+
         # Validasi input
         if 'data' not in data:
             return jsonify({
                 'success': False,
                 'message': 'Parameter "data" diperlukan'
             }), 400
-        
+
         sales_data = data['data']
         sales_data = [float(x) for x in sales_data]
-        
+
         # Validasi data minimal
         if len(sales_data) < 8:
             return jsonify({
                 'success': False,
                 'message': 'Data minimal harus 8 periode'
             }), 400
-        
+
         # Konversi ke pandas Series (tanpa tanggal)
         series = pd.Series(sales_data)
-        
+
         # Buat model Holt (Double Exponential Smoothing)
         # Hanya trend, tanpa seasonal
         model = ExponentialSmoothing(
-            series, 
+            series,
             trend='add',
             seasonal=None
         )
-        
+
         fit = model.fit(optimized=True)
-        
+
         # Prediksi untuk 1 periode ke depan
         forecast = fit.forecast(1)
-        
+
         # Format hasil
         result = {
             'success': True,
@@ -60,9 +60,9 @@ def predict():
                 }
             }
         }
-        
+
         return jsonify(result), 200
-        
+
     except Exception as e:
         print(e)
         return jsonify({
