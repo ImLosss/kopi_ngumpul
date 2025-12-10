@@ -45,19 +45,15 @@ class AdminController extends Controller
     {
         $data = Stock::all();
 
-        $Stocks = Stock::all();
-        foreach ($Stocks as $i => $Stock) {
-            $result = $this->generatePredictHybrid(12, $Stock->id);
-            if($result !== false) $predictionHybrid[] = $result;
-        }
+        $predictions = $this->generatePredictHybrid();
 
         return DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('name', function($data) {
             return $data->name;
         })
-        ->addColumn('trendLeast', function($data) use ($predictionHybrid) {
-            foreach ($predictionHybrid as $p) {
+        ->addColumn('trendLeast', function($data) use ($predictions) {
+            foreach ($predictions as $p) {
                 if ($p['product_id'] == $data->id) {
                     if($p['trendLeast'] < 1) return '-';
                     return $p['trendLeast'];
@@ -65,8 +61,8 @@ class AdminController extends Controller
             }
             return '-'; // atau nilai default jika tidak ada yang cocok
         })
-        ->addColumn('holt', function($data) use ($predictionHybrid) {
-            foreach ($predictionHybrid as $p) {
+        ->addColumn('holt', function($data) use ($predictions) {
+            foreach ($predictions as $p) {
                 if ($p['product_id'] == $data->id) {
                     if($p['holt'] < 1) return '-';
                     return $p['holt'];
@@ -74,8 +70,8 @@ class AdminController extends Controller
             }
             return '-'; // atau nilai default jika tidak ada yang cocok
         })
-        ->addColumn('hybrid', function($data) use ($predictionHybrid) {
-            foreach ($predictionHybrid as $p) {
+        ->addColumn('hybrid', function($data) use ($predictions) {
+            foreach ($predictions as $p) {
                 if ($p['product_id'] == $data->id) {
                     if($p['prediction'] < 1) return '-';
                     return $p['prediction'];
@@ -121,8 +117,8 @@ class AdminController extends Controller
         return $data;
     }
 
-    private function generatePredict($n, $product_id) {
-        $result['dataSales'] = $this->getSalesData($product_id, $n);
+    private function generatePredictTls($dataSales, $n, $product_id) {
+        $result['dataSales'] = $dataSales;
 
         // Membalikkan urutan array
         $result['dataSales']['penjualanInMonth'] = array_reverse($result['dataSales']['penjualanInMonth']);
@@ -173,30 +169,27 @@ class AdminController extends Controller
         ];
     }
 
-    private function generatePredictHolt($salesData) {
+    private function generatePredictHolt(array $saleDataItems) {
 
-        if (count($salesData) < 8) return false;
+        if (count($saleDataItems) < 1) return false;
         // Reverse untuk urutan dari terlama ke terbaru
-        $salesData = array_reverse($salesData);
+        $payload = collect($saleDataItems)->map(function ($sales, $productId) {
+            return [
+                'product_id' => $productId,
+                'sales' => array_values($sales),
+            ];
+        })->values()->all();
 
         // dd($salesData);
 
         try {
-            $response = Http::timeout(30)->post('http://localhost:33/predict', [
-                'data' => $salesData
-            ]);
+            $response = Http::timeout(30)
+                ->acceptJson()
+                ->asJson()
+                ->post('http://localhost:33/predict', ['items' => $payload]);
 
-            if ($response->successful()) {
-                $resultPredict = $response->json();
-
-                if ($resultPredict['success']) {
-                    return [
-                        'totalPenjualan' => array_sum($salesData),
-                        'prediction' => ceil($resultPredict['data']['forecast']),
-                        'metode' => 'HOLT',
-                        'data_count' => count($salesData) // Untuk info berapa data yang digunakan
-                    ];
-                }
+            if ($response->successful() && ($resultPredict = $response->json()) && ($resultPredict['success'] ?? false)) {
+                return $resultPredict['data']; // sesuaikan dengan struktur balasan Python
             }
 
             return false;
@@ -206,45 +199,77 @@ class AdminController extends Controller
         }
     }
 
-    private function generatePredictHybrid($n, $product_id) {
-        $result['dataSales'] = $this->getSalesData($product_id, $n);
-        // dd($result['dataSales']);
+    private function generatePredictHybrid() {
+        $Stocks = Stock::all();
+        $saleDataItems = [];
+        $trendPredictions = [];
+        foreach ($Stocks as $i => $Stock) {
+            $result['dataSales'] = $this->getSalesData($Stock->id, 12);
 
-        // Ambil semua total penjualan
-        $totals = array_column($result['dataSales']['penjualanInMonth'], 'total');
+            // Ambil semua total penjualan
+            $totals = array_column($result['dataSales']['penjualanInMonth'], 'total');
 
-        // Ambil 8 data pertama (terbaru/paling penting)
-        $first8 = array_slice($totals, 0, 8);
+            // Ambil 8 data pertama (terbaru/paling penting)
+            $first5 = array_slice($totals, 0, 5);
 
-        // Cek apakah ada 0 di 8 data pertama
-        if (in_array(0, $first8)) {
-            return false; // Return false jika ada 0 di data 1-8
+            // Cek apakah ada 0 di 5 data pertama
+            if (in_array(0, $first5)) {
+
+                continue;
+            }
+
+            // Ambil 7 data berikutnya (data ke 6-12)
+            $last7 = array_slice($totals, 5);
+
+            // dd($last7, $first5);
+
+            // Hapus data yang bernilai 0 dari data ke 6-12
+            $last7Filtered = array_filter($last7, function($value) {
+                return $value != 0;
+            });
+
+            // Gabungkan data 1-8 dengan data 9-12 yang sudah difilter
+            $salesData = array_merge($first5, $last7Filtered);
+
+            if(count($salesData) >= 8) $saleDataItems[$Stock->id] = array_reverse($salesData);
+
+            if (count($salesData) < 5) return false;
+
+            // $holtResult = $this->generatePredictHolt($salesData);
+            $trendLeastResult = $this->generatePredictTls($result['dataSales'], count($salesData), $Stock->id);
+
+            $trendPredictions[] = [
+                'product_id' => $Stock->id,
+                'trendLeast' => $trendLeastResult['prediction'],
+            ];
         }
 
-        // Ambil 4 data berikutnya (data ke 9-12)
-        $last4 = array_slice($totals, 8);
+        // dd($trendPredictions);
 
-        // Hapus data yang bernilai 0 dari data ke 9-12
-        $last4Filtered = array_filter($last4, function($value) {
-            return $value != 0;
-        });
+        $holtResult = $this->generatePredictHolt($saleDataItems);
 
-        // Gabungkan data 1-8 dengan data 9-12 yang sudah difilter
-        $salesData = array_merge($first8, $last4Filtered);
+        $hybridPredictions = [];
+        foreach ($trendPredictions as $trend) {
+            $productId = $trend['product_id'];
+            $trendValue = $trend['trendLeast'];
 
-        if (count($salesData) < 5) return false;
+            $holtItem = collect($holtResult)->firstWhere('product_id', $productId);
+            $holtValue = $holtItem['forecast'] ?? null;
 
-        $holtResult = $this->generatePredictHolt($salesData);
-        $trendLeastResult = $this->generatePredict(count($salesData), $product_id);
+            $hybridValue = $holtValue !== null
+                ? ((0.6 * $holtValue) + (0.4 * $trendValue))
+                : $trendValue;
 
-        $hybridPrediction = $holtResult !== false ? ((0.6 * $holtResult['prediction']) + (0.4 * $trendLeastResult['prediction'])) : 0;
+            $hybridPredictions[] = [
+                'product_id' => $productId,
+                'trendLeast' => $trendValue,
+                'holt' => $holtValue,
+                'prediction' => ceil($hybridValue),
+            ];
+        }
 
-        return [
-            'holt' => $holtResult['prediction'] ?? 0,
-            'trendLeast' => $trendLeastResult['prediction'],
-            'prediction' => ceil($hybridPrediction),
-            'product_id' => $product_id,
-            'metode' => 'HYBRID'
-        ];
+        // dd($hybridPredictions, $holtResult);
+
+        return $hybridPredictions;
     }
 }
