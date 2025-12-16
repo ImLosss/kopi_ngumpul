@@ -258,7 +258,7 @@ class AdminController extends Controller
 
             $hybridValue = $holtValue !== null
                 ? ((0.6 * $holtValue) + (0.4 * $trendValue))
-                : $trendValue;
+                : false;
 
             $hybridPredictions[] = [
                 'product_id' => $productId,
