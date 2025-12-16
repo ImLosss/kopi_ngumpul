@@ -64,6 +64,13 @@
                         </table>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="d-flex flex-wrap">
+                            <a class="btn bg-gradient-secondary mt-2" href="#" id="btnPrint" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -158,6 +165,18 @@
             headerCallback: function(thead, data, start, end, display) {
                 $(thead).find('th').css('text-align', 'left');
             }
+        });
+
+        $('#btnPrint').on('click', function (e) {
+            e.preventDefault();
+
+            let dateRange = $('#dateRange').val() || '';
+            let search = (table && typeof table.search === 'function') ? (table.search() || '') : '';
+
+            let url = "{{ route('sales-record.print') }}";
+            url += "?dateRange=" + encodeURIComponent(dateRange) + "&search=" + encodeURIComponent(search);
+
+            window.open(url, '_blank');
         });
     });
 

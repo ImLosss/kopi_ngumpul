@@ -125,28 +125,27 @@ class StockInController extends Controller
 
         $user = auth()->user();
 
-        // if ($request->filled('dateRange')) {
-        //     $dateRange = $request->dateRange;
+        // Default: today
+        $startDate = Carbon::today()->startOfDay();
+        $endDate = Carbon::today()->endOfDay();
 
-        //     // Split berdasarkan separator " - "
-        //     $dates = explode(' - ', $dateRange);
+        if ($request->filled('dateRange')) {
+            $dateRange = $request->dateRange;
 
-        //     if (count($dates) === 2) {
-        //         try {
-        //             // Parse tanggal dari format DD/MM/YYYY
-        //             $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
-        //             $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
-        //         } catch (\Exception $e) {
-        //             Log::error('Error parsing date range: ' . $e->getMessage());
-        //             // Fallback ke default (hari ini)
-        //             $startDate = Carbon::today();
-        //             $endDate = Carbon::today()->endOfDay();
-        //         }
-        //     }
-        // }
+            $dates = explode(' - ', $dateRange);
+            if (count($dates) === 2) {
+                try {
+                    $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
+                    $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
+                } catch (\Exception $e) {
+                    Log::error('Error parsing date range: ' . $e->getMessage());
+                }
+            }
+        }
 
-        // $data = StockIn::with('stock')->whereBetween('created_at', [$startDate, $endDate])->orderBy('created_at', 'desc');
-        $data = StockIn::with('stock')->orderBy('created_at', 'desc');
+        $data = StockIn::with('stock')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc');
 
         return DataTables::of($data)
         ->addColumn('product', function($data) {
@@ -184,5 +183,51 @@ class StockInController extends Controller
         })
         ->rawColumns(['action'])
         ->toJson();
+    }
+
+    public function print(Request $request)
+    {
+        // Default: today
+        $startDate = Carbon::today()->startOfDay();
+        $endDate = Carbon::today()->endOfDay();
+
+        $dateRangeLabel = $request->input('dateRange');
+        if ($request->filled('dateRange')) {
+            $dates = explode(' - ', (string) $request->input('dateRange'));
+            if (count($dates) === 2) {
+                try {
+                    $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
+                    $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
+                } catch (\Exception $e) {
+                    Log::error('Error parsing date range (stock-in print): ' . $e->getMessage());
+                }
+            }
+        }
+
+        $search = trim((string) $request->input('search', ''));
+
+        $query = StockIn::with('stock')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc');
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('qty', 'like', "%{$search}%")
+                    ->orWhere('created_at', 'like', "%{$search}%")
+                    ->orWhereHas('stock', function ($stockQuery) use ($search) {
+                        $stockQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $records = $query->get();
+
+        return view('admin.stockIn.print', [
+            'records' => $records,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'dateRangeLabel' => $dateRangeLabel,
+            'search' => $search,
+        ]);
     }
 }

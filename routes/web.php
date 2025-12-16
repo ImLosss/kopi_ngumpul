@@ -52,6 +52,7 @@ Route::group([
     // endCategory
 
     // routeSalesRecord
+    Route::get('sales-record/print', [SalesRecordController::class, 'print'])->name('sales-record.print');
     Route::resource('sales-record', SalesRecordController::class)->only(['index', 'create', 'store', 'edit', 'update', 'store', 'destroy']);
     Route::get('/getSalesRecord', [SalesRecordController::class, 'getSalesRecord'])->name('admin.dataTable.getSalesRecord');
     // endRoute
@@ -62,6 +63,7 @@ Route::group([
     // endRoute
 
     // routeStock-in
+    Route::get('stock-in/print', [StockInController::class, 'print'])->name('stock-in.print');
     Route::resource('stock-in', StockInController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::get('/getStockIn', [StockInController::class, 'getStockIn'])->name('admin.dataTable.getStockIn');
     // endRoute
