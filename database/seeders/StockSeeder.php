@@ -93,6 +93,11 @@ class StockSeeder extends Seeder
 
         // 12 file CSV yang tersedia (lengkap dari Januari sampai Desember 2019)
         $availableFiles = [
+            'December',  // i=0  -> Oktober 2025
+            'November',  // i=1  -> September 2025
+            'October',   // i=2  -> Agustus 2025
+            'September', // i=3  -> Juli 2025
+            'August',    // i=4  -> Juni 2025
             'July',      // i=5  -> Mei 2025
             'June',      // i=6  -> April 2025
             'May',       // i=7  -> Maret 2025
@@ -103,7 +108,7 @@ class StockSeeder extends Seeder
         ];
 
         // Mapping untuk 12 bulan
-        for ($i = 0; $i < 7; $i++) {
+        for ($i = 0; $i < 12; $i++) {
             // PERBAIKAN: Langsung akses array dengan index $i (bukan $i % 5)
             $csvMonth = $availableFiles[$i];
 
