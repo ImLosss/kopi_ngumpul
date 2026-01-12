@@ -126,14 +126,14 @@
                         <div class="col d-flex align-items-center">
                             <h6>Prediction Next Month</h6>
                         </div>
-                        <div class="col">
+                        {{-- <div class="col">
                             <div class="d-flex justify-content-end flex-wrap">
                                 <div class="mb-2" style="margin-right: 20px">
                                     <a class="btn bg-gradient-secondary mt-2" href="#" style="margin-right: 10px"><i
                                             class="fa-solid fa-print text-md"></i> Print</a>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
