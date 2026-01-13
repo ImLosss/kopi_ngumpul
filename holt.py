@@ -13,55 +13,135 @@ CORS(app)  # Enable CORS untuk akses dari frontend
 def predict():
     try:
         # Ambil data dari request
-        data = request.json
+        data = request.get_json(silent=True)
 
-        # Validasi input
-        if 'data' not in data:
+        if data is None:
             return jsonify({
                 'success': False,
-                'message': 'Parameter "data" diperlukan'
+                'message': 'Body request harus berupa JSON'
             }), 400
 
-        sales_data = data['data']
-        sales_data = [float(x) for x in sales_data]
+        # ============================
+        # MODE BARU: data dalam "items"
+        # ============================
+        if 'items' in data:
+            items = data['items']
 
-        # Validasi data minimal
-        if len(sales_data) < 8:
+            if not isinstance(items, list) or len(items) == 0:
+                return jsonify({
+                    'success': False,
+                    'message': 'Parameter "items" harus berupa list dan tidak boleh kosong'
+                }), 400
+
+            results = []
+
+            for item in items:
+                product_id = item.get('product_id')
+                sales = item.get('sales')
+
+                # Validasi per item
+                if product_id is None or sales is None:
+                    return jsonify({
+                        'success': False,
+                        'message': 'Setiap item harus memiliki "product_id" dan "sales"'
+                    }), 400
+
+                if not isinstance(sales, (list, tuple)):
+                    return jsonify({
+                        'success': False,
+                        'message': f'"sales" untuk product_id {product_id} harus berupa list'
+                    }), 400
+
+                if len(sales) < 8:
+                    return jsonify({
+                        'success': False,
+                        'message': f'Data minimal harus 8 periode untuk product_id {product_id}'
+                    }), 400
+
+                # Konversi ke float dan ke Series
+                sales_data = [float(x) for x in sales]
+                series = pd.Series(sales_data)
+
+                # Model Holt (trend additive, tanpa musiman)
+                model = ExponentialSmoothing(
+                    series,
+                    trend='add',
+                    seasonal=None
+                )
+
+                fit = model.fit(optimized=True)
+
+                # forecast() mengembalikan Series, ambil nilai pertama
+                forecast_series = fit.forecast(1)
+                forecast_value = float(forecast_series.iloc[0])
+
+                results.append({
+                    'product_id': product_id,
+                    'historical': sales_data,
+                    'forecast': int(round(forecast_value)),
+                    'parameters': {
+                        'alpha': float(fit.params.get('smoothing_level', 0.0)),
+                        'beta': float(fit.params.get('smoothing_trend', 0.0))
+                    }
+                })
+
             return jsonify({
-                'success': False,
-                'message': 'Data minimal harus 8 periode'
-            }), 400
+                'success': True,
+                'data': results
+            }), 200
 
-        # Konversi ke pandas Series (tanpa tanggal)
-        series = pd.Series(sales_data)
+        # ======================================
+        # MODE LAMA (opsional): data dalam "data"
+        # ======================================
+        if 'data' in data:
+            sales_data = data['data']
 
-        # Buat model Holt (Double Exponential Smoothing)
-        # Hanya trend, tanpa seasonal
-        model = ExponentialSmoothing(
-            series,
-            trend='add',
-            seasonal=None
-        )
+            if not isinstance(sales_data, (list, tuple)):
+                return jsonify({
+                    'success': False,
+                    'message': 'Parameter "data" harus berupa list'
+                }), 400
 
-        fit = model.fit(optimized=True)
+            sales_data = [float(x) for x in sales_data]
 
-        # Prediksi untuk 1 periode ke depan
-        forecast = fit.forecast(1)
+            if len(sales_data) < 8:
+                return jsonify({
+                    'success': False,
+                    'message': 'Data minimal harus 8 periode'
+                }), 400
 
-        # Format hasil
-        result = {
-            'success': True,
-            'data': {
-                'historical': sales_data,
-                'forecast': int(forecast),
-                'parameters': {
-                    'alpha': float(fit.params['smoothing_level']),
-                    'beta': float(fit.params['smoothing_trend'])
+            series = pd.Series(sales_data)
+
+            model = ExponentialSmoothing(
+                series,
+                trend='add',
+                seasonal=None
+            )
+
+            fit = model.fit(optimized=True)
+
+            forecast_series = fit.forecast(1)
+            forecast_value = float(forecast_series.iloc[0])
+
+            result = {
+                'success': True,
+                'data': {
+                    'historical': sales_data,
+                    'forecast': int(round(forecast_value)),
+                    'parameters': {
+                        'alpha': float(fit.params.get('smoothing_level', 0.0)),
+                        'beta': float(fit.params.get('smoothing_trend', 0.0))
+                    }
                 }
             }
-        }
 
-        return jsonify(result), 200
+            return jsonify(result), 200
+
+        # Kalau tidak ada "items" dan tidak ada "data"
+        return jsonify({
+            'success': False,
+            'message': 'Parameter "items" atau "data" diperlukan'
+        }), 400
 
     except Exception as e:
         print(e)
