@@ -15,15 +15,16 @@ class PermissionRoleSeeder extends Seeder
     public function run(): void
     {
         Role::create(['name' => 'admin']);
+        Role::create(['name' => 'pimpinan']);
         Role::create(['name' => 'staff']);
         Permission::create(['name' => 'dashboardAccess'])
-        ->assignRole(['admin']);
+        ->assignRole(['admin', 'pimpinan']);
         Permission::create(['name' => 'userAccess'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'roleAccess'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'stockAccess'])
-        ->assignRole(['admin', 'staff']);
+        ->assignRole(['admin', 'pimpinan', 'staff']);
         Permission::create(['name' => 'stockCreate'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'stockUpdate'])
@@ -33,7 +34,7 @@ class PermissionRoleSeeder extends Seeder
         Permission::create(['name' => 'categoryAccess'])
         ->assignRole(['admin']);
         Permission::create(['name' => 'salesRecordAccess'])
-        ->assignRole(['admin', 'staff']);
+        ->assignRole(['admin', 'staff', 'pimpinan']);
         Permission::create(['name' => 'salesRecordCreate'])
         ->assignRole(['admin', 'staff']);
         Permission::create(['name' => 'salesRecordUpdate'])
@@ -41,7 +42,7 @@ class PermissionRoleSeeder extends Seeder
         Permission::create(['name' => 'salesRecordDelete'])
         ->assignRole(['admin', 'staff']);
         Permission::create(['name' => 'stockInAccess'])
-        ->assignRole(['admin', 'staff']);
+        ->assignRole(['admin', 'staff', 'pimpinan']);
         Permission::create(['name' => 'stockInCreate'])
         ->assignRole(['admin', 'staff']);
         Permission::create(['name' => 'stockInUpdate'])
