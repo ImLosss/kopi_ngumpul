@@ -75,7 +75,7 @@
                         <p class="text-secondary text-center">
                             Copyright © <script>
                                 document.write(new Date().getFullYear())
-                            </script> Pahriansyah
+                            </script> Awal & Irian
                         </p>
                     </div>
                     {{-- <div class="col-md-6">
