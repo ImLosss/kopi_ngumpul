@@ -9,6 +9,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class StockInController extends Controller
 {
@@ -34,25 +37,47 @@ class StockInController extends Controller
      */
     public function store(Request $request)
     {
+        // Tambahkan validasi untuk batch_code (nullable karena bisa jadi sistem yang buat otomatis)
         $request->validate([
-            'name' => 'required|exists:stocks,id',
-            'qty' => 'required|integer|min:1',
-            'date' => 'required|date',
+            'name'       => 'required|exists:stocks,id',
+            'qty'        => 'required|integer|min:1',
+            'date'       => 'required|date',
+            'batch_code' => 'required|string'
         ]);
 
-        $stock = Stock::findOrFail($request->name);
-        if($request->qty > $stock->qty) return redirect()->back()->with('alert', 'info')->with('message', 'Stok tidak mencukupi untuk penjualan ini.');
+        try {
+            DB::transaction(function () use ($request) {
+                $stock = Stock::findOrFail($request->name);
 
-        $stock->increment('qty', $request->qty);
+                // 1. Tambahkan total qty ke master
+                $stock->increment('qty', $request->qty);
 
-        // Simpan record penjualan
-        StockIn::create([
-            'stock_id' => $request->name,
-            'qty' => $request->qty,
-            'created_at' => $request->date,
-        ]);
+                // 2. Tentukan Kode Batch
+                // Jika request->batch_code diisi, gunakan itu.
+                // Jika kosong, generate otomatis (Contoh: BATCH-20260818-ABCD)
+                $batchCode = $request->batch_code
+                            ?? 'BATCH-' . date('Ymd', strtotime($request->date)) . '-' . strtoupper(Str::random(4));
 
-        return redirect()->route('stock-in.index')->with('alert', 'success')->with('message', 'Stock In added successfully.');
+                // 3. Simpan data masuk dengan batch_code
+                StockIn::create([
+                    'batch_code'    => $batchCode, // <-- Masukkan ke database
+                    'stock_id'      => $request->name,
+                    'qty'           => $request->qty,
+                    'qty_remaining' => $request->qty,
+                    'created_at'    => $request->date,
+                    'updated_at'    => $request->date,
+                ]);
+            });
+
+            return redirect()->route('stock-in.index')
+                            ->with('alert', 'success')
+                            ->with('message', 'Stock In added successfully.');
+
+        } catch (Exception $e) {
+            return redirect()->back()
+                            ->with('alert', 'error')
+                            ->with('message', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -78,29 +103,52 @@ class StockInController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Catatan: Saya asumsikan 'name' dari input form Anda berisi ID barang.
+        // Akan lebih baik jika di HTML-nya name="stock_id" agar tidak membingungkan.
         $request->validate([
             'name' => 'required|exists:stocks,id',
-            'qty' => 'required|integer|min:1',
+            'qty'  => 'required|integer|min:1',
             'date' => 'required|date',
         ]);
 
-        $stock = Stock::findOrFail($request->name);
-        $stockIn = StockIn::findOrFail($id);
+        try {
+            DB::transaction(function () use ($request, $id) {
+                $stockIn = StockIn::findOrFail($id);
+                $stock = Stock::findOrFail($request->name);
 
-        if(($stock->qty + $request->qty) < $stockIn->qty) {
-            return redirect()->back()->with('alert', 'info')->with('message', 'Stok tidak mencukupi untuk penyesuaian penambahan stock ini.');
+                // 1. Hitung selisih antara inputan baru dengan stok awal masuk
+                // Jika awalnya 10, diupdate jadi 15 -> selisih = +5
+                // Jika awalnya 20, diupdate jadi 15 -> selisih = -5
+                $selisihQty = $request->qty - $stockIn->qty;
+
+                // 2. Validasi: Jangan sampai perubahan membuat sisa batch ini jadi minus
+                if (($stockIn->qty_remaining + $selisihQty) < 0) {
+                    throw new Exception('Gagal. Barang dari batch ini sudah keluar lebih banyak dari jumlah yang Anda inputkan.');
+                }
+
+                // 3. Update master barang (Tabel stocks)
+                // Jika selisihnya +, stok nambah. Jika -, stok berkurang otomatis
+                $stock->qty += $selisihQty;
+                $stock->save();
+
+                // 4. Update riwayat batch (Tabel stock_ins)
+                $stockIn->stock_id = $request->name;
+                $stockIn->qty = $request->qty;
+                $stockIn->qty_remaining += $selisihQty;
+                $stockIn->created_at = $request->date; // Gunakan ini jika kolom Anda bernama created_at
+                $stockIn->save();
+            });
+
+            return redirect()->route('stock-in.index')
+                            ->with('alert', 'success')
+                            ->with('message', 'Data barang masuk berhasil diperbarui.');
+
+        } catch (Exception $e) {
+            // Jika validasi gagal atau terjadi error, kembalikan user dengan pesan error
+            return redirect()->back()
+                            ->with('alert', 'error')
+                            ->with('message', $e->getMessage());
         }
-        $stock->decrement('qty', $stockIn->qty);
-        $stock->increment('qty', $request->qty);
-
-        $stockIn->update([
-            'stock_id' => $request->name,
-            'qty' => $request->qty,
-            'date' => $request->date,
-        ]);
-
-        return redirect()->route('stock-in.index')->with('alert', 'success')->with('message', 'Stock In updated successfully.');
-
     }
 
     /**
@@ -108,15 +156,41 @@ class StockInController extends Controller
      */
     public function destroy(string $id)
     {
-        $record = StockIn::findOrFail($id);
-        $record->delete();
-        $stock = Stock::findOrFail($record->stock_id);
+        try {
+            DB::transaction(function () use ($id) {
+                $stockIn = StockIn::findOrFail($id);
 
-        if($stock->qty < $record->qty) return redirect()->route('stock-in.index')->with('alert', 'info')->with('message', 'Stok tidak mencukupi untuk penyesuaian stock ini.');
-        $stock->decrement('qty', $record->qty);
+                // 1. Validasi Utama: Cek apakah batch ini sudah ada yang terjual
+                // Jika sisa stok (qty_remaining) kurang dari total awal masuk (qty), berarti sudah terpakai
+                if ($stockIn->qty_remaining < $stockIn->qty) {
+                    throw new Exception('Data tidak dapat dihapus karena sebagian atau seluruh barang dari batch ini sudah terjual/keluar.');
+                }
 
-        return redirect()->route('stock-in.index')->with('alert', 'success')->with('message', 'Stock In deleted successfully.');
+                // 2. Kurangi total qty di tabel master barang
+                $stock = Stock::findOrFail($stockIn->stock_id);
 
+                // Validasi tambahan untuk berjaga-jaga
+                if ($stock->qty < $stockIn->qty) {
+                    throw new Exception('Total stok gudang tidak mencukupi untuk membatalkan transaksi ini.');
+                }
+
+                $stock->decrement('qty', $stockIn->qty);
+
+                // 3. Hapus data batch (Stock In)
+                // Lakukan penghapusan PALING TERAKHIR setelah semua validasi aman
+                $stockIn->delete();
+            });
+
+            return redirect()->route('stock-in.index')
+                            ->with('alert', 'success')
+                            ->with('message', 'Data Stock In berhasil dihapus.');
+
+        } catch (Exception $e) {
+            // Jika gagal, kembalikan dengan pesan error (tidak ada data yang terhapus)
+            return redirect()->back()
+                            ->with('alert', 'error')
+                            ->with('message', $e->getMessage());
+        }
     }
 
     public function getStockIn(Request $request)

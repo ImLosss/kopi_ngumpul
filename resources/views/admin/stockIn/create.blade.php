@@ -65,6 +65,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-6">
+                        <div class="form-group has-validation">
+                            <label for="user-name" class="form-control-label">{{ __('Batch Code') }}</label>
+                            <div class="@error('batch_code')border border-danger rounded-3 @enderror">
+                                <input class="form-control" type="text" placeholder="Batch Code" name="batch_code" value="{{ old('batch_code') }}" autofocus>
+                                @error('batch_code')
+                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Add Stock In' }}</button>

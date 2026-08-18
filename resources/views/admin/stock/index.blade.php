@@ -52,8 +52,11 @@
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Name</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Category</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Unit</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Qty</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Rincian Batch</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Price</th>
+                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Selling Price</th>
                             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
                         </tr>
                         </thead>
@@ -90,8 +93,11 @@
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },
                 { data: 'category', name: 'category' },
+                { data: 'unit', name: 'unit' },
                 { data: 'qty', name: 'qty' },
+                { data: 'batches', name: 'batches', orderable: false, searchable: false },
                 { data: 'price', name: 'price' },
+                { data: 'selling_price', name: 'selling_price' },
                 { data: 'action', name: 'action' }
             ],
             language: {

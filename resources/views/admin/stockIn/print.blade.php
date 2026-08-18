@@ -48,6 +48,7 @@
             <tr>
                 <th>Product</th>
                 <th class="right">Qty Masuk</th>
+                <th class="right">Batch Code</th>
                 <th class="right">Sisa Stok</th>
                 <th class="nowrap">Date</th>
             </tr>
@@ -57,6 +58,7 @@
                 <tr>
                     <td>{{ optional($row->stock)->name ?? 'Produk tidak ditemukan' }}</td>
                     <td class="right">{{ $row->qty }}</td>
+                    <td class="right">{{ $row->batch_code }}</td>
                     <td class="right">{{ optional($row->stock)->qty ?? '-' }}</td>
                     <td class="nowrap">{{ optional($row->created_at)->format('d/m/Y H:i') }}</td>
                 </tr>

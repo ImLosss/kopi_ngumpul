@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('stock_ins', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('stock_id');
+            $table->string('batch_code')->nullable();
             $table->integer('qty');
+            $table->integer('qty_remaining');
             $table->timestamps();
         });
     }

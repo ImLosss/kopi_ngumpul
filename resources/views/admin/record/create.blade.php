@@ -65,6 +65,33 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-6">
+                        <div class="form-group has-validation">
+                            <label for="customer_name" class="form-control-label">{{ __('Customer Name') }}</label>
+                            <div class="@error('customer_name') border border-danger rounded-3 @enderror">
+                                <input class="form-control" type="text" placeholder="Input Customer Name" name="customer_name" value="{{ old('customer_name') }}">
+                                @error('customer_name')
+                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAMBAHAN: Kolom Customer Name & Invoice -->
+                <div class="row mt-2">
+                    <div class="col-6">
+                        <div class="form-group has-validation">
+                            <label for="invoice" class="form-control-label">{{ __('Invoice Number') }}</label>
+                            <div class="@error('invoice') border border-danger rounded-3 @enderror">
+                                <input class="form-control" type="text" placeholder="Kosongkan untuk Auto Generate" name="invoice" value="{{ old('invoice') }}">
+                                <small class="text-muted text-xs">Biarkan kosong agar sistem membuat invoice otomatis.</small>
+                                @error('invoice')
+                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Add Record' }}</button>

@@ -37,12 +37,17 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col">
                         <div class="form-group has-validation">
-                            <label for="user-name" class="form-control-label">{{ __('qty') }}</label>
-                            <div class="@error('qty')border border-danger rounded-3 @enderror">
-                                <input class="form-control" type="number" placeholder="qty" name="qty" min="0" value="{{ $data->qty }}">
-                                @error('qty')
+                            <label for="user-name" class="form-control-label">{{ __('Category') }}</label>
+                            <div class="@error('category_id')border border-danger rounded-3 @enderror">
+                                <select class="form-control" name="category_id">
+                                    <option value="">Select Category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}" {{ $data->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('category_id')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -56,6 +61,30 @@
                             <div class="@error('price')border border-danger rounded-3 @enderror">
                                 <input class="form-control" type="number" placeholder="Price" name="price" value="{{ $data->price }}" autofocus>
                                 @error('price')
+                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group has-validation">
+                            <label for="user-name" class="form-control-label">{{ __('Selling Price') }}</label>
+                            <div class="@error('selling_price')border border-danger rounded-3 @enderror">
+                                <input class="form-control" type="number" placeholder="Selling Price" name="selling_price" value="{{ $data->selling_price }}" autofocus>
+                                @error('selling_price')
+                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group has-validation">
+                            <label for="user-name" class="form-control-label">{{ __('Unit') }}</label>
+                            <div class="@error('unit')border border-danger rounded-3 @enderror">
+                                <input class="form-control" type="text" placeholder="dus/bottle" name="unit" value="{{ $data->unit }}" autofocus>
+                                @error('unit')
                                 <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
                             </div>

@@ -65,6 +65,30 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-6">
+                        <div class="form-group has-validation">
+                            <label for="user-name" class="form-control-label">{{ __('Selling Price') }}</label>
+                            <div class="@error('selling_price')border border-danger rounded-3 @enderror">
+                                <input class="form-control" type="number" placeholder="Selling Price" name="selling_price" value="{{ old('selling_price') }}" autofocus>
+                                @error('selling_price')
+                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group has-validation">
+                            <label for="user-name" class="form-control-label">{{ __('Unit') }}</label>
+                            <div class="@error('unit')border border-danger rounded-3 @enderror">
+                                <input class="form-control" type="text" placeholder="dus/bottle" name="unit" value="{{ old('unit') }}" autofocus>
+                                @error('unit')
+                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn bg-gradient-dark btn-md mt-4 mb-4">{{ 'Add Stock' }}</button>

@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             PermissionRoleSeeder::class,
             UserSeeder::class,
             CategorySeeder::class,
-            StockSeeder::class,
+            // StockSeeder::class,
         ]);
     }
 }

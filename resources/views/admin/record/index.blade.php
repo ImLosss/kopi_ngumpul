@@ -53,11 +53,14 @@
                         <table class="table" id="dataTable3">
                             <thead>
                                 <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Qty</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total Price</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Invoice</th> <!-- Opsional jika ingin ditampilkan -->
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Customer</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Product</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Qty</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Rincian Batch</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Total Price</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Date</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Action</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -137,26 +140,14 @@
                 }
             },
             columns: [
-                {
-                    data: 'product',
-                    name: 'product'
-                },
-                {
-                    data: 'qty',
-                    name: 'qty'
-                },
-                {
-                    data: 'total_price',
-                    name: 'total_price'
-                },
-                {
-                    data: 'date',
-                    name: 'date'
-                },
-                {
-                    data: 'action',
-                    name: 'action'
-                }
+                { data: 'invoice', name: 'invoice' }, // Sesuai urutan thead di atas
+                { data: 'customer_name', name: 'customer_name' },
+                { data: 'product', name: 'product' },
+                { data: 'qty', name: 'qty' },
+                { data: 'batch_details', name: 'batch_details', orderable: false, searchable: false },
+                { data: 'total_price', name: 'total_price' },
+                { data: 'date', name: 'date' },
+                { data: 'action', name: 'action', orderable: false, searchable: false }
             ],
             language: {
                 emptyTable: "Tidak ada histori ditemukan",

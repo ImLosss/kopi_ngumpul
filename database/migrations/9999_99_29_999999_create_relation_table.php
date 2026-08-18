@@ -15,6 +15,11 @@ return new class extends Migration
             $table->foreign('stock_id')->references('id')->on('stocks')->onDelete('cascade');
         });
 
+        Schema::table('stock_out_details', function (Blueprint $table) {
+            $table->foreign('stock_out_id')->references('id')->on('stock_outs')->onDelete('cascade');
+            $table->foreign('stock_in_id')->references('id')->on('stock_ins')->onDelete('cascade');
+        });
+
         Schema::table('stock_ins', function (Blueprint $table) {
             $table->foreign('stock_id')->references('id')->on('stocks')->onDelete('cascade');
         });

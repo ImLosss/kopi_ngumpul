@@ -54,6 +54,7 @@
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Qty</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Batch Code</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                                 </tr>
@@ -142,6 +143,10 @@
                 {
                     data: 'qty',
                     name: 'qty'
+                },
+                {
+                    data: 'batch_code',
+                    name: 'batch_code'
                 },
                 {
                     data: 'date',

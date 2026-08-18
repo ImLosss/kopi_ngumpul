@@ -15,4 +15,10 @@ class StockOut extends Model
     {
         return $this->belongsTo(Stock::class);
     }
+
+    // Relasi ke rincian batch
+    public function details()
+    {
+        return $this->hasMany(StockOutDetail::class, 'stock_out_id');
+    }
 }
