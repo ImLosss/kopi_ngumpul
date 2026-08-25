@@ -44,6 +44,7 @@ Route::group([
     // routeStock
     Route::resource('stock', StockController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::get('/getStock', [StockController::class, 'getStock'])->name('admin.dataTable.getStock');
+    Route::get('stock/print', [StockController::class, 'print'])->name('stock.print');
     //endRoute
 
     // routeCategory

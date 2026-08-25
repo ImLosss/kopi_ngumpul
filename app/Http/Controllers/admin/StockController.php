@@ -110,6 +110,26 @@ class StockController extends Controller
         }
     }
 
+    public function printStock(Request $request)
+    {
+        // Ambil semua barang beserta rincian batch-nya
+        $query = Stock::with(['stockIns' => function($q) {
+            $q->where('qty_remaining', '>', 0)->orderBy('created_at', 'asc');
+        }]);
+
+        // Jika ada filter pencarian (opsional)
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $stocks = $query->get();
+        $search = $request->search ?? null;
+
+        // Arahkan ke file blade print-stock.blade.php
+        return view('admin.stock.print', compact('stocks', 'search'));
+    }
+
     public function getStock(Request $request) {
         // 1. Ambil data dengan relasi stockIns (Hanya ambil yang sisa stoknya > 0)
         $data = Stock::with(['category', 'stockIns' => function($query) {

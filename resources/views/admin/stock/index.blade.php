@@ -42,6 +42,13 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="d-flex flex-wrap">
+                            <a class="btn bg-gradient-secondary mt-2" href="#" id="btnPrint" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">
