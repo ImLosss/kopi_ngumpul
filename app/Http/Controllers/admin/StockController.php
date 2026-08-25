@@ -110,7 +110,7 @@ class StockController extends Controller
         }
     }
 
-    public function printStock(Request $request)
+    public function print(Request $request)
     {
         // Ambil semua barang beserta rincian batch-nya
         $query = Stock::with(['stockIns' => function($q) {
