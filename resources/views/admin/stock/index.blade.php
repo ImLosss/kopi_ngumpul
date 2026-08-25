@@ -68,7 +68,7 @@
                 <div class="row">
                     <div class="col">
                         <div class="d-flex flex-wrap">
-                            <a class="btn bg-gradient-secondary mt-2" href="{{ route('stock.print') }}" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
+                            <a class="btn bg-gradient-secondary mt-2" href="{{ route('stock.print') }}" target="_blank" style="margin-right: 10px"><i class="fa-solid fa-print text-md"></i> Print</a>
                         </div>
                     </div>
                 </div>

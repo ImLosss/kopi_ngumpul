@@ -3,26 +3,32 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Laporan Stok Barang</title>
+    <title>Laporan Penjualan</title>
 
     <style>
-        body { font-family: Arial, Helvetica, sans-serif; color: #111; }
-        .header { margin-bottom: 16px; }
-        .title { font-size: 18px; font-weight: 700; margin: 0 0 6px; }
-        .meta { font-size: 12px; margin: 0; color: #555; }
+        body { font-family: Arial, Helvetica, sans-serif; color: #111; margin: 0; padding: 20px; }
+        .header { margin-bottom: 16px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .title { font-size: 16px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase; }
+        .meta { font-size: 11px; margin: 2px 0; color: #444; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-        th, td { border: 1px solid #ddd; padding: 8px; font-size: 12px; vertical-align: top; }
-        th { text-align: left; background: #f5f5f5; }
+        /* Mengatur font tabel menjadi lebih kecil dan rapi */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #aaa; padding: 5px 6px; font-size: 10px; vertical-align: top; }
+        th { text-align: left; background: #e9ecef; font-weight: bold; }
+
         .right { text-align: right; }
         .center { text-align: center; }
         .nowrap { white-space: nowrap; }
 
-        .batch-list { margin: 0; padding-left: 16px; color: #333; }
+        /* Style untuk list batch */
+        .batch-list { margin: 0; padding-left: 12px; color: #222; }
         .batch-list li { margin-bottom: 2px; }
+
+        .total-row th { background: #d6d8db; font-size: 11px; }
 
         @media print {
             .no-print { display: none !important; }
+            body { padding: 0; }
         }
     </style>
 </head>
@@ -32,67 +38,94 @@
     </div>
 
     <div class="header">
-        <p class="title">Laporan Stok Barang (Inventory)</p>
-        <p class="meta">Tanggal Cetak: {{ now()->format('d/m/Y H:i') }}</p>
+        <p class="title">Laporan Barang Keluar / Penjualan</p>
+        <p class="meta">
+            <strong>Periode:</strong>
+            @if(!empty($dateRangeLabel))
+                {{ $dateRangeLabel }}
+            @else
+                {{ $startDate->format('d/m/Y') }} - {{ $endDate->format('d/m/Y') }}
+            @endif
+        </p>
         @if(!empty($search))
-            <p class="meta">Pencarian: {{ $search }}</p>
+            <p class="meta"><strong>Pencarian:</strong> {{ $search }}</p>
         @endif
+        <p class="meta"><strong>Dicetak pada:</strong> {{ now()->format('d/m/Y H:i') }}</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th class="center" style="width: 5%;">No</th>
-                <th style="width: 25%;">Nama Barang</th>
-                <th style="width: 10%;">Satuan</th>
-                <th style="width: 45%;">Rincian Batch & Sisa Stok</th>
-                <th class="right" style="width: 15%;">Total Qty</th>
+                <th class="center" style="width: 3%;">No</th>
+                <th class="nowrap">Faktur & Pelanggan</th>
+                <th>Produk</th>
+                <th>Rincian Pengambilan (Batch)</th>
+                <th class="center">Qty</th>
+                <th class="right">Total Penjualan</th>
+                <th class="right">Keuntungan</th>
+                <th class="nowrap">Tanggal</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($stocks as $index => $row)
+            @php
+                $grandTotalSales = 0;
+                $grandTotalProfit = 0;
+            @endphp
+
+            @forelse($records as $index => $row)
+                @php
+                    // Hitung modal dan keuntungan
+                    $modal = $row->stock ? ($row->stock->price * $row->qty) : 0;
+                    $keuntungan = $row->total_price - $modal;
+
+                    // Akumulasi total keseluruhan
+                    $grandTotalSales += $row->total_price;
+                    $grandTotalProfit += $keuntungan;
+                @endphp
                 <tr>
                     <td class="center">{{ $index + 1 }}</td>
-                    <td>{{ $row->name }}</td>
-                    <td>{{ $row->unit }}</td>
                     <td>
-                        {{-- Logika pengelompokan batch langsung di Blade --}}
-                        @php
-                            $groupedBatches = [];
-                            // Pastikan relasi stockIns sudah di-load dari controller
-                            if($row->stockIns) {
-                                foreach($row->stockIns as $batch) {
-                                    if($batch->qty_remaining > 0) {
-                                        $code = $batch->batch_code ?: 'Tanpa Kode';
-                                        if(!isset($groupedBatches[$code])) {
-                                            $groupedBatches[$code] = 0;
-                                        }
-                                        $groupedBatches[$code] += $batch->qty_remaining;
-                                    }
-                                }
-                            }
-                        @endphp
-
-                        @if(empty($groupedBatches))
-                            <span style="color: #999; font-style:italic;">Stok Kosong / Habis</span>
-                        @else
+                        <strong>{{ $row->invoice ?? '-' }}</strong><br>
+                        {{ $row->customer_name ?? '-' }}
+                    </td>
+                    <td>{{ optional($row->stock)->name ?? 'Produk Dihapus' }}</td>
+                    <td>
+                        @if($row->details && $row->details->isNotEmpty())
                             <ul class="batch-list">
-                                @foreach($groupedBatches as $code => $qty)
-                                    <li><strong>{{ $code }}</strong> (Sisa: {{ $qty }})</li>
+                                @foreach($row->details as $detail)
+                                    <li>
+                                        {{ $detail->stockIn->batch_code ?? 'Tanpa Kode' }}
+                                        (Qty: {{ $detail->qty_taken }})
+                                    </li>
                                 @endforeach
                             </ul>
+                        @else
+                            <span style="color:#777; font-style:italic;">-</span>
                         @endif
                     </td>
-                    <td class="right" style="font-weight: bold; font-size: 14px;">
-                        {{ $row->qty }}
+                    <td class="center">{{ $row->qty }} {{ optional($row->stock)->unit }}</td>
+                    <td class="right">Rp {{ number_format($row->total_price, 0, ',', '.') }}</td>
+                    <td class="right" style="color: green; font-weight: bold;">
+                        Rp {{ number_format($keuntungan, 0, ',', '.') }}
                     </td>
+                    <td class="nowrap">{{ optional($row->created_at)->format('d/m/Y H:i') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="center">Tidak ada data barang saat ini.</td>
+                    <td colspan="8" class="center">Tidak ada data penjualan pada periode ini.</td>
                 </tr>
             @endforelse
         </tbody>
+        @if($records->isNotEmpty())
+        <tfoot>
+            <tr class="total-row">
+                <th colspan="5" class="right">TOTAL KESELURUHAN</th>
+                <th class="right">Rp {{ number_format($grandTotalSales, 0, ',', '.') }}</th>
+                <th class="right" style="color: green;">Rp {{ number_format($grandTotalProfit, 0, ',', '.') }}</th>
+                <th></th>
+            </tr>
+        </tfoot>
+        @endif
     </table>
 
     <script>
@@ -101,7 +134,7 @@
         });
 
         window.addEventListener('afterprint', function () {
-            // Opsional: Tutup tab setelah print selesai
+            // Uncomment baris di bawah jika ingin tab otomatis tertutup setelah print
             window.close();
         });
     </script>
