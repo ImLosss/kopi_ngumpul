@@ -234,10 +234,10 @@ class StockInController extends Controller
         ->addColumn('action', function($data) use ($user) {
             $hiddenInput = '<input type="hidden" name="ids[]" value="' . $data->id . '">';
             $update = '';
-            $delete = '';
+            // $delete = '';
             if($user->can('stockInUpdate')) $update = '<a href="' . route('stock-in.edit', $data->id) . '"><i class="fa-solid fa-pen-to-square text-secondary"></i></a>';
-            if($user->can('stockInDelete')) $delete = '<button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>';
-            return  $hiddenInput . $update . $delete . '
+            // if($user->can('stockInDelete')) $delete = '<button class="cursor-pointer fas fa-trash text-danger" onclick="modalHapus('. $data->id .')" style="border: none; background: no-repeat;" data-bs-toggle="tooltip" data-bs-original-title="Delete User"></button>';
+            return  $hiddenInput . $update . '
             <form id="form_'. $data->id .'" action="' . route('stock-in.destroy', $data->id) . '" method="POST" class="inline">
                 ' . csrf_field() . '
                 ' . method_field('DELETE') . '
