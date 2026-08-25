@@ -135,7 +135,7 @@
 
         window.addEventListener('afterprint', function () {
             // Uncomment baris di bawah jika ingin tab otomatis tertutup setelah print
-            // window.close();
+            window.close();
         });
     </script>
 </body>
