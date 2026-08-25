@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Laporan Stok Barang</title>
+    <title>Laporan Penjualan</title>
 
     <style>
         body { font-family: Arial, Helvetica, sans-serif; color: #111; }
@@ -18,7 +18,8 @@
         .center { text-align: center; }
         .nowrap { white-space: nowrap; }
 
-        .batch-list { margin: 0; padding-left: 16px; color: #333; }
+        /* Styling untuk list batch agar rapi */
+        .batch-list { margin: 0; padding-left: 16px; color: #333; font-size: 11px; }
         .batch-list li { margin-bottom: 2px; }
 
         @media print {
@@ -32,64 +33,65 @@
     </div>
 
     <div class="header">
-        <p class="title">Laporan Stok Barang (Inventory)</p>
-        <p class="meta">Tanggal Cetak: {{ now()->format('d/m/Y H:i') }}</p>
+        <p class="title">Laporan Barang Keluar / Penjualan</p>
+        <p class="meta">
+            Periode:
+            @if(!empty($dateRangeLabel))
+                {{ $dateRangeLabel }}
+            @else
+                {{ $startDate->format('d/m/Y') }} - {{ $endDate->format('d/m/Y') }}
+            @endif
+        </p>
         @if(!empty($search))
             <p class="meta">Pencarian: {{ $search }}</p>
         @endif
+        <p class="meta">Dicetak: {{ now()->format('d/m/Y H:i') }}</p>
     </div>
 
     <table>
         <thead>
             <tr>
                 <th class="center" style="width: 5%;">No</th>
-                <th style="width: 25%;">Nama Barang</th>
-                <th style="width: 10%;">Satuan</th>
-                <th style="width: 45%;">Rincian Batch & Sisa Stok</th>
-                <th class="right" style="width: 15%;">Total Qty</th>
+                <th>Invoice</th>
+                <th>Customer</th>
+                <th>Product</th>
+                <th class="right">Qty</th>
+                <th style="width: 25%;">Rincian Batch</th>
+                <th class="right">Total Price</th>
+                <th class="nowrap">Date</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($stocks as $index => $row)
+            @forelse($records as $index => $row)
                 <tr>
                     <td class="center">{{ $index + 1 }}</td>
-                    <td>{{ $row->name }}</td>
-                    <td>{{ $row->unit }}</td>
+                    <td>{{ $row->invoice ?? '-' }}</td>
+                    <td>{{ $row->customer_name ?? '-' }}</td>
+                    <td>{{ optional($row->stock)->name ?? 'Produk tidak ditemukan' }}</td>
+                    <td class="right">
+                        {{ $row->qty }} {{ optional($row->stock)->unit }}
+                    </td>
                     <td>
-                        {{-- Logika pengelompokan batch langsung di Blade --}}
-                        @php
-                            $groupedBatches = [];
-                            // Pastikan relasi stockIns sudah di-load dari controller
-                            if($row->stockIns) {
-                                foreach($row->stockIns as $batch) {
-                                    if($batch->qty_remaining > 0) {
-                                        $code = $batch->batch_code ?: 'Tanpa Kode';
-                                        if(!isset($groupedBatches[$code])) {
-                                            $groupedBatches[$code] = 0;
-                                        }
-                                        $groupedBatches[$code] += $batch->qty_remaining;
-                                    }
-                                }
-                            }
-                        @endphp
-
-                        @if(empty($groupedBatches))
-                            <span style="color: #999; font-style:italic;">Stok Kosong / Habis</span>
+                        {{-- Logika Menampilkan Rincian Batch yang Terpotong --}}
+                        @if($row->details->isEmpty())
+                            <span style="color: #999; font-style:italic;">Tidak ada rincian batch</span>
                         @else
                             <ul class="batch-list">
-                                @foreach($groupedBatches as $code => $qty)
-                                    <li><strong>{{ $code }}</strong> (Sisa: {{ $qty }})</li>
+                                @foreach($row->details as $detail)
+                                    <li>
+                                        <strong>{{ optional($detail->stockIn)->batch_code ?? 'Tanpa Kode' }}</strong>
+                                        (Diambil: {{ $detail->qty_taken }})
+                                    </li>
                                 @endforeach
                             </ul>
                         @endif
                     </td>
-                    <td class="right" style="font-weight: bold; font-size: 14px;">
-                        {{ $row->qty }}
-                    </td>
+                    <td class="right nowrap">Rp {{ number_format($row->total_price, 0, ',', '.') }}</td>
+                    <td class="nowrap">{{ optional($row->created_at)->format('d/m/Y H:i') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="center">Tidak ada data barang saat ini.</td>
+                    <td colspan="8" class="center">Tidak ada data histori penjualan pada periode ini.</td>
                 </tr>
             @endforelse
         </tbody>
@@ -101,8 +103,8 @@
         });
 
         window.addEventListener('afterprint', function () {
-            // Opsional: Tutup tab setelah print selesai
-            // window.close();
+            // Uncomment baris di bawah ini jika ingin tab otomatis tertutup setelah print
+            window.close();
         });
     </script>
 </body>

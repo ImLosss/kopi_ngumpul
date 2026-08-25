@@ -313,48 +313,52 @@ class SalesRecordController extends Controller
     }
 
     public function print(Request $request)
-    {
-        // Default: today
-        $startDate = Carbon::today()->startOfDay();
-        $endDate = Carbon::today()->endOfDay();
+{
+    // Default: today
+    $startDate = Carbon::today()->startOfDay();
+    $endDate = Carbon::today()->endOfDay();
 
-        $dateRangeLabel = $request->input('dateRange');
-        if ($request->filled('dateRange')) {
-            $dates = explode(' - ', (string) $request->input('dateRange'));
+    $dateRangeLabel = $request->input('dateRange');
+    if ($request->filled('dateRange')) {
+        $dates = explode(' - ', (string) $request->input('dateRange'));
 
-            if (count($dates) === 2) {
-                try {
-                    $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
-                    $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
-                } catch (\Exception $e) {
-                    Log::error('Error parsing date range (print): ' . $e->getMessage());
-                }
+        if (count($dates) === 2) {
+            try {
+                $startDate = Carbon::createFromFormat('d/m/Y', trim($dates[0]))->startOfDay();
+                $endDate = Carbon::createFromFormat('d/m/Y', trim($dates[1]))->endOfDay();
+            } catch (\Exception $e) {
+                Log::error('Error parsing date range (print): ' . $e->getMessage());
             }
         }
-
-        $search = trim((string) $request->input('search', ''));
-
-        $query = StockOut::with('stock')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->orderBy('created_at', 'desc');
-
-        if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('qty', 'like', "%{$search}%")
-                    ->orWhereHas('stock', function ($stockQuery) use ($search) {
-                        $stockQuery->where('name', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        $records = $query->get();
-
-        return view('admin.record.print', [
-            'records' => $records,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'dateRangeLabel' => $dateRangeLabel,
-            'search' => $search,
-        ]);
     }
+
+    $search = trim((string) $request->input('search', ''));
+
+    // TAMBAHKAN RELASI details.stockIn DI SINI
+    $query = StockOut::with(['stock', 'details.stockIn'])
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->orderBy('created_at', 'desc');
+
+    if ($search !== '') {
+        $query->where(function ($q) use ($search) {
+            // PERBAIKI PENCARIAN
+            $q->where('invoice', 'like', "%{$search}%")
+              ->orWhere('customer_name', 'like', "%{$search}%")
+              ->orWhere('qty', 'like', "%{$search}%")
+              ->orWhereHas('stock', function ($stockQuery) use ($search) {
+                  $stockQuery->where('name', 'like', "%{$search}%");
+              });
+        });
+    }
+
+    $records = $query->get();
+
+    return view('admin.record.print', [
+        'records' => $records,
+        'startDate' => $startDate,
+        'endDate' => $endDate,
+        'dateRangeLabel' => $dateRangeLabel,
+        'search' => $search,
+    ]);
+}
 }
