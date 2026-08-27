@@ -140,6 +140,9 @@ class StockController extends Controller
 
         return DataTables::of($data)
         ->addIndexColumn()
+        ->addColumn('code', function($data) {
+            return $data->code;
+        })
         ->addColumn('name', function($data) {
             return $data->name;
         })

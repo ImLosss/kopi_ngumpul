@@ -51,6 +51,7 @@
                             <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Code</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Name</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Category</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-1">Unit</th>
@@ -100,6 +101,7 @@
             },
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'code', name: 'code' },
                 { data: 'name', name: 'name' },
                 { data: 'category', name: 'category' },
                 { data: 'unit', name: 'unit' },

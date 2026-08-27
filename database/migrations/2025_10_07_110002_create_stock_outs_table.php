@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('stock_id');
             $table->integer('qty');
-            $table->float('total_price');
+            $table->bigInteger('total_price');
             $table->string('customer_name');
             $table->string('invoice');
             $table->timestamps();

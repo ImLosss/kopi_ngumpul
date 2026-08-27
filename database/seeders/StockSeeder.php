@@ -3,10 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\Stock;
+use App\Models\StockIn;
 use App\Models\StockOut;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\StockOutDetail;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class StockSeeder extends Seeder
 {
@@ -15,199 +17,210 @@ class StockSeeder extends Seeder
      */
     public function run(): void
     {
-        // Daftar file CSV dengan mapping ke bulan sekarang
-        $csvFiles = $this->getCsvFiles();
+        // Cari SEMUA file CSV di dalam folder seeders
+        $csvFiles = glob(database_path('seeders/*.csv'));
 
-        $allProducts = [];
-        $allStockOuts = [];
-
-        foreach ($csvFiles as $csvFile) {
-            $this->command->info('Memproses file: ' . basename($csvFile['file']) . ' -> Bulan: ' . $csvFile['target_month']);
-
-            if (!file_exists($csvFile['file'])) {
-                $this->command->warn('File CSV tidak ditemukan: ' . $csvFile['file']);
-                continue;
-            }
-
-            $result = $this->processCsvFile($csvFile['file'], $csvFile['target_date']);
-
-            // Gabungkan produk dari semua file
-            foreach ($result['products'] as $productName => $quantity) {
-                if (!isset($allProducts[$productName])) {
-                    $allProducts[$productName] = $quantity;
-                } else {
-                    $allProducts[$productName] += $quantity;
-                }
-            }
-
-            // Gabungkan stock outs dari semua file
-            $allStockOuts = array_merge($allStockOuts, $result['stockOuts']);
+        if (empty($csvFiles)) {
+            $this->command->error("Tidak ada file CSV yang ditemukan di folder seeders.");
+            return;
         }
 
-        // Insert produk ke tabel stocks menggunakan Eloquent
-        $createdStocks = [];
-        foreach ($allProducts as $productName => $totalQty) {
-            // Cek apakah produk sudah ada
-            $existingStock = Stock::where('name', $productName)->first();
-
-            if ($existingStock) {
-                // Update quantity jika produk sudah ada
-                $existingStock->update(['qty' => $existingStock->qty + $totalQty]);
-                $createdStocks[$productName] = $existingStock;
-                $this->command->info("Updated stock untuk: {$productName}");
-            } else {
-                // Buat produk baru
-                $stock = Stock::create([
-                    'name' => $productName,
-                    'category_id' => 1,
-                    'qty' => $totalQty,
-                    'price' => 10000
-                ]);
-                $createdStocks[$productName] = $stock;
-                $this->command->info("Created new stock untuk: {$productName}");
-            }
-        }
-
-        // Insert stock_outs menggunakan Eloquent
-        foreach ($allStockOuts as $stockOut) {
-            $stock = $createdStocks[$stockOut['product_name']];
-
-            StockOut::create([
-                'stock_id' => $stock->id,
-                'qty' => $stockOut['qty'],
-                'total_price' => $stock->price * $stockOut['qty'],
-                'created_at' => $stockOut['created_at'],
-                'updated_at' => now(),
-            ]);
-        }
-
-        $this->command->info('Berhasil mengimpor ' . count($allProducts) . ' produk dan ' . count($allStockOuts) . ' stock outs dari ' . count($csvFiles) . ' file CSV');
-    }
-
-    /**
-     * Mendapatkan daftar file CSV dengan mapping ke bulan terbaru
-     */
-    private function getCsvFiles(): array
-    {
-        $csvFiles = [];
-
-        // 12 file CSV yang tersedia (lengkap dari Januari sampai Desember 2019)
-        $availableFiles = [
-            'December',  // i=0  -> Oktober 2025
-            'November',  // i=1  -> September 2025
-            'October',   // i=2  -> Agustus 2025
-            'September', // i=3  -> Juli 2025
-            'August',    // i=4  -> Juni 2025
-            'July',      // i=5  -> Mei 2025
-            'June',      // i=6  -> April 2025
-            'May',       // i=7  -> Maret 2025
-            'April',     // i=8  -> Februari 2025
-            'March',     // i=9  -> Januari 2025
-            'February',  // i=10 -> Desember 2024
-            'January'    // i=11 -> November 2024
-        ];
-
-        // Mapping untuk 12 bulan
-        for ($i = 0; $i < 12; $i++) {
-            // PERBAIKAN: Langsung akses array dengan index $i (bukan $i % 5)
-            $csvMonth = $availableFiles[$i];
-
-            $fileName = "Sales_{$csvMonth}_2019.csv";
-            $filePath = database_path("seeders/{$fileName}");
-
-            // Skip jika file tidak ada
-            if (!file_exists($filePath)) {
-                $this->command->warn("File tidak ditemukan, skip: {$fileName}");
-                continue;
-            }
-
-            // Gunakan startOfMonth untuk menghindari masalah hari invalid
-            $targetDate = Carbon::now()->startOfMonth()->subMonths($i);
-
-            $csvFiles[] = [
-                'file' => $filePath,
-                'target_date' => $targetDate,
-                'target_month' => $targetDate->format('F Y'),
-                'csv_month' => $csvMonth
-            ];
-
-            $this->command->info("Mapping: Sales_{$csvMonth}_2019.csv -> {$targetDate->format('F Y')}");
-        }
-
-        return $csvFiles;
-    }
-
-    /**
-     * Memproses satu file CSV dengan tanggal target
-     */
-    private function processCsvFile(string $csvFile, Carbon $targetDate): array
-    {
-        $file = fopen($csvFile, 'r');
-
-        // Skip header row
-        fgetcsv($file);
+        $this->command->info("Ditemukan " . count($csvFiles) . " file CSV. Memulai proses gabungan...");
 
         $products = [];
         $stockOuts = [];
+        $totalRowCount = 0;
 
-        // Baca setiap baris CSV
-        while (($row = fgetcsv($file)) !== false) {
-            // Skip baris kosong
-            if (empty($row[0]) || empty($row[1])) {
-                continue;
+        foreach ($csvFiles as $csvFile) {
+            $fileName = basename($csvFile);
+            $this->command->info("-> Membaca file: {$fileName} ...");
+
+            $file = fopen($csvFile, 'r');
+
+            // Lewati baris pertama (Header)
+            fgetcsv($file);
+            $fileRowCount = 0;
+
+            // Membaca baris demi baris
+            while (($row = fgetcsv($file)) !== false) {
+                // Pastikan memiliki KODE BARANG (Kolom 6 / index 5)
+                if (!isset($row[5]) || trim($row[5]) === '') {
+                    continue;
+                }
+
+                // Filter Keterangan (Kolom 21 / index 20) harus "Penjualan"
+                if (!isset($row[20]) || strtolower(trim($row[20])) !== 'penjualan') {
+                    continue;
+                }
+
+                // Ambil Qty (Kolom 14 / index 13) dan abaikan Qty Minus (Retur)
+                $qty = (int) $row[13];
+                if ($qty <= 0) {
+                    continue;
+                }
+
+                $fileRowCount++;
+                $totalRowCount++;
+
+                // Pemetaan Kolom CSV
+                $dateString   = trim($row[0]);  // Kolom 1: Tanggal
+                $customerName = trim($row[3]) ?: 'Pelanggan Umum'; // Kolom 4: Nama Customer
+                $productCode  = trim($row[5]);  // Kolom 6: KODE BARANG (Patokan Utama)
+                $batchCode    = trim($row[6]) ?: 'TANPA-KODE';     // Kolom 7: Kode Batch
+                $productName  = trim($row[10]); // Kolom 11: Nama Barang
+                $unit         = trim($row[11]) ?: 'Pcs'; // Kolom 12: Unit
+
+                // Kolom 15: Harga Satuan (Ubah jadi angka bulat)
+                $priceString = str_replace(['Rp', '.', ',', ' '], '', $row[14]);
+                $price       = (float) $priceString;
+
+                // Mengelompokkan Data Produk BERDASARKAN KODE BARANG
+                if (!isset($products[$productCode])) {
+                    $products[$productCode] = [
+                        'name'          => $productName, // Simpan nama untuk dibuatkan master
+                        'unit'          => $unit,
+                        'price'         => round($price),
+                        'selling_price' => round($price * 1.2),
+                        'batches'       => []
+                    ];
+                }
+
+                // Hitung total qty yang dibutuhkan UNTUK SETIAP KODE BATCH pada KODE BARANG ini
+                if (!isset($products[$productCode]['batches'][$batchCode])) {
+                    $products[$productCode]['batches'][$batchCode] = 0;
+                }
+                $products[$productCode]['batches'][$batchCode] += $qty;
+
+                // Parse Tanggal
+                try {
+                    // 'd' = Hari (01-31), 'm' = Bulan (01-12), 'y' = Tahun 2 digit (misal: 26)
+                    $parsedDate = Carbon::createFromFormat('d/m/y', $dateString)->startOfDay();
+                } catch (\Exception $e) {
+                    try {
+                        // Fallback (cadangan) jika ternyata Excel merubahnya jadi 4 digit tahun (dd/mm/yyyy)
+                        $parsedDate = Carbon::createFromFormat('d/m/Y', $dateString)->startOfDay();
+                    } catch (\Exception $e2) {
+                        // Fallback aman terakhir jika format benar-benar hancur/kosong
+                        $parsedDate = Carbon::now()->startOfDay();
+                    }
+                }
+
+                // Kumpulkan data transaksi Stock Out
+                $stockOuts[] = [
+                    'product_code'  => $productCode, // Patokan untuk mencari Master Stock nanti
+                    'customer_name' => $customerName,
+                    'batch_code'    => $batchCode,
+                    'qty'           => $qty,
+                    'price'         => round($price),
+                    'date'          => $parsedDate
+                ];
             }
 
-            $orderId = $row[0];
-            $productName = trim($row[1]);
-            $quantity = (int) $row[2];
-            $originalOrderDate = $row[3];
+            fclose($file);
+            $this->command->info("   Selesai mengambil {$fileRowCount} baris Penjualan dari {$fileName}.");
+        }
 
-            // Kumpulkan produk unik dan total quantity
-            if (!isset($products[$productName])) {
-                $products[$productName] = $quantity;
-            } else {
-                $products[$productName] += $quantity;
-            }
+        $this->command->info("---");
+        $this->command->info("Total keseluruhan: {$totalRowCount} baris data Penjualan Valid dari " . count($csvFiles) . " file.");
+        $this->command->info("Mempersiapkan Master Barang dan Modal Batch (Stock Ins)...");
 
-            // Parse tanggal asli untuk mendapatkan hari dan jam
-            $originalDate = $this->parseOriginalOrderDate($originalOrderDate);
+        $createdStocks = [];
 
-            // Buat tanggal baru dengan tahun dan bulan target, tapi hari dan jam dari data asli
-            $newDate = Carbon::create(
-                $targetDate->year,
-                $targetDate->month,
-                min($originalDate->day, $targetDate->daysInMonth), // Pastikan hari tidak exceed
-                $originalDate->hour,
-                $originalDate->minute,
-                0
+        // 3. BUAT MASTER BARANG & STOCK IN
+        foreach ($products as $code => $data) {
+            // Gunakan KODE BARANG sebagai pencarian firstOrCreate
+            $stock = Stock::firstOrCreate(
+                ['code' => $code], // Kondisi pencarian
+                [
+                    'name'          => $data['name'],
+                    'unit'          => $data['unit'],
+                    'qty'           => 0,
+                    'price'         => $data['price'],
+                    'selling_price' => $data['selling_price'],
+                    'category_id'   => 1
+                ]
             );
 
-            // Simpan data stock out untuk nanti
-            $stockOuts[] = [
-                'product_name' => $productName,
-                'qty' => $quantity,
-                'created_at' => $newDate,
-            ];
+            $totalQtyMaster = 0;
+
+            // Buat Riwayat Stock In persis sesuai Batch Code
+            foreach ($data['batches'] as $bCode => $neededQty) {
+                $modalAwal = $neededQty + 20; // Dilebihkan 20 Pcs
+                $totalQtyMaster += $modalAwal;
+
+                StockIn::create([
+                    'stock_id'      => $stock->id,
+                    'batch_code'    => $bCode,
+                    'qty'           => $modalAwal,
+                    'qty_remaining' => $modalAwal,
+                    'created_at'    => Carbon::parse('2026-01-01')
+                ]);
+            }
+
+            // Update Total Qty di Master Stock
+            $stock->increment('qty', $totalQtyMaster);
+
+            // Simpan model berdasarkan kode agar mudah dicari saat Stock Out
+            $createdStocks[$code] = $stock;
         }
 
-        fclose($file);
+        $this->command->info("Memproses " . count($stockOuts) . " Transaksi Penjualan (FIFO)...");
 
-        return [
-            'products' => $products,
-            'stockOuts' => $stockOuts
-        ];
-    }
+        // 4. PROSES STOCK OUT DAN POTONG BATCH (FIFO)
+        foreach ($stockOuts as $idx => $out) {
+            // Ambil ID stok berdasarkan kode barang
+            $stock = $createdStocks[$out['product_code']];
+            $qtyToDeduct = $out['qty'];
 
-    /**
-     * Parse tanggal order asli dari CSV
-     */
-    private function parseOriginalOrderDate(string $orderDate): Carbon
-    {
-        try {
-            return Carbon::createFromFormat('n/j/Y G:i', $orderDate);
-        } catch (\Exception $e) {
-            // Jika gagal parse, gunakan tanggal random di bulan tersebut
-            return Carbon::now()->setDay(rand(1, 28))->setHour(rand(8, 20))->setMinute(rand(0, 59));
+            // Generate Invoice otomatis
+            $invoice = 'INV-' . $out['date']->format('Ymd') . '-' . str_pad($idx + 1, 5, '0', STR_PAD_LEFT);
+
+            // Simpan header Penjualan (StockOut)
+            $stockOutRecord = StockOut::create([
+                'stock_id'      => $stock->id,
+                'qty'           => $qtyToDeduct,
+                'total_price'   => $out['price'] * $qtyToDeduct,
+                'customer_name' => $out['customer_name'],
+                'invoice'       => $invoice,
+                'created_at'    => $out['date'],
+                'updated_at'    => $out['date'],
+            ]);
+
+            // LOGIKA FIFO: Ambil batch yang stoknya masih sisa
+            $batches = StockIn::where('stock_id', $stock->id)
+                ->where('qty_remaining', '>', 0)
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+            $remainingDeduct = $qtyToDeduct;
+
+            foreach ($batches as $batch) {
+                if ($remainingDeduct <= 0) break;
+
+                if ($batch->qty_remaining >= $remainingDeduct) {
+                    $qtyTaken = $remainingDeduct;
+                    $batch->qty_remaining -= $remainingDeduct;
+                    $remainingDeduct = 0;
+                } else {
+                    $qtyTaken = $batch->qty_remaining;
+                    $remainingDeduct -= $batch->qty_remaining;
+                    $batch->qty_remaining = 0;
+                }
+
+                $batch->save();
+
+                // Simpan Detail Potongan
+                StockOutDetail::create([
+                    'stock_out_id' => $stockOutRecord->id,
+                    'stock_in_id'  => $batch->id,
+                    'qty_taken'    => $qtyTaken
+                ]);
+            }
+
+            // Kurangi qty keseluruhan barang
+            $stock->decrement('qty', $qtyToDeduct);
         }
+
+        $this->command->info("Seeder Selesai! Riwayat Penjualan beserta Rincian Batch berhasil dibuat.");
     }
 }

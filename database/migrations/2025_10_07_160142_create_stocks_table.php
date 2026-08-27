@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->unique();
             $table->string('name');
             $table->string('unit');
             $table->integer('qty')->default(0);
-            $table->float('price');
-            $table->float('selling_price');
+            $table->bigInteger('price');
+            $table->bigInteger('selling_price');
             $table->unsignedBigInteger('category_id');
             $table->timestamps();
         });
