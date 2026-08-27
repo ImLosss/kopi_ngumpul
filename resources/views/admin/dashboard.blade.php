@@ -224,6 +224,7 @@
                 }
             }
         });
+
         $(document).ready(function() {
             var table = $('#prediksi').DataTable({
                 processing: true,
@@ -231,54 +232,32 @@
                 ordering: false,
                 ajax: {
                     url: "{{ route('admin.dataTable.getPrediction') }}",
+                    data: function (d) {
+                        // TAMBAHAN INI: Mengirimkan nilai dropdown ke Controller Laravel via Ajax
+                        d.month_ahead = $('#predictionMonth').val();
+                    },
                     error: function(xhr, error, thrown) {
                         console.log('An error occurred while fetching data.');
-                        // Hide the default error message
-                        $('#example').DataTable().clear().draw();
                     }
                 },
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'trendLeast',
-                        name: 'trendLeast'
-                    },
-                    {
-                        data: 'holt',
-                        name: 'holt'
-                    },
-                    {
-                        data: 'hybrid',
-                        name: 'hybrid'
-                    },
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                    { data: 'name', name: 'name' },
+                    { data: 'trendLeast', name: 'trendLeast' },
+                    { data: 'holt', name: 'holt' },
+                    { data: 'hybrid', name: 'hybrid' },
                 ],
                 language: {
                     emptyTable: "Not Available"
                 },
                 headerCallback: function(thead, data, start, end, display) {
-                    $(thead).find('th').css('text-align',
-                        'left'); // pastikan align header tetap di tengah
-                },
-                rowCallback: function(row, data, index) {
-                    // Periksa nilai colspan dari data
-                    //   if (!data.prediction) {
-                    //       // Tambahkan colspan ke kolom menu dan kosongkan kolom lainnya
-                    //       $('td:eq(1)', row).attr('colspan', 3);
-                    //       $('td:eq(1)', row).text(`Data Kurang (${ data.name })`);
-                    //       $('td:eq(1)', row).addClass('text-center');
-                    //       for (let i = 1; i < 7; i++) {
-                    //           $(`td:eq(2)`, row).remove();
-                    //       }
-                    //   }
-                },
+                    $(thead).find('th').css('text-align', 'left');
+                }
+            });
+
+            // TAMBAHAN INI: Otomatis reload tabel saat dropdown periode diganti
+            $('#predictionMonth').on('change', function() {
+                table.ajax.reload();
             });
         });
     </script>
