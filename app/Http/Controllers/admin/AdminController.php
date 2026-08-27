@@ -257,6 +257,8 @@ class AdminController extends Controller
             $holtItem = is_array($holtResult) ? collect($holtResult)->firstWhere('product_id', $productId) : null;
             $holtValue = $holtItem['forecast'] ?? null;
 
+            dd($trendValue, $holtValue);
+
             $hybridValue = null;
             if ($holtValue !== null && is_numeric($holtValue) && $trendValue !== null && is_numeric($trendValue) && $trendValue > 0) {
                 $hybridValue = (0.6 * $holtValue) + (0.4 * $trendValue);
