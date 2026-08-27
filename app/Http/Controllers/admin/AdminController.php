@@ -182,7 +182,7 @@ class AdminController extends Controller
             $response = Http::timeout(30)
                 ->acceptJson()
                 ->asJson()
-                ->post('http://localhost:33/predict', ['items' => $payload]);
+                ->post('http://localhost:3333/predict', ['items' => $payload]);
 
             if ($response->successful() && ($resultPredict = $response->json()) && ($resultPredict['success'] ?? false)) {
                 return $resultPredict['data']; // sesuaikan dengan struktur balasan Python
