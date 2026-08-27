@@ -258,7 +258,7 @@ class AdminController extends Controller
             $holtValue = $holtItem['forecast'] ?? null;
 
             $hybridValue = null;
-            if ($holtValue !== null && is_numeric($holtValue) && $trendValue !== null && is_numeric($trendValue)) {
+            if ($holtValue !== null && is_numeric($holtValue) && $trendValue !== null && is_numeric($trendValue) && $trendValue > 0) {
                 $hybridValue = (0.6 * $holtValue) + (0.4 * $trendValue);
             }
 
