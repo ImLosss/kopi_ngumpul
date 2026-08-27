@@ -124,16 +124,19 @@
                 <div class="card-header pb-3">
                     <div class="row">
                         <div class="col d-flex align-items-center">
-                            <h6>Prediction Next Month</h6>
+                            <h6>Prediction</h6>
                         </div>
-                        {{-- <div class="col">
-                            <div class="d-flex justify-content-end flex-wrap">
-                                <div class="mb-2" style="margin-right: 20px">
-                                    <a class="btn bg-gradient-secondary mt-2" href="#" style="margin-right: 10px"><i
-                                            class="fa-solid fa-print text-md"></i> Print</a>
-                                </div>
-                            </div>
-                        </div> --}}
+                        <div class="col-6 d-flex justify-content-end">
+                        <!-- PILIHAN BULAN SEBELUMNYA -->
+                        <div class="input-group input-group-sm w-auto">
+                            <label class="input-group-text text-xs" for="predictionMonth">Periode:</label>
+                            <select class="form-select text-xs font-weight-bold" id="predictionMonth">
+                                <option value="1" selected>1 Bulan Sebelumnya</option>
+                                <option value="2">2 Bulan Sebelumnya</option>
+                                <option value="3">3 Bulan Sebelumnya</option>
+                            </select>
+                        </div>
+                    </div>
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">

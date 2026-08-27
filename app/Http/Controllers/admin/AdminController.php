@@ -44,9 +44,15 @@ class AdminController extends Controller
 
     public function getPrediction(Request $request)
     {
-        // Ambil data prediksi dan indeks-kan berdasarkan product_id agar pencarian nilainya instan
-        $predictions = Cache::remember('hybrid_predictions_cache', 3600, function () {
-            $rawPredictions = $this->generatePredictHybrid();
+        // Tangkap pilihan bulan (1, 2, atau 3 bulan sebelumnya)
+        $monthAhead = (int) $request->input('month_ahead', 1);
+        if ($monthAhead < 1 || $monthAhead > 3) $monthAhead = 1;
+
+        // Cache dinamis berdasarkan pilihan bulan sebelumnya
+        $cacheKey = 'hybrid_predictions_cache_prev_' . $monthAhead;
+
+        $predictions = Cache::remember($cacheKey, 3600, function () use ($monthAhead) {
+            $rawPredictions = $this->generatePredictHybrid($monthAhead);
             return collect($rawPredictions)->keyBy('product_id')->toArray();
         });
 
@@ -77,22 +83,24 @@ class AdminController extends Controller
                     $search = $request->input('search.value');
                     $query->where(function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%")
-                            ->orWhere('code', 'like', "%{$search}%"); // Pencarian berdasarkan nama atau kode barang
+                            ->orWhere('code', 'like', "%{$search}%");
                     });
                 }
             })
             ->toJson();
     }
 
-    private function getSalesData($stockId, $rangeMonths, $allSalesGrouped)
+    private function getSalesData($stockId, $rangeMonths, $allSalesGrouped, $monthAhead)
     {
         $data['penjualanInMonth'] = [];
 
+        // Titik acuan waktu dimundurkan berdasarkan $monthAhead (1, 2, atau 3 bulan lalu)
+        $baseDate = Carbon::now()->subMonths($monthAhead);
+
         for ($i = 1; $i <= $rangeMonths; $i++) {
-            $date = Carbon::now()->startOfMonth()->subMonths($i);
+            $date = (clone $baseDate)->startOfMonth()->subMonths($i);
             $yearMonth = $date->format('Y-m');
 
-            // Ambil dari hasil grouping yang sudah ditarik sekali di awal (sangat cepat)
             $totalSales = $allSalesGrouped[$stockId][$yearMonth] ?? 0;
 
             $data['penjualanInMonth'][] = [
@@ -109,21 +117,13 @@ class AdminController extends Controller
     private function generatePredictTls($dataSales, $n, $product_id)
     {
         $result['dataSales'] = $dataSales;
-
-        // 1. BALIK URUTAN ARRAY DI AWAL
-        // Sekarang urutan indeks 0 adalah bulan terlama (Desember 2025)
-        // dan indeks ke-($n-1) adalah bulan terbaru (Juli 2026).
         $result['dataSales']['penjualanInMonth'] = array_reverse($result['dataSales']['penjualanInMonth']);
-
-        // Batasi data sesuai dengan nilai $n yang dikirimkan ($n = count($salesData))
-        // Ini penting agar jika data yang lolos filter berjumlah 8, array-nya dipotong jadi 8 saja.
         $result['dataSales']['penjualanInMonth'] = array_slice($result['dataSales']['penjualanInMonth'], -$n);
 
         $result['x'] = [];
         $result['x2'] = [];
         $result['xy'] = [];
 
-        // 2. Tentukan Nilai X dan X kuadrat
         for ($i = 1; $i <= $n; $i++) {
             if ($n % 2 === 0) {
                 $xVal = (2 * $i) - $n - 1;
@@ -135,7 +135,6 @@ class AdminController extends Controller
             $result['x2'][] = $xVal * $xVal;
         }
 
-        // 3. Hitung XY (Sekarang indeks $index pada $result['x'] sudah sinkron dengan bulan penjualan)
         foreach ($result['x'] as $index => $value) {
             $result['xy'][] = $value * $result['dataSales']['penjualanInMonth'][$index]['total'];
         }
@@ -143,26 +142,19 @@ class AdminController extends Controller
         $result['sumXY'] = array_sum($result['xy']);
         $result['sumX2'] = array_sum($result['x2']);
 
-        // 4. Hitung a dan b
         $totalPenjualanAktif = array_sum(array_column($result['dataSales']['penjualanInMonth'], 'total'));
         $result['a'] = $totalPenjualanAktif / $n;
         $result['b'] = $result['sumXY'] / $result['sumX2'];
 
-        // 5. MENCARI X PREDIKSI (Bulan Depan)
         $lastX = end($result['x']);
         $interval = ($n % 2 === 0) ? 2 : 1;
         $nextX = $lastX + $interval;
 
-        // 6. Rumus Final Prediksi: Y = a + bX
         $result['y'] = $result['a'] + ($result['b'] * $nextX);
-
-        // if ($product_id === 116) {
-        //     dd($result);
-        // }
 
         return [
             'totalPenjualan' => $totalPenjualanAktif,
-            'prediction' => max(0, ceil($result['y'])), // Mencegah hasil minus
+            'prediction' => max(0, ceil($result['y'])),
             'product_id' => $product_id,
             'metode' => "TREND LEAST"
         ];
@@ -170,17 +162,14 @@ class AdminController extends Controller
 
     private function generatePredictHolt(array $saleDataItems)
     {
-
         if (count($saleDataItems) < 1) return false;
-        // Reverse untuk urutan dari terlama ke terbaru
+
         $payload = collect($saleDataItems)->map(function ($sales, $productId) {
             return [
                 'product_id' => $productId,
                 'sales' => array_values($sales),
             ];
         })->values()->all();
-
-        // dd($salesData);
 
         try {
             $response = Http::timeout(30)
@@ -189,7 +178,7 @@ class AdminController extends Controller
                 ->post('http://localhost:3333/predict', ['items' => $payload]);
 
             if ($response->successful() && ($resultPredict = $response->json()) && ($resultPredict['success'] ?? false)) {
-                return $resultPredict['data']; // sesuaikan dengan struktur balasan Python
+                return $resultPredict['data'];
             }
 
             return false;
@@ -199,13 +188,15 @@ class AdminController extends Controller
         }
     }
 
-    private function generatePredictHybrid()
+    private function generatePredictHybrid($monthAhead = 1)
     {
         $Stocks = Stock::all();
 
-        // OPTIMASI UTAMA: Ambil seluruh data penjualan 12 bulan terakhir dalam 1 Kali Query Saja!
-        $startDate = Carbon::now()->startOfMonth()->subMonths(12)->startOfDay();
-        $endDate = Carbon::now()->startOfMonth()->subDays(1)->endOfDay();
+        // Acuan tanggal dimundurkan berdasarkan pilihan user (1, 2, atau 3 bulan lalu)
+        $baseDate = Carbon::now()->subMonths($monthAhead);
+
+        $startDate = (clone $baseDate)->startOfMonth()->subMonths(12)->startOfDay();
+        $endDate = (clone $baseDate)->startOfMonth()->subDays(1)->endOfDay();
 
         $allSales = StockOut::selectRaw("stock_id, DATE_FORMAT(created_at, '%Y-%m') as ym, SUM(qty) as total")
             ->whereBetween('created_at', [$startDate, $endDate])
@@ -213,7 +204,6 @@ class AdminController extends Controller
             ->get()
             ->groupBy('stock_id');
 
-        // Ubah struktur collection agar gampang dipetakan oleh getSalesData
         $allSalesGrouped = [];
         foreach ($allSales as $stockId => $rows) {
             $allSalesGrouped[$stockId] = $rows->pluck('total', 'ym')->toArray();
@@ -223,8 +213,8 @@ class AdminController extends Controller
         $trendPredictions = [];
 
         foreach ($Stocks as $Stock) {
-            // Kirim data cache global ke getSalesData
-            $result['dataSales'] = $this->getSalesData($Stock->id, 12, $allSalesGrouped);
+            // Mengirim $monthAhead agar pengambilan 12 bulan historisnya ikut mundur
+            $result['dataSales'] = $this->getSalesData($Stock->id, 12, $allSalesGrouped, $monthAhead);
 
             $totals = array_column($result['dataSales']['penjualanInMonth'], 'total');
             $first5 = array_slice($totals, 0, 5);
@@ -254,6 +244,7 @@ class AdminController extends Controller
             ];
         }
 
+        // Python murni menerima array historis penjualan yang sudah disesuaikan rentangnya oleh PHP
         $holtResult = $this->generatePredictHolt($saleDataItems);
 
         $hybridPredictions = [];
