@@ -44,12 +44,12 @@ class AdminController extends Controller
 
     public function getPrediction(Request $request)
     {
-        // Tangkap pilihan bulan (1, 2, atau 3 bulan sebelumnya)
         $monthAhead = (int) $request->input('month_ahead', 1);
-        if ($monthAhead < 1 || $monthAhead > 3) $monthAhead = 1;
+        if ($monthAhead < -3 || $monthAhead > 3 || $monthAhead === 0) {
+            $monthAhead = 1;
+        }
 
-        // Cache dinamis berdasarkan pilihan bulan sebelumnya
-        $cacheKey = 'hybrid_predictions_cache_prev_' . $monthAhead;
+        $cacheKey = 'hybrid_predictions_cache_v3_' . $monthAhead;
 
         $predictions = Cache::remember($cacheKey, 3600, function () use ($monthAhead) {
             $rawPredictions = $this->generatePredictHybrid($monthAhead);
@@ -90,12 +90,9 @@ class AdminController extends Controller
             ->toJson();
     }
 
-    private function getSalesData($stockId, $rangeMonths, $allSalesGrouped, $monthAhead)
+    private function getSalesData($stockId, $rangeMonths, $allSalesGrouped, $baseDate)
     {
         $data['penjualanInMonth'] = [];
-
-        // Titik acuan waktu dimundurkan berdasarkan $monthAhead (1, 2, atau 3 bulan lalu)
-        $baseDate = Carbon::now()->subMonths($monthAhead);
 
         for ($i = 1; $i <= $rangeMonths; $i++) {
             $date = (clone $baseDate)->startOfMonth()->subMonths($i);
@@ -114,7 +111,7 @@ class AdminController extends Controller
         return $data;
     }
 
-    private function generatePredictTls($dataSales, $n, $product_id)
+    private function generatePredictTls($dataSales, $n, $product_id, $steps = 1)
     {
         $result['dataSales'] = $dataSales;
         $result['dataSales']['penjualanInMonth'] = array_reverse($result['dataSales']['penjualanInMonth']);
@@ -148,7 +145,9 @@ class AdminController extends Controller
 
         $lastX = end($result['x']);
         $interval = ($n % 2 === 0) ? 2 : 1;
-        $nextX = $lastX + $interval;
+
+        // Menyesuaikan langkah prediksi ke depan ($steps)
+        $nextX = $lastX + ($interval * abs($steps));
 
         $result['y'] = $result['a'] + ($result['b'] * $nextX);
 
@@ -160,7 +159,7 @@ class AdminController extends Controller
         ];
     }
 
-    private function generatePredictHolt(array $saleDataItems)
+    private function generatePredictHolt(array $saleDataItems, $steps = 1)
     {
         if (count($saleDataItems) < 1) return false;
 
@@ -175,7 +174,10 @@ class AdminController extends Controller
             $response = Http::timeout(30)
                 ->acceptJson()
                 ->asJson()
-                ->post('http://localhost:3333/predict', ['items' => $payload]);
+                ->post('http://localhost:3333/predict', [
+                    'items' => $payload,
+                    'steps' => abs($steps) // Kirim jumlah langkah ke Python
+                ]);
 
             if ($response->successful() && ($resultPredict = $response->json()) && ($resultPredict['success'] ?? false)) {
                 return $resultPredict['data'];
@@ -192,8 +194,10 @@ class AdminController extends Controller
     {
         $Stocks = Stock::all();
 
-        // Acuan tanggal dimundurkan berdasarkan pilihan user (1, 2, atau 3 bulan lalu)
-        $baseDate = Carbon::now()->subMonths($monthAhead);
+        // Jika positif (1,2,3), acuan waktu adalah sekarang. Jika negatif (-1,-2,-3), acuan waktu dimundurkan.
+        $baseDate = $monthAhead > 0
+            ? Carbon::now()
+            : Carbon::now()->subMonths(abs($monthAhead));
 
         $startDate = (clone $baseDate)->startOfMonth()->subMonths(12)->startOfDay();
         $endDate = (clone $baseDate)->startOfMonth()->subDays(1)->endOfDay();
@@ -213,8 +217,7 @@ class AdminController extends Controller
         $trendPredictions = [];
 
         foreach ($Stocks as $Stock) {
-            // Mengirim $monthAhead agar pengambilan 12 bulan historisnya ikut mundur
-            $result['dataSales'] = $this->getSalesData($Stock->id, 12, $allSalesGrouped, $monthAhead);
+            $result['dataSales'] = $this->getSalesData($Stock->id, 12, $allSalesGrouped, $baseDate);
 
             $totals = array_column($result['dataSales']['penjualanInMonth'], 'total');
             $first5 = array_slice($totals, 0, 5);
@@ -236,7 +239,7 @@ class AdminController extends Controller
 
             if (count($salesData) < 5) continue;
 
-            $trendLeastResult = $this->generatePredictTls($result['dataSales'], count($salesData), $Stock->id);
+            $trendLeastResult = $this->generatePredictTls($result['dataSales'], count($salesData), $Stock->id, $monthAhead);
 
             $trendPredictions[] = [
                 'product_id' => $Stock->id,
@@ -244,8 +247,7 @@ class AdminController extends Controller
             ];
         }
 
-        // Python murni menerima array historis penjualan yang sudah disesuaikan rentangnya oleh PHP
-        $holtResult = $this->generatePredictHolt($saleDataItems);
+        $holtResult = $this->generatePredictHolt($saleDataItems, $monthAhead);
 
         $hybridPredictions = [];
         foreach ($trendPredictions as $trend) {

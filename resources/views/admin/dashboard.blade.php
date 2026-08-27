@@ -128,13 +128,21 @@
                         </div>
                         <div class="col-6 d-flex justify-content-end">
                         <!-- PILIHAN BULAN SEBELUMNYA -->
-                        <div class="input-group input-group-sm w-auto">
-                            <label class="input-group-text text-xs" for="predictionMonth">Periode:</label>
-                            <select class="form-select text-xs font-weight-bold" id="predictionMonth">
-                                <option value="1" selected>1 Bulan Sebelumnya</option>
-                                <option value="2">2 Bulan Sebelumnya</option>
-                                <option value="3">3 Bulan Sebelumnya</option>
-                            </select>
+                        <div class="col-6 d-flex justify-content-end">
+                            <!-- PILIHAN PERIODE -->
+                            <div class="input-group input-group-sm w-auto">
+                                <label class="input-group-text text-xs" for="predictionMonth">Periode:</label>
+                                <select class="form-select text-xs font-weight-bold" id="predictionMonth">
+                                    <optgroup label="Masa Depan (Prediksi)">
+                                        <option value="1" selected>1 Bulan ke Depan</option>
+                                    </optgroup>
+                                    <optgroup label="Masa Lalu (Evaluasi)">
+                                        <option value="-1">1 Bulan Sebelumnya</option>
+                                        <option value="-2">2 Bulan Sebelumnya</option>
+                                        <option value="-3">3 Bulan Sebelumnya</option>
+                                    </optgroup>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     </div>
