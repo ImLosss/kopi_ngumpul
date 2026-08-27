@@ -134,7 +134,7 @@
                                 <label class="input-group-text text-xs" for="predictionMonth">Periode:</label>
                                 <select class="form-select text-xs font-weight-bold" id="predictionMonth">
                                     <optgroup label="Masa Depan (Prediksi)">
-                                        <option value="1" selected>1 Bulan ke Depan</option>
+                                        <option value="1" selected>Bulan ini</option>
                                     </optgroup>
                                     <optgroup label="Masa Lalu (Evaluasi)">
                                         <option value="-1">1 Bulan Sebelumnya</option>
