@@ -8,6 +8,7 @@ use App\Models\StockOut;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\Facades\DataTables;
@@ -19,7 +20,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $data['staff'] = User::whereDoesntHave('roles', function($query) {
+        $data['staff'] = User::whereDoesntHave('roles', function ($query) {
             $query->where('name', 'admin');
         })->count();
 
@@ -34,52 +35,54 @@ class AdminController extends Controller
             ->orderBy('month')
             ->get();
 
-        $data['monthlySalesLabels'] = $monthlySales->map(fn ($row) => Carbon::createFromFormat('Y-m', $row->month)->isoFormat('MMM YY'));
+        $data['monthlySalesLabels'] = $monthlySales->map(fn($row) => Carbon::createFromFormat('Y-m', $row->month)->isoFormat('MMM YY'));
         $data['monthlySalesValues'] = $monthlySales->pluck('total_qty');
         $data['monthlyRevenueValues'] = $monthlySales->pluck('total_revenue');
 
         return view('admin.dashboard', $data);
     }
 
-     public function getPrediction(Request $request)
-{
-    // Ambil data prediksi dan indeks-kan berdasarkan product_id agar pencarian nilainya instan
-    $rawPredictions = $this->generatePredictHybrid();
-    $predictions = collect($rawPredictions)->keyBy('product_id')->toArray();
+    public function getPrediction(Request $request)
+    {
+        // Ambil data prediksi dan indeks-kan berdasarkan product_id agar pencarian nilainya instan
+        $predictions = Cache::remember('hybrid_predictions_cache', 3600, function () {
+            $rawPredictions = $this->generatePredictHybrid();
+            return collect($rawPredictions)->keyBy('product_id')->toArray();
+        });
 
-    $data = Stock::query();
+        $data = Stock::query();
 
-    return DataTables::of($data)
-        ->addIndexColumn()
-        ->addColumn('name', function($data) {
-            return $data->name;
-        })
-        ->addColumn('trendLeast', function($data) use ($predictions) {
-            $p = $predictions[$data->id] ?? null;
-            if (!$p || $p['trendLeast'] < 1) return '-';
-            return $p['trendLeast'];
-        })
-        ->addColumn('holt', function($data) use ($predictions) {
-            $p = $predictions[$data->id] ?? null;
-            if (!$p || $p['holt'] === '-' || $p['holt'] < 1) return '-';
-            return $p['holt'];
-        })
-        ->addColumn('hybrid', function($data) use ($predictions) {
-            $p = $predictions[$data->id] ?? null;
-            if (!$p || $p['prediction'] < 1) return '-';
-            return $p['prediction'];
-        })
-        ->filter(function ($query) use ($request) {
-            if ($request->has('search') && $request->input('search.value')) {
-                $search = $request->input('search.value');
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('code', 'like', "%{$search}%"); // Pencarian berdasarkan nama atau kode barang
-                });
-            }
-        })
-        ->toJson();
-}
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('name', function ($data) {
+                return $data->name;
+            })
+            ->addColumn('trendLeast', function ($data) use ($predictions) {
+                $p = $predictions[$data->id] ?? null;
+                if (!$p || $p['trendLeast'] < 1) return '-';
+                return $p['trendLeast'];
+            })
+            ->addColumn('holt', function ($data) use ($predictions) {
+                $p = $predictions[$data->id] ?? null;
+                if (!$p || $p['holt'] === '-' || $p['holt'] < 1) return '-';
+                return $p['holt'];
+            })
+            ->addColumn('hybrid', function ($data) use ($predictions) {
+                $p = $predictions[$data->id] ?? null;
+                if (!$p || $p['prediction'] < 1) return '-';
+                return $p['prediction'];
+            })
+            ->filter(function ($query) use ($request) {
+                if ($request->has('search') && $request->input('search.value')) {
+                    $search = $request->input('search.value');
+                    $query->where(function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('code', 'like', "%{$search}%"); // Pencarian berdasarkan nama atau kode barang
+                    });
+                }
+            })
+            ->toJson();
+    }
 
     private function getSalesData($stockId, $rangeMonths, $allSalesGrouped)
     {
@@ -165,7 +168,8 @@ class AdminController extends Controller
         ];
     }
 
-    private function generatePredictHolt(array $saleDataItems) {
+    private function generatePredictHolt(array $saleDataItems)
+    {
 
         if (count($saleDataItems) < 1) return false;
         // Reverse untuk urutan dari terlama ke terbaru
@@ -195,7 +199,8 @@ class AdminController extends Controller
         }
     }
 
-    private function generatePredictHybrid() {
+    private function generatePredictHybrid()
+    {
         $Stocks = Stock::all();
 
         // OPTIMASI UTAMA: Ambil seluruh data penjualan 12 bulan terakhir dalam 1 Kali Query Saja!
@@ -229,7 +234,7 @@ class AdminController extends Controller
             }
 
             $last7 = array_slice($totals, 5);
-            $last7Filtered = array_filter($last7, function($value) {
+            $last7Filtered = array_filter($last7, function ($value) {
                 return $value != 0;
             });
 
